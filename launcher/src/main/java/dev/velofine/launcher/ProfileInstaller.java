@@ -45,10 +45,12 @@ import java.util.Comparator;
  * arrays) — refuses to touch pre-1.13-style {@code minecraftArguments} string profiles rather than
  * risk corrupting them.
  *
- * <p><b>Not yet validated against a real vanilla 26.2 version JSON</b> — this dev environment has no
- * vanilla 26.2 install to test against (see README/CLAUDE.md). Field names/structure follow the
- * documented modern Mojang schema; treat this as needing a real-world validation pass once a genuine
- * vanilla 26.2 install is available.
+ * <p>Validated (Phase 1) against a real vanilla 26.2 install cached by Legacy Launcher Stable — note
+ * that its {@code arguments.jvm} entries are <em>all</em> normalized to {@code {"value": ...}} object
+ * form, even unconditional flags with no {@code rules}, unlike the official Mojang manifest's usual
+ * mix of bare strings and rule-gated objects. This class always appends new entries in object form
+ * for that reason — valid under the schema either way, and the only form guaranteed compatible with
+ * both a stock Mojang file and a Legacy-Launcher-normalized one.
  */
 public final class ProfileInstaller {
 
@@ -101,9 +103,15 @@ public final class ProfileInstaller {
         }
         libraries.add(velofineLibraryEntry());
 
+        // Element form, not bare strings: real-world version JSONs (confirmed against both a
+        // stock Mojang-schema file and Legacy Launcher's own cached copy) mix bare strings and
+        // {"rules": [...], "value": ...} objects in this array — some launchers (Legacy
+        // Launcher's cache included) normalize *every* entry to object form, even unconditional
+        // ones. Object-with-just-"value" is valid per the schema either way, so this is the
+        // strictly safer form for a newly-appended entry.
         JsonArray jvmArgs = velofine.getAsJsonObject("arguments").getAsJsonArray("jvm");
-        jvmArgs.add("-Djdk.attach.allowAttachSelf=true");
-        jvmArgs.add("-Dvelofine.vanillaMainClass=" + vanillaMainClass);
+        jvmArgs.add(jvmArgValue("-Djdk.attach.allowAttachSelf=true"));
+        jvmArgs.add(jvmArgValue("-Dvelofine.vanillaMainClass=" + vanillaMainClass));
 
         Path velofineJsonDir = minecraftDir.resolve("versions").resolve(velofineId);
         Files.createDirectories(velofineJsonDir);
@@ -165,6 +173,12 @@ public final class ProfileInstaller {
         JsonObject library = new JsonObject();
         library.addProperty("name", "dev.velofine:velofine-launcher:" + VELOFINE_VERSION);
         return library;
+    }
+
+    private static JsonObject jvmArgValue(String value) {
+        JsonObject entry = new JsonObject();
+        entry.addProperty("value", value);
+        return entry;
     }
 
     private static void registerProfile(Gson gson, Path minecraftDir, String vanillaVersion, String velofineId)

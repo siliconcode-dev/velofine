@@ -4,18 +4,23 @@
 
 import org.gradle.internal.os.OperatingSystem
 
+// Required: this script references :launcher's shadowJar task, which :launcher's own
+// build.gradle.kts registers (via the Shadow plugin) during ITS evaluation - not guaranteed to
+// have happened yet by the time this script runs otherwise.
+evaluationDependsOn(":launcher")
+
 val appName = "Velofine"
 val jpackageInputDir = layout.buildDirectory.dir("jpackage-input")
 val jpackageOutputDir = layout.buildDirectory.dir("jpackage")
 val innoOutputDir = layout.buildDirectory.dir("innosetup")
 
-val launcherJar = project(":launcher").tasks.named("jar")
-val launcherRuntimeClasspath = project(":launcher").configurations.named("runtimeClasspath")
+// launcher ships as one self-contained shaded jar (see launcher/build.gradle.kts) - no separate
+// runtimeClasspath jars need staging alongside it.
+val launcherJar = project(":launcher").tasks.named("shadowJar")
 
 val stageJpackageInput = tasks.register<Sync>("stageJpackageInput") {
     dependsOn(launcherJar)
     from(launcherJar)
-    from(launcherRuntimeClasspath)
     into(jpackageInputDir)
 }
 

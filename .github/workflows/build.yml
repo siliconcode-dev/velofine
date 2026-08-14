@@ -45,7 +45,7 @@ jobs:
         run: ./gradlew :installer:jpackageAppImage :installer:innoSetupCompile
 
       - name: Upload installer artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Velofine-Setup
           path: installer/build/innosetup/Velofine-Setup.exe

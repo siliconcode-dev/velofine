@@ -14,19 +14,10 @@ plugins {
     id("com.gradleup.shadow") version "9.6.1"
 }
 
-repositories {
-    maven("https://repo.spongepowered.org/repository/maven-public/")
-}
-
 dependencies {
     implementation(project(":core"))
+    implementation(project(":legacysupport"))
     implementation("com.google.code.gson:gson:2.14.0")
-
-    // Mixin tooling decision (see CLAUDE.md "Mixin tooling decision"): SpongePowered Mixin,
-    // chosen over plain ASM on SpongeVanilla's standalone-javaagent precedent. Dependency wired
-    // now; a working custom IMixinService for our bare-agent (no ModLauncher/Fabric Knot)
-    // environment is a substantial task deferred to the start of Phase 2. Unused in Phase 1.
-    implementation("org.spongepowered:mixin:0.8.7")
 }
 
 tasks.shadowJar {

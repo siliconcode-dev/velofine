@@ -116,7 +116,7 @@ Extra features beyond vanilla, each independently toggleable:
 
 These should be resolved during early implementation phases, not blocking project kickoff:
 
-- Exact OpenGL context/profile LegacySupport will force (needs targeted technical research against the specific Intel HD 4000 / driver 15.33.53.5161 failure modes).
-- Whether 26.2's bundled LWJGL version itself contributes to the bug, independent of the OpenGL context issue.
+- OpenGL context/profile LegacySupport forces is now implemented (Phase 2): vanilla requests 3.3 Core Forward-Compatible (confirmed via javap against the real client jar); on detected Intel Gen7 hardware, Velofine forces 3.3 Compatibility Profile instead. This is a research-grounded hypothesis, not yet confirmed against the actual reference hardware — see CLAUDE.md's "LegacySupport: real findings" section.
+- 26.2's bundled LWJGL version is confirmed 3.4.1 (via its own version JSON); whether it independently contributes to the bug beyond the GL-context/shader issues already addressed is still open.
 - Whether to build the OptiFine/Iris shader-format parser from scratch or adapt Iris's existing LGPL components.
 - Whether Velofine should ship an automatic crash-recovery "safe mode" (auto-relaunch with LegacySupport forced on after a startup crash) — leaning yes, not committed.

@@ -20,6 +20,7 @@
 package dev.velofine.launcher;
 
 import dev.velofine.core.agent.AgentContext;
+import dev.velofine.legacysupport.LegacySupportEngine;
 
 import java.lang.instrument.Instrumentation;
 
@@ -28,10 +29,9 @@ import java.lang.instrument.Instrumentation;
  * Minecraft-launch time (so {@link #agentmain} runs), and also exposes {@link #premain} for
  * completeness/manual testing with a literal {@code -javaagent:} flag.
  *
- * <p>Phase 1 scope only: acquire {@link Instrumentation}, publish it via {@link AgentContext} for
- * later engines to use, and prove attachment with a log line. It registers zero class transformers
- * and does not touch Mixin — see CLAUDE.md's "Mixin tooling decision" for why that's deferred to
- * Phase 2.
+ * <p>Acquires {@link Instrumentation}, publishes it via {@link AgentContext} for engines to use,
+ * then hands off to {@link LegacySupportEngine} (Phase 2) — the first engine to actually register
+ * class transformers. Optimus/Utility get the same treatment once they exist.
  */
 public final class VelofineAgent {
 
@@ -51,7 +51,8 @@ public final class VelofineAgent {
         AgentContext.init(inst, vanillaMainClass);
         System.out.println("[Velofine] agent attached: Instrumentation acquired "
                 + "(canRetransform=" + inst.isRetransformClassesSupported()
-                + ", canRedefine=" + inst.isRedefineClassesSupported() + "); "
-                + "0 transformers registered (Phase 1 — pipeline validation only)");
+                + ", canRedefine=" + inst.isRedefineClassesSupported() + ")");
+
+        LegacySupportEngine.onAgentAttached(inst);
     }
 }

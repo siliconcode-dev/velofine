@@ -112,6 +112,10 @@ public final class ProfileInstaller {
         JsonArray jvmArgs = velofine.getAsJsonObject("arguments").getAsJsonArray("jvm");
         jvmArgs.add(jvmArgValue("-Djdk.attach.allowAttachSelf=true"));
         jvmArgs.add(jvmArgValue("-Dvelofine.vanillaMainClass=" + vanillaMainClass));
+        // mixins.legacysupport.json has no refmap (not needed - real Mojang class names, not
+        // SRG/obfuscated); without this flag Mixin logs a spurious "Invalid REFMAP JSON" error
+        // for the unset field (confirmed via this phase's VerifyMixinsHarness).
+        jvmArgs.add(jvmArgValue("-Dmixin.env.disableRefMap=true"));
 
         Path velofineJsonDir = minecraftDir.resolve("versions").resolve(velofineId);
         Files.createDirectories(velofineJsonDir);

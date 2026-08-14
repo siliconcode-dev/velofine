@@ -21,6 +21,11 @@ subprojects {
 
     repositories {
         mavenCentral()
+        // SpongePowered Mixin isn't on Maven Central. Declared once here (not per-module) since
+        // Gradle resolves transitive dependencies using the *consuming* project's repositories,
+        // not the declaring project's - launcher transitively needs this via legacysupport even
+        // though launcher itself never mentions Mixin directly.
+        maven("https://repo.spongepowered.org/repository/maven-public/")
     }
 
     configure<SpotlessExtension> {

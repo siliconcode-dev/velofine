@@ -7,7 +7,7 @@ Three independent engines:
 - **Optimus** — OpenGL-focused performance optimization.
 - **Utility** — OptiFine-parity QoL features and full shader pipeline support.
 
-**Status:** Phase 1 of the build plan — the patcher pipeline and installer exist, but none of the three engines do any real work yet (the agent attaches and does nothing). Not yet a useful mod. See `Build_plan.md` for what's next.
+**Status:** Phase 2 of the build plan — LegacySupport's Intel HD 4000/HD Graphics 2500 fix is implemented (forced GL compatibility profile + a defensive shader patch) and verified against the real vanilla 26.2 client classes, but **not yet confirmed on the actual reference hardware** — that's pending community testers. Optimus and Utility still do nothing. See `Build_plan.md` for what's next.
 
 ## Installing
 

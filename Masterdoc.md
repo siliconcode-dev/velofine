@@ -17,7 +17,7 @@ Installing Velofine means going **Velofine-only** — it is not designed to coex
 
 Two problems, one tool:
 
-1. **Ancient hardware is badly broken on modern Minecraft.** Since Minecraft 1.17 raised its minimum requirement to an OpenGL 3.2 Core context, older integrated GPUs (Intel HD 4000-class, e.g. an i3-3110M laptop with 4GB DDR3 and an HDD) have suffered escalating rendering bugs. On 26.2 specifically, this manifests as **fully invisible (x-ray-through) portals, lava, and water**, plus poor overall performance. This is confirmed to happen on both fresh vanilla 26.2 and on Fabric 26.2 with Sodium/Lithium installed — it is not a mod conflict, it's a driver/GL-compliance-class bug. This class of bug is independently documented (Intel Community forum threads, an open Sodium GitHub issue about Intel driver detection) and Intel has not shipped a new driver for this hardware generation since October 2020 (driver 15.33.53.5161) — so the fix has to live in software, not "update your drivers."
+1. **Ancient hardware is badly broken on modern Minecraft.** Since Minecraft 1.17 raised its minimum requirement to an OpenGL 3.2 Core context, older Ivy Bridge-era Intel integrated GPUs (HD 4000/HD 2500-class — e.g. an i3-3110M laptop with 4GB DDR3 and an HDD, or an i5-3470S desktop with 4GB DDR3 and an SSD) have suffered escalating rendering bugs. On 26.2 specifically, this manifests as **fully invisible (x-ray-through) portals, lava, and water**, plus poor overall performance. This is confirmed to happen on both fresh vanilla 26.2 and on Fabric 26.2 with Sodium/Lithium installed — it is not a mod conflict, it's a driver/GL-compliance-class bug. This class of bug is independently documented (Intel Community forum threads, an open Sodium GitHub issue about Intel driver detection) and Intel has not shipped a new driver for this hardware generation since October 2020 (driver 15.33.53.5161) — so the fix has to live in software, not "update your drivers."
 2. **OptiFine's role has fragmented.** OptiFine is closed-source, slow to update, and conflicts with performance mods. The community answer (Sodium + Iris on Fabric/NeoForge) is excellent but requires a mod loader and doesn't help the legacy-hardware case above. Velofine aims to be a single-install, no-mod-loader-required tool that covers both: modern performance techniques *and* legacy-hardware compatibility fixes, in one product.
 
 ## 3. Architecture
@@ -37,7 +37,11 @@ Two problems, one tool:
 ## 4. The Three Engines
 
 ### 4.1 LegacySupport Engine — "make it work on ancient hardware"
-**Target hardware floor (v1):** Intel Core i3-3110M / 4GB DDR3 / HDD, Intel HD 4000 integrated graphics, Windows, driver 15.33.53.5161 (Intel's last driver for this GPU generation, Oct 2020). This is the *initial* floor; future versions may target even lower-spec hardware.
+**Target hardware floor (v1):** two reference machines, both Ivy Bridge-generation Intel with the same driver-support cutoff era:
+- Intel Core i3-3110M / 4GB DDR3 / HDD, Intel HD 4000 integrated graphics, Windows, driver 15.33.53.5161 (Intel's last driver for this GPU generation, Oct 2020) — dual-core laptop profile.
+- Intel Core i5-3470S / 4GB DDR3 / SSD, Intel HD Graphics 2500 integrated graphics, Windows — quad-core desktop profile, weaker/different iGPU (HD 2500 vs. HD 4000) but a stronger CPU; same driver-era GL-compliance risk as the i3-3110M.
+
+This is the *initial* floor; future versions may target even lower-spec hardware.
 
 Confirmed symptoms on this class of hardware (26.2):
 - Portals, lava, and water render **fully invisible** (see-through, not solid black) — an x-ray-like effect.
@@ -95,7 +99,7 @@ Extra features beyond vanilla, each independently toggleable:
 
 ## 7. Testing
 
-- No personal access to the reference legacy hardware (i3-3110M) during development — real-hardware validation depends on the founder's friend and, later, community testers.
+- No personal access to the reference legacy hardware during development — real-hardware validation depends on two testers with the i3-3110M and i5-3470S reference machines respectively, and, later, community testers.
 - Manual QA is acceptable for early phases; automated unit/integration tests should be added once the core architecture (patcher pipeline, engine boundaries) stabilizes rather than from the very first line of code.
 - CI (build + test pipeline) is wanted from day one regardless, even while test coverage itself ramps up gradually.
 

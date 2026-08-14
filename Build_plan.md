@@ -39,9 +39,9 @@ Phased implementation plan. Each phase should be functionally complete and valid
 - Implement GPU/driver auto-detection (identify Intel HD 4000-class hardware and this specific driver generation) and apply a pre-built fix profile automatically on match.
 - Implement the actual fix: forced GL context negotiation and/or targeted GLSL shader patches for the affected draw calls (portal, lava, water rendering — the confirmed "fully invisible" bug).
 - Implement the generic fallback "safe mode" / compatibility renderer for old/unknown GPUs that don't match the specific pre-built profile.
-- Since there's no personal access to the reference hardware: build this phase with a tight feedback loop to the friend/community tester who has the affected machine — treat their confirmation as the actual acceptance test, not just code review.
+- Since there's no personal access to the reference hardware: build this phase with a tight feedback loop to the two testers who have the affected machines — treat their confirmation as the actual acceptance test, not just code review.
 
-**Exit criteria:** On the reference i3-3110M / Intel HD 4000 / driver 15.33.53.5161 machine, portals/lava/water render correctly (not invisible) under Velofine, on both a fresh install and confirmed non-regressing versus the earlier Fabric+Sodium+Lithium test case.
+**Exit criteria:** On both reference machines — the i3-3110M / Intel HD 4000 / driver 15.33.53.5161 laptop and the i5-3470S / Intel HD Graphics 2500 desktop — portals/lava/water render correctly (not invisible) under Velofine, on both a fresh install and confirmed non-regressing versus the earlier Fabric+Sodium+Lithium test case.
 
 ---
 

@@ -22,3 +22,31 @@ jobs:
 
       - name: Build
         run: ./gradlew build
+
+  package-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer
+        run: ./gradlew :installer:jpackageAppImage :installer:innoSetupCompile
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Velofine-Setup
+          path: installer/build/innosetup/Velofine-Setup.exe
+          if-no-files-found: error

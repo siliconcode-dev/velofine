@@ -11,7 +11,7 @@ subprojects {
     apply(plugin = "com.diffplug.spotless")
 
     group = "dev.velofine"
-    version = "0.0.1-phase0"
+    version = "0.1.0"
 
     configure<JavaPluginExtension> {
         toolchain {

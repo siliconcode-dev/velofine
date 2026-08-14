@@ -1,0 +1,6 @@
+[versions]
+java = "25"
+spotless = "8.9.0"
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

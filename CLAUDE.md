@@ -31,6 +31,28 @@ Velofine is a standalone, launcher-level OptiFine-style patcher for Minecraft Ja
 - Starting Phase 9, add automated unit/integration tests for the now-stabilized core: patcher pipeline, each engine's core logic, config system.
 - CI (build pipeline) should exist from Phase 0 onward regardless of test coverage maturity — every push should at least compile and package successfully.
 
+## Local dev testing: game directory
+
+**Always use the project owner's real Minecraft directory for local install/launch testing on this
+machine — do not use a synthetic `/tmp` fixture or the default `%APPDATA%\.minecraft` path:**
+
+```text
+C:\Users\Azam\AppData\Roaming\.tlauncher\legacy\Minecraft\game
+```
+
+This is a real, standard-format (`versions/` + `launcher_profiles.json`) game directory managed by
+Legacy Launcher Stable (a TLauncher sibling) — not the official Mojang launcher, but Velofine reads
+and writes the same file layout either way. Vanilla 26.2 is being installed here now; once it's
+present at `versions\26.2\26.2.json`, this becomes the real end-to-end test target for Phase 1's
+exit criteria (install → launch the Velofine profile → title screen → confirm the agent-attached log
+line) and every LegacySupport/Optimus/Utility feature after it. Before that, this folder only has
+`Fabric 1.19.4` installed — useful for structural JSON testing (see CLAUDE.md git history / commit
+`1d1f62e`) but not a substitute for a real vanilla 26.2 run.
+
+When testing `ProfileInstaller` (`--install-profile`/`--uninstall-profile`) against this folder,
+prefer a clean install → verify → uninstall round-trip unless the project owner asks for the profile
+to be left in place — it's their real, in-use game directory, not disposable scratch space.
+
 ## Documentation
 
 - Maintain `README.md` starting Phase 1 with install instructions and screenshots/GIFs; keep it current as features ship in later phases.

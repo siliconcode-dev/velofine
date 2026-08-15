@@ -1,3 +1,3 @@
 rootProject.name = "velofine"
 
-include("core", "legacysupport", "optimus", "utility", "launcher", "installer")
+include("mcstubs", "core", "legacysupport", "optimus", "utility", "launcher", "installer")

@@ -22,6 +22,7 @@ package dev.velofine.core.gpu;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.velofine.core.log.VelofineLog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +75,7 @@ public final class GpuDetector {
             }
             return adapters.isEmpty() ? GpuInfo.unknown() : adapters.get(0);
         } catch (Exception e) {
-            System.err.println("[Velofine][core] GPU detection failed, assuming no fix profile: " + e);
+            VelofineLog.warn("core", "GPU detection failed, assuming no fix profile: " + e);
             return GpuInfo.unknown();
         }
     }

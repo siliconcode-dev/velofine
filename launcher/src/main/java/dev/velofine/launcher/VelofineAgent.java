@@ -19,9 +19,11 @@
 
 package dev.velofine.launcher;
 
+import dev.velofine.core.CoreEngine;
 import dev.velofine.core.agent.AgentContext;
 import dev.velofine.legacysupport.LegacySupportEngine;
 import dev.velofine.optimus.OptimusEngine;
+import dev.velofine.utility.UtilityEngine;
 
 import java.lang.instrument.Instrumentation;
 
@@ -31,8 +33,10 @@ import java.lang.instrument.Instrumentation;
  * completeness/manual testing with a literal {@code -javaagent:} flag.
  *
  * <p>Acquires {@link Instrumentation}, publishes it via {@link AgentContext} for engines to use,
- * then hands off to {@link LegacySupportEngine} (Phase 2) and {@link OptimusEngine} (Phase 4).
- * Utility gets the same treatment once it exists.
+ * then hands off to each engine. {@link CoreEngine} goes first and unconditionally - it installs
+ * the config UI's entry-point mixins, which must stay reachable even when every other engine below
+ * it is switched off in {@code config.json}, otherwise a user who disables all three has locked
+ * themselves out of the only place to turn them back on.
  */
 public final class VelofineAgent {
 
@@ -54,7 +58,9 @@ public final class VelofineAgent {
                 + "(canRetransform=" + inst.isRetransformClassesSupported()
                 + ", canRedefine=" + inst.isRedefineClassesSupported() + ")");
 
+        CoreEngine.onAgentAttached(inst);
         LegacySupportEngine.onAgentAttached(inst);
         OptimusEngine.onAgentAttached(inst);
+        UtilityEngine.onAgentAttached(inst);
     }
 }

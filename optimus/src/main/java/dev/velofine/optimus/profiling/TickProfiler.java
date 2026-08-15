@@ -33,12 +33,18 @@ import dev.velofine.core.log.VelofineLog;
  *
  * <p>Always called from the client (render) thread by {@code Minecraft.tick()} itself, so plain
  * static fields are correct here - no cross-thread access, no need for volatile/atomics.
+ *
+ * <p>Since Phase 5 the profiler is off by default and toggleable at runtime, so {@link #onTickEnd}
+ * can be reached without a matching {@link #onTickStart} - the toggle may have flipped mid-tick.
+ * The {@code sampling} latch makes every sample a genuine start/end pair rather than measuring
+ * from whenever the profiler last happened to be enabled.
  */
 public final class TickProfiler {
 
     private static final int SAMPLE_WINDOW_TICKS = 100;
 
     private static long tickStartNanos;
+    private static boolean sampling;
     private static long minNanos = Long.MAX_VALUE;
     private static long maxNanos;
     private static long totalNanos;
@@ -49,9 +55,15 @@ public final class TickProfiler {
 
     public static void onTickStart() {
         tickStartNanos = System.nanoTime();
+        sampling = true;
     }
 
     public static void onTickEnd() {
+        if (!sampling) {
+            return;
+        }
+        sampling = false;
+
         long elapsedNanos = System.nanoTime() - tickStartNanos;
         minNanos = Math.min(minNanos, elapsedNanos);
         maxNanos = Math.max(maxNanos, elapsedNanos);

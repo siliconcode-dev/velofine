@@ -19,14 +19,15 @@
 
 package dev.velofine.legacysupport;
 
-import dev.velofine.core.gpu.GpuDetector;
+import dev.velofine.core.config.ConfigManager;
+import dev.velofine.core.config.Tri;
+import dev.velofine.core.config.VelofineConfig;
 import dev.velofine.core.gpu.GpuInfo;
-import dev.velofine.core.hardware.DiskDetector;
 import dev.velofine.core.hardware.DiskInfo;
 import dev.velofine.core.hardware.Fix;
 import dev.velofine.core.hardware.FixProfileRules;
 import dev.velofine.core.hardware.HardwareProfile;
-import dev.velofine.core.hardware.MemoryDetector;
+import dev.velofine.core.hardware.HardwareProfiles;
 import dev.velofine.core.hardware.MemoryInfo;
 import dev.velofine.core.log.VelofineLog;
 import dev.velofine.core.mixin.MixinBridge;
@@ -35,20 +36,22 @@ import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigSource;
 
 import java.lang.instrument.Instrumentation;
-import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Entry point for the LegacySupport engine, called from {@code VelofineAgent} after the agent
- * self-attaches. Builds a {@link HardwareProfile} (GPU, RAM, disk type), resolves it to a set of
- * {@link Fix}es via {@link FixProfileRules}, and - only if at least one fix is active - boots
- * Mixin and installs {@code mixins.legacysupport.json}.
+ * self-attaches. Reads the {@link HardwareProfile} (GPU, RAM, disk type - detected once in
+ * {@code core}, see {@link HardwareProfiles}), resolves it to a set of {@link Fix}es via
+ * {@link FixProfileRules} adjusted by the user's per-fix {@link Tri} overrides, and - only if at
+ * least one fix is active - boots Mixin and installs {@code mixins.legacysupport.json}.
  *
- * <p>No config/toggle system exists yet (that's Phase 5) - LegacySupport runs unconditionally for
- * now. {@link #isFixActive(Fix)} is the single decision point every mixin reads at runtime, so a
- * future config system only needs to change what feeds it, not the mixins themselves.
+ * <p>Since Phase 5, {@code engines.legacySupport} gates the whole engine (mirroring Optimus and
+ * Utility), and each {@link Fix} can be forced {@code ON}/{@code OFF} independently of what
+ * detection decided, or left at {@code AUTO}. {@link #isFixActive(Fix)} remains the single
+ * decision point every mixin reads at runtime - the config system changes what feeds it, not the
+ * mixins themselves, exactly as planned when this class was first written.
  */
 public final class LegacySupportEngine {
 
@@ -59,15 +62,21 @@ public final class LegacySupportEngine {
     }
 
     public static void onAgentAttached(Instrumentation instrumentation) {
-        hardwareProfile = buildHardwareProfile();
+        hardwareProfile = HardwareProfiles.get();
         activeFixes = resolveFixes(hardwareProfile);
 
         VelofineLog.info("LegacySupport", "GPU detected: " + describe(hardwareProfile.gpu()));
         VelofineLog.info("LegacySupport", "RAM detected: " + describe(hardwareProfile.memory()));
         VelofineLog.info("LegacySupport", "disk type: " + describe(hardwareProfile.disk()));
 
+        if (!ConfigManager.get().engines.legacySupport) {
+            VelofineLog.info("LegacySupport", "Engine disabled in config; LegacySupport mixins not applied.");
+            return;
+        }
+
         if (activeFixes.isEmpty()) {
-            VelofineLog.info("LegacySupport", "No known-bad hardware detected; LegacySupport mixins not applied.");
+            VelofineLog.info("LegacySupport", "No fixes active (detection found nothing, and none were forced on); "
+                    + "LegacySupport mixins not applied.");
             return;
         }
 
@@ -97,33 +106,34 @@ public final class LegacySupportEngine {
         return activeFixes.contains(fix);
     }
 
+    /**
+     * Detection first, then the per-fix {@link Tri} override on top, then (for dev testing only)
+     * the {@code -Dvelofine.legacysupport.forceFixes} system property, which replaces the whole
+     * set rather than layering - it exists so the Mixin pipeline can be exercised on machines
+     * without the reference hardware, same as before Phase 5, and takes priority over the config
+     * UI so a diagnostic run is never silently overridden by whatever is saved on disk.
+     */
     private static Set<Fix> resolveFixes(HardwareProfile profile) {
         String forced = System.getProperty("velofine.legacysupport.forceFixes");
-        if (forced == null) {
-            return FixProfileRules.resolve(profile);
+        if (forced != null) {
+            EnumSet<Fix> forcedFixes = EnumSet.noneOf(Fix.class);
+            for (String name : forced.split(",")) {
+                if (!name.isBlank()) {
+                    forcedFixes.add(Fix.valueOf(name.trim()));
+                }
+            }
+            return forcedFixes;
         }
-        EnumSet<Fix> forcedFixes = EnumSet.noneOf(Fix.class);
-        for (String name : forced.split(",")) {
-            if (!name.isBlank()) {
-                forcedFixes.add(Fix.valueOf(name.trim()));
+
+        Set<Fix> detected = FixProfileRules.resolve(profile);
+        VelofineConfig.LegacySupportSection overrides = ConfigManager.get().legacySupport;
+        EnumSet<Fix> resolved = EnumSet.noneOf(Fix.class);
+        for (Fix fix : Fix.values()) {
+            if (overrides.mode(fix).resolve(detected.contains(fix))) {
+                resolved.add(fix);
             }
         }
-        return forcedFixes;
-    }
-
-    /**
-     * Real detection, unless overridden via {@code -Dvelofine.legacysupport.forceFixes=...} (a
-     * comma-separated list of {@link Fix} names) - a small testability hook so the Mixin pipeline
-     * can be exercised on dev machines that don't have the actual reference hardware. Not used by
-     * any real install/launch path. When forcing fixes, hardware detection still runs (for
-     * accurate logging) but its result is ignored in favor of the forced set.
-     */
-    private static HardwareProfile buildHardwareProfile() {
-        GpuInfo gpu = GpuDetector.detect();
-        MemoryInfo memory = MemoryDetector.detect();
-        String gameDir = System.getProperty("velofine.gameDir");
-        DiskInfo disk = gameDir != null ? DiskDetector.detect(Path.of(gameDir)) : DiskInfo.unknown();
-        return new HardwareProfile(gpu, memory, disk);
+        return resolved;
     }
 
     private static String describe(GpuInfo info) {

@@ -30,15 +30,18 @@ import java.util.zip.ZipFile;
 /**
  * Manual diagnostic tool, not a JUnit test (Phase 2 predates the Phase 9 automated-test buildout
  * per CLAUDE.md). Run with {@code -javaagent:<shaded launcher jar>} (triggers the real self-attach
- * path, which now runs both {@code LegacySupportEngine.onAgentAttached} and {@code
- * OptimusEngine.onAgentAttached} - Optimus's mixins are unconditional, so no force-flag is needed
- * for those) and {@code
+ * path, which now runs {@code CoreEngine}, {@code LegacySupportEngine}, {@code OptimusEngine} and
+ * {@code UtilityEngine} in sequence - CoreEngine's mixins and Optimus's are unconditional given
+ * default config, so no force-flag is needed for those) and {@code
  * -Dvelofine.legacysupport.forceFixes=GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS} (so LegacySupport's mixins run regardless of this machine's real
  * GPU), then exercises Mixin's real transform pipeline directly against real vanilla 26.2 client
- * jar class bytes - without touching GLFW/the actual game. Running both engines' mixins in the
+ * jar class bytes - without touching GLFW/the actual game. Running every engine's mixins in the
  * same JVM here also empirically confirms Phase 4's hoisted {@code MixinBridge}/{@code
  * VelofineMixinService} correctly applies multiple engines' independently-added
- * {@code Mixins.addConfiguration(...)} configs through the one shared transformer.
+ * {@code Mixins.addConfiguration(...)} configs through the one shared transformer - Phase 5 adds a
+ * third config ({@code mixins.velofine-core.json}) and two classes ({@code Minecraft},
+ * {@code PauseScreen}... {@code VideoSettingsScreen}) targeted by more than one engine's mixins at
+ * once, which is exactly the scenario that would expose a transformer-sharing regression.
  *
  * <p>Deliberately lives outside {@code dev.velofine.legacysupport.mixin}: Mixin forbids classes
  * inside an active mixin config's own package from being loaded directly, which would otherwise
@@ -61,6 +64,8 @@ public final class VerifyMixinsHarness {
     private static final String OPTIONS = "net.minecraft.client.Options";
     private static final String MOB = "net.minecraft.world.entity.Mob";
     private static final String MINECRAFT = "net.minecraft.client.Minecraft";
+    private static final String VIDEO_SETTINGS_SCREEN = "net.minecraft.client.gui.screens.options.VideoSettingsScreen";
+    private static final String PAUSE_SCREEN = "net.minecraft.client.gui.screens.PauseScreen";
 
     private VerifyMixinsHarness() {
     }
@@ -88,8 +93,15 @@ public final class VerifyMixinsHarness {
                         "velofine$entityDistanceScalingDefault", "velofine$mipmapLevelsDefault", "velofine$particlesDefault"});
         ok &= verifyClass(clientJar, outDir, MOB, "MobMixin",
                 new String[] {"velofine$goalSelectorUpdateInterval"});
-        ok &= verifyClass(clientJar, outDir, MINECRAFT, "MinecraftMixin",
-                new String[] {"velofine$onTickStart", "velofine$onTickEnd"});
+        // Minecraft is targeted by two independent mixin configs (Optimus's tick profiler/governor
+        // hook, and core's config-keybind poll) - both markers must survive in the same transform,
+        // which is the real test of the shared-transformer claim above.
+        ok &= verifyClass(clientJar, outDir, MINECRAFT, "MinecraftMixin + MinecraftKeybindMixin",
+                new String[] {"velofine$onTickStart", "velofine$onTickEnd", "velofine$pollConfigKeybind"});
+        ok &= verifyClass(clientJar, outDir, VIDEO_SETTINGS_SCREEN, "VideoSettingsScreenMixin",
+                new String[] {"velofine$addSettingsRow", "VELOFINE SETTINGS"});
+        ok &= verifyClass(clientJar, outDir, PAUSE_SCREEN, "PauseScreenMixin",
+                new String[] {"velofine$addPauseMenuButton", "VELOFINE"});
 
         System.out.println("=== " + (ok ? "PASS" : "FAIL") + " ===");
         System.exit(ok ? 0 : 1);

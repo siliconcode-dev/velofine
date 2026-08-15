@@ -1,19 +1,21 @@
-// Optimus engine: OpenGL-focused performance optimization.
+// Optimus engine: performance optimization, OpenGL-focused.
 // Configuration inherited from the root project's `subprojects` block.
 
 dependencies {
-    // Mixin/ASM/Guava come transitively via core's `api(...)` dependencies (see
-    // core/build.gradle.kts) - this module's own mixin classes use those types directly.
+    // Mixin/ASM/Guava arrive transitively via core's `api(...)` declarations - see
+    // core/build.gradle.kts for why those are `api` and not `implementation`.
     implementation(project(":core"))
+
+    // Phase 5's performance governor reads Minecraft.getFps() and writes
+    // Options.renderDistance().set(...), so unlike Phases 4's mixins (primitives only) this module
+    // now needs the signature-only Minecraft stubs. compileOnly - never shaded.
+    compileOnly(project(":mcstubs"))
 }
 
-// mixins.optimus.json declares compatibilityLevel JAVA_16 for the same reason
-// legacysupport/build.gradle.kts documents: Mixin 0.8.7's ASM-minor-version auto-detection can't
-// read a version back from launcher's shaded/merged jar, so anything above JAVA_16 spuriously
-// fails even with real ASM 9.10.1 present.
-
-// OptimusVerifyMixinsHarness (src/test/java) is a manual diagnostic tool, not a JUnit test - same
-// reasoning as legacysupport/build.gradle.kts.
+// Optimus's mixins are verified by legacysupport's VerifyMixinsHarness (which loads both engines'
+// mixin configs into one JVM on purpose - that is also how the shared MixinBridge transformer gets
+// exercised with more than one config). This module has no test sources of its own; the flag keeps
+// `check` green if that ever changes to an empty source set.
 tasks.test {
     failOnNoDiscoveredTests.set(false)
 }

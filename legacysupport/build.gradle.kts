@@ -1,19 +1,6 @@
 // LegacySupport engine: ancient-hardware compatibility fixes.
 // Configuration inherited from the root project's `subprojects` block.
 
-// A separate, compile-only source set for hand-authored stub types matching real Minecraft
-// classes' package/name/method *signatures* only (zero decompiled Mojang logic - just enough for
-// javac to resolve @Redirect handler parameter types in the mixins below). Never bundled: not a
-// dependency of any runtime configuration, so shadowJar never sees it. We can't depend on
-// Mojang's actual client jar (proprietary, not republishable, not something CI has access to
-// anyway) - this is the standard workaround modding tooling solves via full deobfuscation
-// pipelines; ours is a minimal hand-written version scoped to the handful of types we touch.
-sourceSets {
-    create("stubs") {
-        java.srcDir("src/stubs/java")
-    }
-}
-
 dependencies {
     // Mixin/ASM/Guava come transitively via core's `api(...)` dependencies (see
     // core/build.gradle.kts) - `api`, not `implementation`, because this module's own mixin
@@ -30,7 +17,11 @@ dependencies {
     compileOnly("org.lwjgl:lwjgl:3.4.1")
     compileOnly("org.lwjgl:lwjgl-glfw:3.4.1")
 
-    compileOnly(sourceSets["stubs"].output)
+    // Signature-only Minecraft stubs. Phase 5 moved these out of this module's own
+    // `src/stubs/java` source set into the shared :mcstubs module - see mcstubs/build.gradle.kts
+    // for why that per-engine decision from Phase 4 was reversed. compileOnly, so shadowJar can
+    // never bundle a fake net.minecraft.* class over the real one.
+    compileOnly(project(":mcstubs"))
 }
 
 // mixins.legacysupport.json declares compatibilityLevel JAVA_16, not the higher JAVA_21 Mixin
@@ -47,4 +38,3 @@ dependencies {
 tasks.test {
     failOnNoDiscoveredTests.set(false)
 }
-

@@ -1,8 +1,12 @@
 // Shared cross-engine utilities (config system, logging, GPU/hardware detection, Mixin service
-// plumbing). Configuration inherited from the root project's `subprojects` block.
+// plumbing, and - since Phase 5 - the in-game config UI). Configuration inherited from the root
+// project's `subprojects` block.
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.14.0")
+    // `api`, not `implementation`, since Phase 5: dev.velofine.core.config types are read and
+    // mutated by every engine module and by the UI, and ConfigManager exposes Gson-serialized
+    // POJOs across that boundary.
+    api("com.google.code.gson:gson:2.14.0")
 
     // Mixin service/transformer plumbing (MixinBridge, VelofineMixinService,
     // VelofinePropertyKey/Service) lives here, not in any one engine module: ServiceLoader's
@@ -28,4 +32,9 @@ dependencies {
     api("org.ow2.asm:asm-util:9.10.1")
     api("org.ow2.asm:asm-analysis:9.10.1")
     api("com.google.guava:guava:33.6.0-jre")
+
+    // Signature-only Minecraft stubs for the Phase 5 config UI (dev.velofine.core.gui) and its
+    // entry-point mixins. compileOnly on purpose: these fake net.minecraft.* classes must never
+    // reach a runtime classpath, where they would shadow the real ones.
+    compileOnly(project(":mcstubs"))
 }

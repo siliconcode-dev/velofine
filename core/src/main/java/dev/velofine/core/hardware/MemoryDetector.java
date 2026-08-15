@@ -22,6 +22,7 @@ package dev.velofine.core.hardware;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.velofine.core.log.VelofineLog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +60,7 @@ public final class MemoryDetector {
 
             return parse(output);
         } catch (Exception e) {
-            System.err.println("[Velofine][core] Memory detection failed, assuming unknown: " + e);
+            VelofineLog.warn("core", "Memory detection failed, assuming unknown: " + e);
             return MemoryInfo.unknown();
         }
     }

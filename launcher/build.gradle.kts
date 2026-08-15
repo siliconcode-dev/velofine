@@ -18,6 +18,8 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":legacysupport"))
     implementation(project(":optimus"))
+    // Phase 5: UtilityEngine now exists and VelofineAgent calls it directly.
+    implementation(project(":utility"))
     implementation("com.google.code.gson:gson:2.14.0")
 }
 

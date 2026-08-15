@@ -68,15 +68,15 @@ Phased implementation plan. Each phase should be functionally complete and valid
 
 ---
 
-## Phase 5 — Optimus Engine (adaptive) + per-engine toggling UI
+## Phase 5 — Optimus Engine (adaptive) + per-engine toggling UI — **implemented**
 **Goal:** Make performance behavior smart and user-controllable.
 
-- Adaptive/auto performance governor: real-time FPS-based adjustment of render distance/graphics quality.
-- Fixed manual mode as an alternative to the governor.
-- Build the independent-toggle GUI panels for each engine (LegacySupport / Optimus / Utility), each with its own config panel, per the "not one combined settings screen" requirement.
-- Wire up Utility's "safe-by-default on weak hardware" behavior against LegacySupport's hardware detection from Phase 2.
+- Adaptive/auto performance governor: real-time FPS-based adjustment of render distance/graphics quality. **Done** — `optimus/.../governor/PerformanceGovernor`, render-distance-only this phase (an explicit scope cut; secondary quality-tier levers like entity distance/particles/clouds were considered and deferred, see CLAUDE.md). Needs zero mixins: confirmed via javap that `Options.renderDistance().set(n)` already fires vanilla's own `ValueUpdateListener`, which handles the chunk-graph rebuild and server view-distance packet.
+- Fixed manual mode as an alternative to the governor. **Done** — `GovernorMode.MANUAL` pins one render distance on world join and never adapts.
+- Build the independent-toggle GUI panels for each engine (LegacySupport / Optimus / Utility), each with its own config panel, per the "not one combined settings screen" requirement. **Done** — `dev.velofine.core.gui`, a fully custom-drawn ("brutalist," black/white/red) screen with a Sodium-style left tab rail, one page per engine plus a General page, staged UNDO/APPLY, and per-row live-vs-restart badges. Reachable from a Video Settings row, a pause-menu button, and a rebindable in-game keybind — all three confirmed via `VerifyMixinsHarness` and hand-disassembly against the real 26.2 client jar.
+- Wire up Utility's "safe-by-default on weak hardware" behavior against LegacySupport's hardware detection from Phase 2. **Done** — hardware detection itself was hoisted from `legacysupport` to `core`'s new `HardwareProfiles` so Utility (and Optimus's governor default) don't need to depend on the LegacySupport module to ask; `utility/.../SafeDefaultsPolicy.shouldStartSafe()` is the policy switch, though no Utility feature exists yet to consult it (Phase 6).
 
-**Exit criteria:** A user can independently enable/disable each engine and see the governor visibly respond to FPS changes in real time.
+**Exit criteria:** A user can independently enable/disable each engine and see the governor visibly respond to FPS changes in real time. **Met** — every engine has a master on/off toggle gating whether its mixin config even installs (verified via config round-trip against the real Legacy Launcher game directory, and via `VerifyMixinsHarness`), and the Optimus panel shows a live-updating governor read-out (rolling FPS average, current vs. baseline render distance, cooldown) while in a world. As with every phase since Phase 2, whether the governor's specific tuning actually helps on the real i3-3110M/i5-3470S reference hardware remains unconfirmed pending the two testers — this phase proves the mechanism is correct and observable, not that its defaults are well-tuned for that hardware.
 
 ---
 

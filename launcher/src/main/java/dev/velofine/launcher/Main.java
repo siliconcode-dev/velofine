@@ -20,6 +20,7 @@
 package dev.velofine.launcher;
 
 import com.sun.tools.attach.VirtualMachine;
+import dev.velofine.core.config.ConfigManager;
 import dev.velofine.optimus.OptimusEngine;
 
 import java.lang.reflect.Method;
@@ -54,11 +55,17 @@ public final class Main {
             return;
         }
 
-        captureGameDir(args);
+        Path gameDir = captureGameDir(args);
+        // Config must be loaded before anything reads it - LegacySupport/Optimus's
+        // onAgentAttached (same JVM, right after self-attach below) and this method's own
+        // threadPoolTuning check both depend on it already being in memory.
+        ConfigManager.load(gameDir);
         // Must run before vanilla's net.minecraft.util.Util class loads (its shared background
         // thread pool is created lazily on first touch) - self-attach hasn't handed off to
         // vanilla's main class yet at this point, so this is always early enough.
-        OptimusEngine.applyThreadPoolTuning();
+        if (ConfigManager.get().optimus.threadPoolTuning) {
+            OptimusEngine.applyThreadPoolTuning();
+        }
         selfAttachAgent();
         handOffToVanilla(args);
     }
@@ -69,14 +76,17 @@ public final class Main {
      * before self-attaching so the agent (same JVM, self-attach) can read it without needing a
      * separate profile-JSON flag (the game directory isn't known at profile-generation time, only
      * at each actual launch).
+     *
+     * @return the game directory, or {@code null} if {@code --gameDir} was absent
      */
-    private static void captureGameDir(String[] args) {
+    private static Path captureGameDir(String[] args) {
         for (int i = 0; i < args.length - 1; i++) {
             if ("--gameDir".equals(args[i])) {
                 System.setProperty("velofine.gameDir", args[i + 1]);
-                return;
+                return Path.of(args[i + 1]);
             }
         }
+        return null;
     }
 
     private static void selfAttachAgent() {

@@ -19,6 +19,8 @@
 
 package dev.velofine.core.hardware;
 
+import dev.velofine.core.log.VelofineLog;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -68,7 +70,7 @@ public final class DiskDetector {
 
             return parse(output);
         } catch (Exception e) {
-            System.err.println("[Velofine][core] Disk type detection failed, assuming not rotational: " + e);
+            VelofineLog.warn("core", "Disk type detection failed, assuming not rotational: " + e);
             return DiskInfo.unknown();
         }
     }

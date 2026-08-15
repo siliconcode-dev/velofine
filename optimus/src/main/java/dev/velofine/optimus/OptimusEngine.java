@@ -19,6 +19,7 @@
 
 package dev.velofine.optimus;
 
+import dev.velofine.core.config.ConfigManager;
 import dev.velofine.core.log.VelofineLog;
 import dev.velofine.core.mixin.MixinBridge;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -28,11 +29,15 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigSource;
 import java.lang.instrument.Instrumentation;
 
 /**
- * Entry point for the Optimus engine. Unlike {@code LegacySupportEngine}, Optimus's optimizations
- * are unconditional - they apply on every install regardless of detected hardware, matching how
- * Sodium/Lithium/C2ME actually behave (no hardware gating; a per-engine on/off toggle is Phase 5,
- * not this phase). There is no {@code Fix}/{@code HardwareProfile} indirection here as a result -
- * every mixin in {@code mixins.optimus.json} just always applies.
+ * Entry point for the Optimus engine.
+ *
+ * <p>Through Phase 4, Optimus's optimizations were unconditional - no hardware gating, matching
+ * how Sodium/Lithium/C2ME behave. Phase 5 adds the master engine toggle Build_plan's exit
+ * criterion asks for: with {@code engines.optimus} off, {@code onAgentAttached} returns before
+ * installing any mixin, so the game runs exactly as it would with Optimus never having been
+ * built. Individual features (thread-pool tuning, the goal-selector throttle, the governor) have
+ * their own finer-grained toggles on top of that - see {@code mixins.optimus.json}'s handlers and
+ * {@code dev.velofine.optimus.governor}.
  *
  * <p>Two separate entry points, called at two different points in the launch sequence:
  * <ul>
@@ -47,6 +52,9 @@ import java.lang.instrument.Instrumentation;
  */
 public final class OptimusEngine {
 
+    private static final int MIN_THREADS = 1;
+    private static final int MAX_THREADS = 255;
+
     private OptimusEngine() {
     }
 
@@ -59,25 +67,40 @@ public final class OptimusEngine {
      * world-gen/IO dispatch ({@code ChunkTaskDispatcher} et al.) simultaneously, so one explicit,
      * auditable value benefits all three - Optimus doesn't need to reimplement any of that
      * threading itself.
+     *
+     * <p>Called only when the {@code threadPoolTuning} toggle is on ({@code Main} checks before
+     * calling). Two defensive changes from Phase 4: it no longer overwrites a value the user (or
+     * something further up the launch chain) already put in {@code -Dmax.bg.threads}, and the
+     * computed count is clamped to vanilla's own documented 1-255 range before being written -
+     * this property is read directly by vanilla, so an out-of-range value would reach it unchecked
+     * otherwise.
      */
     public static void applyThreadPoolTuning() {
+        if (System.getProperty("max.bg.threads") != null) {
+            VelofineLog.info("Optimus", "max.bg.threads already set externally; leaving it alone.");
+            return;
+        }
         int availableProcessors = Runtime.getRuntime().availableProcessors();
-        int threadCount = Math.max(1, availableProcessors - 1);
+        int threadCount = Math.max(MIN_THREADS, Math.min(MAX_THREADS, availableProcessors - 1));
         System.setProperty("max.bg.threads", String.valueOf(threadCount));
         VelofineLog.info("Optimus", "background thread pool: " + threadCount + " thread(s) (availableProcessors="
                 + availableProcessors + ")");
     }
 
     public static void onAgentAttached(Instrumentation instrumentation) {
+        if (!ConfigManager.get().engines.optimus) {
+            VelofineLog.info("Optimus", "Engine disabled in config; Optimus mixins not applied.");
+            return;
+        }
         try {
             // MixinBootstrap.init() and MixinBridge.install() are idempotent - safe to call here
-            // regardless of whether LegacySupportEngine already initialized them (it only does so
-            // when at least one hardware-gated fix is active; Optimus always needs Mixin booted).
+            // regardless of whether LegacySupportEngine/CoreEngine already initialized them.
             MixinBootstrap.init();
             Mixins.addConfiguration("mixins.optimus.json", (IMixinConfigSource) null);
             MixinBridge.install(instrumentation);
 
-            VelofineLog.info("Optimus", "mixins active: goal-selector tick throttle, tick-time profiler");
+            VelofineLog.info("Optimus", "mixins active: goal-selector tick throttle, tick-time profiler, "
+                    + "performance governor");
         } catch (Throwable t) {
             VelofineLog.warn("Optimus", "Failed to initialize Mixin pipeline; Optimus disabled: " + t);
             t.printStackTrace();

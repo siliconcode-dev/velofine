@@ -19,6 +19,7 @@
 
 package dev.velofine.optimus.mixin;
 
+import dev.velofine.core.config.ConfigManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
@@ -39,8 +40,9 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
  * increase (2 -&gt; 3 ticks, i.e. ~100ms -&gt; ~150ms between full re-evaluations) chosen to be a
  * real but conservative CPU saving, not a change likely to read as sluggish AI to a player.
  *
- * <p>Unconditional (Optimus has no hardware-gating model, unlike LegacySupport's {@code Fix}
- * system) - this is a plain constant swap, no runtime branch needed.
+ * <p>Since Phase 5 this is config-gated rather than unconditional: the handler re-reads
+ * {@code goalSelectorThrottle} on every call, so switching it off in the Optimus panel takes
+ * effect on the very next re-evaluation for every mob, no restart needed.
  */
 @Mixin(targets = "net.minecraft.world.entity.Mob")
 public abstract class MobMixin {
@@ -49,6 +51,6 @@ public abstract class MobMixin {
 
     @ModifyConstant(method = "serverAiStep", constant = @Constant(intValue = 2))
     private int velofine$goalSelectorUpdateInterval(int original) {
-        return GOAL_SELECTOR_UPDATE_INTERVAL_TICKS;
+        return ConfigManager.get().optimus.goalSelectorThrottle ? GOAL_SELECTOR_UPDATE_INTERVAL_TICKS : original;
     }
 }

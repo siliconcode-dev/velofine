@@ -19,6 +19,7 @@
 
 package dev.velofine.legacysupport.mixin;
 
+import dev.velofine.core.hardware.Fix;
 import dev.velofine.legacysupport.LegacySupportEngine;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,7 +47,7 @@ public abstract class GlBackendMixin {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 
-        if (LegacySupportEngine.shouldForceCompatibilityProfile()) {
+        if (LegacySupportEngine.isFixActive(Fix.GL_COMPATIBILITY_PROFILE)) {
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_FALSE);
             System.out.println("[Velofine][LegacySupport] GlBackend.setWindowHints(): compatibility profile forced (3.3, no forward-compat)");

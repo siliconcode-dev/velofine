@@ -21,6 +21,7 @@ package dev.velofine.legacysupport.mixin;
 
 import com.mojang.blaze3d.shaders.ShaderSource;
 import com.mojang.blaze3d.shaders.ShaderType;
+import dev.velofine.core.hardware.Fix;
 import dev.velofine.legacysupport.LegacySupportEngine;
 import dev.velofine.legacysupport.shader.ShaderPatcher;
 import net.minecraft.resources.Identifier;
@@ -47,7 +48,7 @@ public abstract class GlDeviceMixin {
                             + "Lcom/mojang/blaze3d/shaders/ShaderType;)Ljava/lang/String;"))
     private String velofine$maybePatchShaderSource(ShaderSource source, Identifier id, ShaderType type) {
         String original = source.get(id, type);
-        if (!LegacySupportEngine.shouldPatchShaders()) {
+        if (!LegacySupportEngine.isFixActive(Fix.SHADER_MIX_PATCH)) {
             return original;
         }
         return ShaderPatcher.patch(original, String.valueOf(id));

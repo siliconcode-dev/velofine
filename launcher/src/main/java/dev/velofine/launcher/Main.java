@@ -53,8 +53,25 @@ public final class Main {
             return;
         }
 
+        captureGameDir(args);
         selfAttachAgent();
         handOffToVanilla(args);
+    }
+
+    /**
+     * Minecraft's own launch args always include {@code --gameDir <path>} (the instance directory
+     * the launcher just set as this JVM's working directory) — publish it as a system property
+     * before self-attaching so the agent (same JVM, self-attach) can read it without needing a
+     * separate profile-JSON flag (the game directory isn't known at profile-generation time, only
+     * at each actual launch).
+     */
+    private static void captureGameDir(String[] args) {
+        for (int i = 0; i < args.length - 1; i++) {
+            if ("--gameDir".equals(args[i])) {
+                System.setProperty("velofine.gameDir", args[i + 1]);
+                return;
+            }
+        }
     }
 
     private static void selfAttachAgent() {

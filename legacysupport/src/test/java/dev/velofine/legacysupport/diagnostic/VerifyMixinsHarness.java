@@ -31,7 +31,7 @@ import java.util.zip.ZipFile;
  * Manual diagnostic tool, not a JUnit test (Phase 2 predates the Phase 9 automated-test buildout
  * per CLAUDE.md). Run with {@code -javaagent:<shaded launcher jar>} (triggers the real self-attach
  * -> {@code LegacySupportEngine.onAgentAttached} path) and {@code
- * -Dvelofine.legacysupport.forceProfile=INTEL_GEN7} (so it runs regardless of this machine's real
+ * -Dvelofine.legacysupport.forceFixes=GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS} (so it runs regardless of this machine's real
  * GPU), then exercises Mixin's real transform pipeline directly against
  * {@code GlBackend.class}/{@code GlDevice.class} bytes extracted from the real vanilla 26.2 client
  * jar - without touching GLFW/the actual game.
@@ -45,7 +45,7 @@ import java.util.zip.ZipFile;
  * {@code @Mixin} targets) loads the target class via the classloader, not just from the raw bytes
  * this harness reads directly.
  *
- * <p>Usage: {@code java -javaagent:launcher-<version>.jar -Dvelofine.legacysupport.forceProfile=INTEL_GEN7
+ * <p>Usage: {@code java -javaagent:launcher-<version>.jar -Dvelofine.legacysupport.forceFixes=GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS
  * -cp <runtime classpath>;<path to 26.2.jar> dev.velofine.legacysupport.diagnostic.VerifyMixinsHarness
  * <path to 26.2.jar> <output dir>}
  */
@@ -53,6 +53,8 @@ public final class VerifyMixinsHarness {
 
     private static final String GL_BACKEND = "com.mojang.blaze3d.opengl.GlBackend";
     private static final String GL_DEVICE = "com.mojang.blaze3d.opengl.GlDevice";
+    private static final String CHUNK_MAP = "net.minecraft.server.level.ChunkMap";
+    private static final String OPTIONS = "net.minecraft.client.Options";
 
     private VerifyMixinsHarness() {
     }
@@ -73,6 +75,11 @@ public final class VerifyMixinsHarness {
                 new String[] {"compatibility profile forced"});
         ok &= verifyClass(clientJar, outDir, GL_DEVICE, "GlDeviceMixin",
                 new String[] {"velofine$maybePatchShaderSource"});
+        ok &= verifyClass(clientJar, outDir, CHUNK_MAP, "ChunkMapMixin",
+                new String[] {"velofine$eagerSaveCap"});
+        ok &= verifyClass(clientJar, outDir, OPTIONS, "OptionsMixin",
+                new String[] {"velofine$renderDistanceDefault", "velofine$simulationDistanceDefault",
+                        "velofine$entityDistanceScalingDefault", "velofine$mipmapLevelsDefault", "velofine$particlesDefault"});
 
         System.out.println("=== " + (ok ? "PASS" : "FAIL") + " ===");
         System.exit(ok ? 0 : 1);

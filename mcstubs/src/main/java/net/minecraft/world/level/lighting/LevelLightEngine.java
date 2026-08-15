@@ -17,12 +17,14 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.world.level.lighting;
 
-public class Identifier {
+import net.minecraft.core.BlockPos;
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
+/** Confirmed real method via javap against the real 26.2 jar. */
+public class LevelLightEngine {
+
+    public void checkBlock(BlockPos pos) {
         throw new UnsupportedOperationException("stub");
     }
 }

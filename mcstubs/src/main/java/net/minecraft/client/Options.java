@@ -33,6 +33,26 @@ public class Options {
         throw new UnsupportedOperationException("stub");
     }
 
+    /** Confirmed real via javap: {@code IntRange(30, 110)}, default 70 - see {@code CameraMixin}. */
+    public OptionInstance<Integer> fov() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    /** Confirmed real via javap: {@code IntRange(0, 4)}, default 4. */
+    public OptionInstance<Integer> mipmapLevels() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    /** Confirmed real via javap: {@code IntRange(1, 3)}, default 2 (anisotropy bit-shift level). */
+    public OptionInstance<Integer> maxAnisotropyBit() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    /** Confirmed real via javap: boolean, default true. */
+    public OptionInstance<Boolean> enableVsync() {
+        throw new UnsupportedOperationException("stub");
+    }
+
     public void save() {
         throw new UnsupportedOperationException("stub");
     }

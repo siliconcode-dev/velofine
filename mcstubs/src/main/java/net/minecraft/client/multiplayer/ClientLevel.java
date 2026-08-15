@@ -19,5 +19,12 @@
 
 package net.minecraft.client.multiplayer;
 
+import net.minecraft.world.level.lighting.LevelLightEngine;
+
+/** {@code getLightEngine()} is declared on the real {@code Level} superclass. */
 public class ClientLevel {
+
+    public LevelLightEngine getLightEngine() {
+        throw new UnsupportedOperationException("stub");
+    }
 }

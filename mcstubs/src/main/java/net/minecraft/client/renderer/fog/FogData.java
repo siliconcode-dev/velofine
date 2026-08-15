@@ -17,12 +17,15 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.client.renderer.fog;
 
-public class Identifier {
-
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
+/**
+ * Confirmed real, already-public fields via javap against the real 26.2 jar - unlike
+ * {@code OptionsSubScreen.list}, no fictitious-visibility trick is needed here.
+ * {@code FogRendererMixin} reads/overwrites {@link #renderDistanceStart}/{@link #renderDistanceEnd}
+ * on the object {@code FogRenderer.setupFog(...)} already returns, rather than replacing it.
+ */
+public class FogData {
+    public float renderDistanceStart;
+    public float renderDistanceEnd;
 }

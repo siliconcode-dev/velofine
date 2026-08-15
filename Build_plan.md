@@ -80,17 +80,17 @@ Phased implementation plan. Each phase should be functionally complete and valid
 
 ---
 
-## Phase 6 — Utility Engine: core QoL features
+## Phase 6 — Utility Engine: core QoL features — **implemented**
 **Goal:** The OptiFine-parity feature set, excluding shaders (which get their own phase due to complexity).
 
-- Zoom (smooth, scroll-adjustable).
-- Dynamic Lights (held + dropped/entity-held sources).
-- Connected Textures (OptiFine CTM format compatibility), Better Snow/Grass, Natural Textures.
-- Variable Render Distance (separate horizontal/vertical).
-- Fog, mipmaps, AF/AA, Vsync controls.
-- Built-in benchmarking/FPS overlay tool.
+- Zoom (smooth, scroll-adjustable). **Done** — `utility/.../mixin/CameraMixin` overrides `Camera.calculateFov` directly (bypasses vanilla's 30-110 FOV clamp), scroll-adjust via `MouseScrollMixin`.
+- Dynamic Lights (held + dropped/entity-held sources). **Partially done** — player's own held item (main + off hand) only, via a query-time override in `BlockLightEngine.getEmission` (`BlockLightEngineMixin`); entity-carried and dropped-item sources are a follow-up, not built this phase.
+- ~~Connected Textures (OptiFine CTM format compatibility), Better Snow/Grass, Natural Textures.~~ **Dropped by explicit project-owner decision mid-Phase-6** — deemed unnecessary. Not built.
+- Variable Render Distance (separate horizontal/vertical). **Done**, with a scope trade-off — `RenderDistanceMixin` adds a vertical cap at the occlusion-graph level (`SectionOcclusionGraph.isInViewDistance`), correct end-user behavior but not wired into `ViewArea`'s section-allocation shape, so out-of-range sections still get mesh-built, just never shown.
+- Fog, mipmaps, AF/AA, Vsync controls. **Done** — Fog via a new `FogRendererMixin`; mipmap/AF/Vsync needed no mixin at all (already real, live vanilla `Options` fields, exposed directly in Utility's panel); AA via a real FXAA post-process pass through Mojang's own `GameRenderer.setPostEffect` mechanism, though the resource-pack registration needed for its custom assets to resolve at runtime isn't built yet (see CLAUDE.md).
+- Built-in benchmarking/FPS overlay tool. **Partially done** — a real per-frame profiler (avg FPS/1%/0.1% lows/frame time) surfaced as a live readout in Utility's config panel, not yet a persistent in-world HUD overlay (that render pipeline wasn't researched this phase).
 
-**Exit criteria:** Each feature independently toggleable, visually correct, and not regressing performance work from Phase 4/5.
+**Exit criteria:** Each feature independently toggleable, visually correct, and not regressing performance work from Phase 4/5. **Met for what was built** — every mixin verified via `VerifyMixinsHarness` against the real 26.2 client jar (13/13 pass), every toggle-off state is bit-identical to vanilla, and none of Phase 6's features touch Optimus's own mixins/threading. See CLAUDE.md's "Utility: real findings (Phase 6)" section for full grounding and every open gap (AA resource-pack registration, in-world FPS overlay, Dynamic Lights entity/dropped-item scope).
 
 ---
 

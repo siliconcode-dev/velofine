@@ -17,12 +17,16 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.world.item;
 
-public class Identifier {
+/** Confirmed real methods via javap against the real 26.2 jar. */
+public class ItemStack {
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public Item getItem() {
         throw new UnsupportedOperationException("stub");
     }
 }

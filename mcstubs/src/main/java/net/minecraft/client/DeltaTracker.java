@@ -17,12 +17,11 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.client;
 
-public class Identifier {
-
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
+/**
+ * Signature-only - referenced as a parameter type in mixin injections
+ * ({@code FogRenderer.setupFog}, {@code GameRenderer.render}) but never called into.
+ */
+public class DeltaTracker {
 }

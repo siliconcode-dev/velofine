@@ -17,12 +17,24 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.core;
 
-public class Identifier {
+/**
+ * Confirmed real static packed-long accessors via javap against the real 26.2 jar - used by
+ * {@code RenderDistanceMixin} to read the Y component {@code SectionOcclusionGraph.isInViewDistance}
+ * itself never reads (that method is confirmed X/Z-only via {@code -c} disassembly).
+ */
+public class SectionPos {
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
+    public static int x(long packed) {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public static int y(long packed) {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public static int z(long packed) {
         throw new UnsupportedOperationException("stub");
     }
 }

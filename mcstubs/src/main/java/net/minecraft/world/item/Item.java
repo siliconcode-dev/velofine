@@ -17,12 +17,8 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.world.item;
 
-public class Identifier {
-
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
+/** Signature-only - {@code DynamicLightsState} keys its light-level table by reference identity. */
+public class Item {
 }

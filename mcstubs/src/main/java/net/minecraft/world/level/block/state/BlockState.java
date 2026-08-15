@@ -17,12 +17,12 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.world.level.block.state;
 
-public class Identifier {
-
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
+/**
+ * Signature-only - only appears as a parameter type in {@code BlockLightEngineMixin}'s injected
+ * method (matching the real {@code BlockLightEngine.getEmission(long, BlockState)} signature); no
+ * members are called on it.
+ */
+public class BlockState {
 }

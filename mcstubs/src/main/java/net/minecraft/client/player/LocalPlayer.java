@@ -17,12 +17,29 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.client.player;
 
-public class Identifier {
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
+/**
+ * Confirmed real members via javap: {@code getMainHandItem()}/{@code getOffhandItem()} are
+ * declared on the real {@code LivingEntity} superclass, {@code blockPosition()} on {@code Entity} -
+ * declared flat here rather than modelling the real inheritance chain, matching this codebase's
+ * "only the members actually referenced" stub convention (nothing else needs the intermediate
+ * types yet).
+ */
+public class LocalPlayer {
+
+    public ItemStack getMainHandItem() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public ItemStack getOffhandItem() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public BlockPos blockPosition() {
         throw new UnsupportedOperationException("stub");
     }
 }

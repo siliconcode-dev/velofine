@@ -55,8 +55,11 @@ public final class VelofineConfigScreen extends Screen {
     private static final int FOOTNOTE_HEIGHT = 12;
     private static final int INFO_HEIGHT = 40;
     private static final int ACTION_HEIGHT = 30;
-    private static final int MAX_WIDTH = 460;
-    private static final int MAX_HEIGHT = 320;
+    /** Gap kept between the panel and the window edge, so it reads as a panel, not a wallpaper. */
+    private static final int MARGIN = 32;
+    /** Floor, not a cap - guards against a degenerate layout on a tiny/minimized window. */
+    private static final int MIN_WIDTH = 420;
+    private static final int MIN_HEIGHT = 260;
     private static final int ESCAPE_KEY = 256;
 
     private final Screen parent;
@@ -97,8 +100,11 @@ public final class VelofineConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        boxWidth = Math.min(width - 20, MAX_WIDTH);
-        boxHeight = Math.min(height - 20, MAX_HEIGHT);
+        // Fills the window minus a fixed margin, so it scales with resolution/window resize
+        // instead of sitting at a small fixed size on a large screen - MIN_WIDTH/MIN_HEIGHT only
+        // kick in below that (a tiny window), never capping it on a big one.
+        boxWidth = Math.max(MIN_WIDTH, width - MARGIN * 2);
+        boxHeight = Math.max(MIN_HEIGHT, height - MARGIN * 2);
         boxLeft = (width - boxWidth) / 2;
         boxTop = (height - boxHeight) / 2;
 

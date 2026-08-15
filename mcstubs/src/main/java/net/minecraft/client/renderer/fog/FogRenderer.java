@@ -17,12 +17,21 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.client.renderer.fog;
 
-public class Identifier {
+import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.multiplayer.ClientLevel;
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
+/**
+ * Confirmed via javap against the real 26.2 jar: {@code setupFog} sets
+ * {@code FogData.renderDistanceStart}/{@code renderDistanceEnd} from {@code renderDistance * 16}
+ * at the very end of the method, which is what {@code FogRendererMixin} overrides.
+ */
+public class FogRenderer {
+
+    public FogData setupFog(Camera camera, int renderDistance, DeltaTracker deltaTracker, float partialTick,
+            ClientLevel level) {
         throw new UnsupportedOperationException("stub");
     }
 }

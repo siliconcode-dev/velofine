@@ -66,6 +66,12 @@ public final class VerifyMixinsHarness {
     private static final String MINECRAFT = "net.minecraft.client.Minecraft";
     private static final String VIDEO_SETTINGS_SCREEN = "net.minecraft.client.gui.screens.options.VideoSettingsScreen";
     private static final String PAUSE_SCREEN = "net.minecraft.client.gui.screens.PauseScreen";
+    private static final String CAMERA = "net.minecraft.client.Camera";
+    private static final String FOG_RENDERER = "net.minecraft.client.renderer.fog.FogRenderer";
+    private static final String MOUSE_HANDLER = "net.minecraft.client.MouseHandler";
+    private static final String SECTION_OCCLUSION_GRAPH = "net.minecraft.client.renderer.SectionOcclusionGraph";
+    private static final String GAME_RENDERER = "net.minecraft.client.renderer.GameRenderer";
+    private static final String BLOCK_LIGHT_ENGINE = "net.minecraft.world.level.lighting.BlockLightEngine";
 
     private VerifyMixinsHarness() {
     }
@@ -93,15 +99,30 @@ public final class VerifyMixinsHarness {
                         "velofine$entityDistanceScalingDefault", "velofine$mipmapLevelsDefault", "velofine$particlesDefault"});
         ok &= verifyClass(clientJar, outDir, MOB, "MobMixin",
                 new String[] {"velofine$goalSelectorUpdateInterval"});
-        // Minecraft is targeted by two independent mixin configs (Optimus's tick profiler/governor
-        // hook, and core's config-keybind poll) - both markers must survive in the same transform,
-        // which is the real test of the shared-transformer claim above.
-        ok &= verifyClass(clientJar, outDir, MINECRAFT, "MinecraftMixin + MinecraftKeybindMixin",
+        // Minecraft is targeted by three independent mixin configs as of Phase 6 (Optimus's tick
+        // profiler/governor hook, core's config-keybind poll, and Utility's UtilityTickMixin) -
+        // every marker must survive in the same transform, the real test of the shared-transformer
+        // claim above, now stress-tested with a third independent injector on the same method.
+        ok &= verifyClass(clientJar, outDir, MINECRAFT, "MinecraftMixin + MinecraftKeybindMixin + UtilityTickMixin",
                 new String[] {"velofine$onTickStart", "velofine$onTickEnd", "velofine$pollConfigKeybind"});
         ok &= verifyClass(clientJar, outDir, VIDEO_SETTINGS_SCREEN, "VideoSettingsScreenMixin",
                 new String[] {"velofine$addSettingsRow", "VELOFINE SETTINGS"});
         ok &= verifyClass(clientJar, outDir, PAUSE_SCREEN, "PauseScreenMixin",
                 new String[] {"velofine$addPauseMenuButton", "VELOFINE"});
+
+        // Phase 6 - Utility's first real mixins.
+        ok &= verifyClass(clientJar, outDir, CAMERA, "CameraMixin",
+                new String[] {"velofine$applyZoom"});
+        ok &= verifyClass(clientJar, outDir, FOG_RENDERER, "FogRendererMixin",
+                new String[] {"velofine$applyFogControl"});
+        ok &= verifyClass(clientJar, outDir, MOUSE_HANDLER, "MouseScrollMixin",
+                new String[] {"velofine$routeZoomScroll"});
+        ok &= verifyClass(clientJar, outDir, SECTION_OCCLUSION_GRAPH, "RenderDistanceMixin",
+                new String[] {"velofine$applyVerticalDistance"});
+        ok &= verifyClass(clientJar, outDir, GAME_RENDERER, "GameRenderMixin",
+                new String[] {"velofine$onFrame"});
+        ok &= verifyClass(clientJar, outDir, BLOCK_LIGHT_ENGINE, "BlockLightEngineMixin",
+                new String[] {"velofine$applyDynamicLight"});
 
         System.out.println("=== " + (ok ? "PASS" : "FAIL") + " ===");
         System.exit(ok ? 0 : 1);

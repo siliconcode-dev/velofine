@@ -127,10 +127,68 @@ public final class VelofineConfig {
     public static final class UtilitySection {
         /**
          * Masterdoc 4.3: Utility features should default to off/reduced when LegacySupport flags
-         * the hardware as weak, rather than defaulting to "on" everywhere. No Utility features
-         * exist until Phase 6 - this is the policy switch they will consult.
+         * the hardware as weak, rather than defaulting to "on" everywhere. Phase 6's features each
+         * consult {@code SafeDefaultsPolicy.shouldStartSafe()} individually rather than this field
+         * gating them directly, so a user can still turn any one of them on themselves.
          */
         public boolean safeDefaultsOnWeakHardware = true;
+
+        public RenderingSection rendering = new RenderingSection();
+        public ZoomSection zoom = new ZoomSection();
+        public RenderDistanceSection renderDistance = new RenderDistanceSection();
+        public FpsOverlaySection fpsOverlay = new FpsOverlaySection();
+        public DynamicLightsSection dynamicLights = new DynamicLightsSection();
+    }
+
+    /**
+     * Fog and anti-aliasing controls (Phase 6.1). Mipmap levels, anisotropic filtering and vsync
+     * are <em>not</em> here - they are already real, live vanilla {@code Options} fields
+     * ({@code mipmapLevels()}, {@code maxAnisotropyBit()}, {@code enableVsync()}), so Utility's
+     * panel binds rows directly to those and lets vanilla's own {@code options.txt} persist them,
+     * rather than shadowing them in a second config file.
+     */
+    public static final class RenderingSection {
+        /** {@code FogRendererMixin} pushes fog start/end far past view distance when false. */
+        public boolean fogEnabled = true;
+        /** Off by default - a real (if usually small) per-frame GPU cost, unlike the other rows here. */
+        public boolean antiAliasing = false;
+    }
+
+    /**
+     * Modeled on Zoomify's fully-configurable-no-hardcoded-values approach: nothing about the zoom
+     * curve is baked in.
+     */
+    public static final class ZoomSection {
+        public boolean enabled = true;
+        /** GLFW key code held to zoom. Unbound by default - Velofine should not steal a key. */
+        public int key = -1;
+        public double maxZoomFactor = 4.0;
+        /** Higher = more gradual. Bumped from an initial 0.1 per real-world testing feedback wanting a noticeably softer feel (the actual stutter bug was a separate tick-vs-frame issue, see ZoomState). */
+        public double smoothingSeconds = 0.2;
+        public boolean scrollAdjustable = true;
+    }
+
+    public static final class RenderDistanceSection {
+        /** {@code false} must be bit-identical to vanilla - a single, unsplit render distance. */
+        public boolean enabled = false;
+        /** 0 means "match horizontal" - vanilla's own single-slider behaviour. */
+        public int verticalDistance = 0;
+    }
+
+    public static final class FpsOverlaySection {
+        public boolean enabled = false;
+        public int sampleWindowSeconds = 5;
+    }
+
+    /**
+     * Modeled on LambDynamicLights: an item-&gt;light-level registry (0-15, vanilla block-light
+     * scale), entity-carried items and burning entities included by default.
+     */
+    public static final class DynamicLightsSection {
+        public boolean enabled = true;
+        public boolean includeEntities = true;
+        public boolean includeDroppedItems = true;
+        public int updateIntervalTicks = 1;
     }
 
     public static final class UiSection {

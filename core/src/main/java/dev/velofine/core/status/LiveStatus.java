@@ -35,6 +35,8 @@ package dev.velofine.core.status;
 public final class LiveStatus {
 
     private static volatile String governor = "governor: idle";
+    private static volatile String fps = "fps: --";
+    private static volatile String zoom = "zoom: idle";
 
     private LiveStatus() {
     }
@@ -45,5 +47,21 @@ public final class LiveStatus {
 
     public static String governor() {
         return governor;
+    }
+
+    public static void setFps(String status) {
+        fps = status;
+    }
+
+    public static String fps() {
+        return fps;
+    }
+
+    public static void setZoom(String status) {
+        zoom = status;
+    }
+
+    public static String zoom() {
+        return zoom;
     }
 }

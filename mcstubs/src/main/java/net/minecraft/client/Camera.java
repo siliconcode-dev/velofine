@@ -17,12 +17,14 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package net.minecraft.client;
 
-public class Identifier {
-
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
+/**
+ * Signature-only. {@code CameraMixin} targets {@code calculateFov(float)} - a private method
+ * resolved by Mixin against the real class bytecode via {@code @Mixin(targets = "...")}, not via
+ * this stub - so no members are declared here; the type only needs to exist so {@code Camera}
+ * can appear as a parameter type in {@code FogRendererMixin}'s injected method signature
+ * ({@code FogRenderer.setupFog}'s first parameter, confirmed via javap against the real 26.2 jar).
+ */
+public class Camera {
 }

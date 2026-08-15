@@ -1,14 +1,15 @@
 // Utility engine: OptiFine-parity QoL features and shader pipeline support.
 // Configuration inherited from the root project's `subprojects` block.
 //
-// Phase 5 brings this module into existence as a real engine: it has an entry point, a config
-// panel and the "safe-by-default on weak hardware" policy wired to core's hardware detection.
-// It ships no actual QoL features yet - those are Phase 6 - and deliberately has no
-// mixins.utility.json until there is something to inject.
+// Phase 5 brought this module into existence as a real engine (entry point, config panel,
+// safe-defaults policy) with no QoL features yet. Phase 6 adds the first ones - Mixin/ASM/Guava
+// arrive transitively via core's `api(...)` declarations (see core/build.gradle.kts), same as
+// optimus/legacysupport, so no separate Mixin dependency line is needed here.
 
 dependencies {
     implementation(project(":core"))
 
+    // Zoom/Fog mixins reference Camera/FogRenderer/FogData/Options/Minecraft signatures.
     compileOnly(project(":mcstubs"))
 }
 

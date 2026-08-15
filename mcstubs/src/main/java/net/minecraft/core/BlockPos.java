@@ -17,44 +17,35 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.client;
+package net.minecraft.core;
 
-import com.mojang.blaze3d.platform.Window;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
+/** Confirmed real members via javap against the real 26.2 jar. */
+public class BlockPos {
 
-public class Minecraft {
+    public BlockPos(int x, int y, int z) {
+    }
 
-    public Font font;
-    public Gui gui;
-    public Options options;
-    public ClientLevel level;
-    public LocalPlayer player;
-    /** Confirmed real, {@code public final}, via javap against the real 26.2 jar. */
-    public GameRenderer gameRenderer;
-
-    public static Minecraft getInstance() {
+    public long asLong() {
         throw new UnsupportedOperationException("stub");
     }
 
-    public boolean isRunning() {
+    public static long asLong(int x, int y, int z) {
         throw new UnsupportedOperationException("stub");
     }
 
-    public int getFps() {
+    public static BlockPos of(long packed) {
         throw new UnsupportedOperationException("stub");
     }
 
-    public Window getWindow() {
+    public static int getX(long packed) {
         throw new UnsupportedOperationException("stub");
     }
 
-    /** {@code Gui.setScreen} plus a forced frame - what vanilla's own menu buttons use. */
-    public void setScreenAndShow(Screen screen) {
+    public static int getY(long packed) {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public static int getZ(long packed) {
         throw new UnsupportedOperationException("stub");
     }
 }

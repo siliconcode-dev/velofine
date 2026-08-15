@@ -31,8 +31,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.HexFormat;
 
 /**
  * Generates (and removes) Velofine's custom launcher profile, following the same
@@ -97,11 +100,13 @@ public final class ProfileInstaller {
         velofine.addProperty("id", velofineId);
         velofine.addProperty("mainClass", "dev.velofine.launcher.Main");
 
+        byte[] launcherJarBytes = Files.readAllBytes(currentJarPath());
+
         JsonArray libraries = velofine.has("libraries") ? velofine.getAsJsonArray("libraries") : new JsonArray();
         if (!velofine.has("libraries")) {
             velofine.add("libraries", libraries);
         }
-        libraries.add(velofineLibraryEntry());
+        libraries.add(velofineLibraryEntry(launcherJarBytes));
 
         // Element form, not bare strings: real-world version JSONs (confirmed against both a
         // stock Mojang-schema file and Legacy Launcher's own cached copy) mix bare strings and
@@ -121,15 +126,32 @@ public final class ProfileInstaller {
         Files.createDirectories(velofineJsonDir);
         writeJsonObject(gson, velofineJsonDir.resolve(velofineId + ".json"), velofine);
 
+        // Launchers derive the expected local client-jar filename from the version "id"
+        // (versions/<id>/<id>.jar), not from the "downloads.client" URL in the JSON - since our
+        // "id" is "<vanillaVersion>-velofine", not "<vanillaVersion>", that path is never
+        // populated by anything vanilla install left behind. Without this, launchers see it
+        // missing locally and re-download the *entire real client jar* from Mojang under the new
+        // filename (confirmed the real cause of an observed slow-but-legitimate download,
+        // distinct from the earlier broken-library-reference hang). The deep-copied
+        // "downloads.client" sha1/size are still valid for this file (identical bytes, just a
+        // new local path), so simply placing the copy is enough - no JSON changes needed here.
+        Path vanillaJarPath = vanillaJsonPath.resolveSibling(vanillaVersion + ".jar");
+        if (Files.isRegularFile(vanillaJarPath)) {
+            Files.copy(vanillaJarPath, velofineJsonDir.resolve(velofineId + ".jar"),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
+
         Path libraryDest = minecraftDir.resolve("libraries").resolve(LIBRARY_GROUP_PATH)
                 .resolve(VELOFINE_VERSION).resolve("velofine-launcher-" + VELOFINE_VERSION + ".jar");
         Files.createDirectories(libraryDest.getParent());
-        Files.copy(currentJarPath(), libraryDest, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        Files.write(libraryDest, launcherJarBytes);
 
         registerProfile(gson, minecraftDir, vanillaVersion, velofineId);
 
         System.out.println("[Velofine] Profile installed: " + velofineId);
         System.out.println("[Velofine]   version JSON: " + velofineJsonDir.resolve(velofineId + ".json"));
+        System.out.println("[Velofine]   client jar:   " + velofineJsonDir.resolve(velofineId + ".jar")
+                + (Files.isRegularFile(vanillaJarPath) ? " (copied from vanilla)" : " (NOT copied - vanilla jar missing at " + vanillaJarPath + ")"));
         System.out.println("[Velofine]   library jar:  " + libraryDest);
         System.out.println("[Velofine]   vanilla mainClass preserved as: " + vanillaMainClass);
     }
@@ -173,10 +195,41 @@ public final class ProfileInstaller {
         System.out.println("[Velofine] Uninstall complete.");
     }
 
-    private static JsonObject velofineLibraryEntry() {
+    /**
+     * A bare {@code {"name": ...}} entry with no {@code downloads} block (the original Phase 1
+     * shape) makes a Mojang-schema-aware launcher fall back to constructing a download URL from
+     * the Maven coordinates against the official libraries CDN, which obviously doesn't host our
+     * jar - confirmed as the real cause of an observed indefinite "Downloading resources..." hang
+     * on Legacy Launcher Stable. Including a real {@code downloads.artifact} block with this
+     * exact jar's sha1/size lets the launcher verify the copy {@link #install} already wrote to
+     * {@code libraries/<path>} and skip downloading entirely - the same pattern Fabric Loader's
+     * own installer uses for its locally-provided libraries, including the empty {@code url}
+     * (no remote source; local-only, matched-by-hash is enough for a launcher to accept it).
+     */
+    private static JsonObject velofineLibraryEntry(byte[] jarBytes) {
         JsonObject library = new JsonObject();
         library.addProperty("name", "dev.velofine:velofine-launcher:" + VELOFINE_VERSION);
+
+        JsonObject artifact = new JsonObject();
+        artifact.addProperty("path", LIBRARY_GROUP_PATH + "/" + VELOFINE_VERSION + "/velofine-launcher-" + VELOFINE_VERSION + ".jar");
+        artifact.addProperty("sha1", sha1Hex(jarBytes));
+        artifact.addProperty("size", jarBytes.length);
+        artifact.addProperty("url", "");
+
+        JsonObject downloads = new JsonObject();
+        downloads.add("artifact", artifact);
+        library.add("downloads", downloads);
+
         return library;
+    }
+
+    private static String sha1Hex(byte[] bytes) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            return HexFormat.of().formatHex(digest.digest(bytes));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-1 is a JDK-guaranteed MessageDigest algorithm", e);
+        }
     }
 
     private static JsonObject jvmArgValue(String value) {

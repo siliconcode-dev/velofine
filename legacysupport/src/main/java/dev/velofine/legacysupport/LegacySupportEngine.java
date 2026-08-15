@@ -29,7 +29,7 @@ import dev.velofine.core.hardware.HardwareProfile;
 import dev.velofine.core.hardware.MemoryDetector;
 import dev.velofine.core.hardware.MemoryInfo;
 import dev.velofine.core.log.VelofineLog;
-import dev.velofine.legacysupport.mixin.MixinBridge;
+import dev.velofine.core.mixin.MixinBridge;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigSource;

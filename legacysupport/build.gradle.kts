@@ -15,21 +15,14 @@ sourceSets {
 }
 
 dependencies {
+    // Mixin/ASM/Guava come transitively via core's `api(...)` dependencies (see
+    // core/build.gradle.kts) - `api`, not `implementation`, because this module's own mixin
+    // classes use those types directly, not just core's MixinBridge/VelofineMixinService. Phase 4
+    // hoisted the shared Mixin service plumbing
+    // (MixinBridge/VelofineMixinService/VelofinePropertyKey/VelofinePropertyService) into core so
+    // legacysupport and optimus share one ServiceLoader-registered transformer pipeline instead
+    // of each registering a competing one.
     implementation(project(":core"))
-    implementation("org.spongepowered:mixin:0.8.7")
-
-    // Mixin's own published POM declares zero dependencies despite using both throughout its
-    // source - callers are expected to supply them. ASM 9.10.1 specifically: this hardware's
-    // real target classes (GlBackend/GlDevice) are compiled at Java 25 bytecode (class file
-    // version 69), which needs ASM 9.8+ to parse at all; 9.10.1 is also exactly what real
-    // Fabric/Mixin tooling ships together (confirmed in this machine's own Fabric 1.19.4
-    // libraries list).
-    implementation("org.ow2.asm:asm:9.10.1")
-    implementation("org.ow2.asm:asm-commons:9.10.1")
-    implementation("org.ow2.asm:asm-tree:9.10.1")
-    implementation("org.ow2.asm:asm-util:9.10.1")
-    implementation("org.ow2.asm:asm-analysis:9.10.1")
-    implementation("com.google.guava:guava:33.6.0-jre")
 
     // Real LWJGL version bundled by vanilla 26.2 (confirmed via its version JSON) - compileOnly
     // because at runtime this comes from Minecraft's own classpath; bundling our own copy would

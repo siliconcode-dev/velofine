@@ -19,7 +19,7 @@
 
 package dev.velofine.legacysupport.diagnostic;
 
-import dev.velofine.legacysupport.mixin.MixinBridge;
+import dev.velofine.core.mixin.MixinBridge;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,11 +30,15 @@ import java.util.zip.ZipFile;
 /**
  * Manual diagnostic tool, not a JUnit test (Phase 2 predates the Phase 9 automated-test buildout
  * per CLAUDE.md). Run with {@code -javaagent:<shaded launcher jar>} (triggers the real self-attach
- * -> {@code LegacySupportEngine.onAgentAttached} path) and {@code
- * -Dvelofine.legacysupport.forceFixes=GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS} (so it runs regardless of this machine's real
- * GPU), then exercises Mixin's real transform pipeline directly against
- * {@code GlBackend.class}/{@code GlDevice.class} bytes extracted from the real vanilla 26.2 client
- * jar - without touching GLFW/the actual game.
+ * path, which now runs both {@code LegacySupportEngine.onAgentAttached} and {@code
+ * OptimusEngine.onAgentAttached} - Optimus's mixins are unconditional, so no force-flag is needed
+ * for those) and {@code
+ * -Dvelofine.legacysupport.forceFixes=GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS} (so LegacySupport's mixins run regardless of this machine's real
+ * GPU), then exercises Mixin's real transform pipeline directly against real vanilla 26.2 client
+ * jar class bytes - without touching GLFW/the actual game. Running both engines' mixins in the
+ * same JVM here also empirically confirms Phase 4's hoisted {@code MixinBridge}/{@code
+ * VelofineMixinService} correctly applies multiple engines' independently-added
+ * {@code Mixins.addConfiguration(...)} configs through the one shared transformer.
  *
  * <p>Deliberately lives outside {@code dev.velofine.legacysupport.mixin}: Mixin forbids classes
  * inside an active mixin config's own package from being loaded directly, which would otherwise
@@ -55,6 +59,8 @@ public final class VerifyMixinsHarness {
     private static final String GL_DEVICE = "com.mojang.blaze3d.opengl.GlDevice";
     private static final String CHUNK_MAP = "net.minecraft.server.level.ChunkMap";
     private static final String OPTIONS = "net.minecraft.client.Options";
+    private static final String MOB = "net.minecraft.world.entity.Mob";
+    private static final String MINECRAFT = "net.minecraft.client.Minecraft";
 
     private VerifyMixinsHarness() {
     }
@@ -80,6 +86,10 @@ public final class VerifyMixinsHarness {
         ok &= verifyClass(clientJar, outDir, OPTIONS, "OptionsMixin",
                 new String[] {"velofine$renderDistanceDefault", "velofine$simulationDistanceDefault",
                         "velofine$entityDistanceScalingDefault", "velofine$mipmapLevelsDefault", "velofine$particlesDefault"});
+        ok &= verifyClass(clientJar, outDir, MOB, "MobMixin",
+                new String[] {"velofine$goalSelectorUpdateInterval"});
+        ok &= verifyClass(clientJar, outDir, MINECRAFT, "MinecraftMixin",
+                new String[] {"velofine$onTickStart", "velofine$onTickEnd"});
 
         System.out.println("=== " + (ok ? "PASS" : "FAIL") + " ===");
         System.exit(ok ? 0 : 1);

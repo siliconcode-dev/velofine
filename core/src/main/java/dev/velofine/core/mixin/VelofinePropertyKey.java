@@ -17,7 +17,7 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package dev.velofine.legacysupport.mixin;
+package dev.velofine.core.mixin;
 
 import org.spongepowered.asm.service.IPropertyKey;
 

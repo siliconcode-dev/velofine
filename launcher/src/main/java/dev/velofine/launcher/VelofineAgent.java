@@ -21,6 +21,7 @@ package dev.velofine.launcher;
 
 import dev.velofine.core.agent.AgentContext;
 import dev.velofine.legacysupport.LegacySupportEngine;
+import dev.velofine.optimus.OptimusEngine;
 
 import java.lang.instrument.Instrumentation;
 
@@ -30,8 +31,8 @@ import java.lang.instrument.Instrumentation;
  * completeness/manual testing with a literal {@code -javaagent:} flag.
  *
  * <p>Acquires {@link Instrumentation}, publishes it via {@link AgentContext} for engines to use,
- * then hands off to {@link LegacySupportEngine} (Phase 2) — the first engine to actually register
- * class transformers. Optimus/Utility get the same treatment once they exist.
+ * then hands off to {@link LegacySupportEngine} (Phase 2) and {@link OptimusEngine} (Phase 4).
+ * Utility gets the same treatment once it exists.
  */
 public final class VelofineAgent {
 
@@ -54,5 +55,6 @@ public final class VelofineAgent {
                 + ", canRedefine=" + inst.isRedefineClassesSupported() + ")");
 
         LegacySupportEngine.onAgentAttached(inst);
+        OptimusEngine.onAgentAttached(inst);
     }
 }

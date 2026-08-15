@@ -17,7 +17,7 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package dev.velofine.legacysupport.mixin;
+package dev.velofine.core.mixin;
 
 import org.spongepowered.asm.service.IGlobalPropertyService;
 import org.spongepowered.asm.service.IPropertyKey;
@@ -29,7 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Mixin's "blackboard" (a simple global key-value store it uses internally for bootstrap state).
  * Discovered via {@code ServiceLoader} through {@code META-INF/services/
  * org.spongepowered.asm.service.IGlobalPropertyService} - required, Mixin bootstrap hard-fails
- * without one registered.
+ * without one registered. Shared across every engine for the same reason as
+ * {@link VelofineMixinService} - only one can be registered per JVM.
  */
 public final class VelofinePropertyService implements IGlobalPropertyService {
 

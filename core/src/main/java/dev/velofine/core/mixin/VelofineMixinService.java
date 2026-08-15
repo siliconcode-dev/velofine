@@ -17,7 +17,7 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package dev.velofine.legacysupport.mixin;
+package dev.velofine.core.mixin;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -44,7 +44,9 @@ import java.util.Collections;
  * Velofine's {@code IMixinService} for our bare-agent environment: no ModLauncher, no Fabric
  * Knot, no custom classloader. Single classloader (the system/application classloader Mojang's
  * launcher started us with), single mixin container (our own shaded jar), single transformer
- * (Mixin's own — we register no other {@code ClassFileTransformer}s to delegate to).
+ * (Mixin's own — we register no other {@code ClassFileTransformer}s to delegate to). Shared across
+ * every engine (LegacySupport, Optimus, ...) - {@code ServiceLoader} only permits one active
+ * {@code IMixinService} per JVM, so this lives in {@code core}, not any one engine module.
  *
  * <p>Discovered via {@code ServiceLoader} through {@code META-INF/services/
  * org.spongepowered.asm.service.IMixinService}. The actual bytecode-transform wiring lives in

@@ -20,6 +20,7 @@
 package dev.velofine.launcher;
 
 import com.sun.tools.attach.VirtualMachine;
+import dev.velofine.optimus.OptimusEngine;
 
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
@@ -54,6 +55,10 @@ public final class Main {
         }
 
         captureGameDir(args);
+        // Must run before vanilla's net.minecraft.util.Util class loads (its shared background
+        // thread pool is created lazily on first touch) - self-attach hasn't handed off to
+        // vanilla's main class yet at this point, so this is always early enough.
+        OptimusEngine.applyThreadPoolTuning();
         selfAttachAgent();
         handOffToVanilla(args);
     }

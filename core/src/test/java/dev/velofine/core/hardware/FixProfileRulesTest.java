@@ -1,0 +1,97 @@
+/*
+ * This file is part of Velofine.
+ *
+ * Velofine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Velofine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Velofine. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Copyright (C) 2026 siliconcode-dev
+ */
+
+package dev.velofine.core.hardware;
+
+import dev.velofine.core.gpu.GpuInfo;
+import org.junit.jupiter.api.Test;
+
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * {@link FixProfileRules#resolve(HardwareProfile)} is a genuinely pure function over a fixed list
+ * of independent, additive rules - no hardware detection, no I/O, no static state - so real
+ * combinations can be asserted exactly, including the "a machine can match several rules at once"
+ * case the class's own javadoc calls out (Build_plan Phase 3's motivating scenario).
+ */
+final class FixProfileRulesTest {
+
+    @Test
+    void unknownHardwareActivatesNoFixes() {
+        assertEquals(Set.of(), FixProfileRules.resolve(HardwareProfile.unknown()));
+    }
+
+    @Test
+    void intelGen7GpuActivatesGlCompatibilityAndShaderMixPatch() {
+        HardwareProfile profile = new HardwareProfile(
+                new GpuInfo("Intel(R) HD Graphics 4000", "15.33.53.5161", GpuInfo.FixProfile.INTEL_GEN7),
+                MemoryInfo.unknown(), DiskInfo.unknown());
+
+        assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE, Fix.SHADER_MIX_PATCH), FixProfileRules.resolve(profile));
+    }
+
+    @Test
+    void genericOldGpuActivatesOnlyGlCompatibility() {
+        HardwareProfile profile = new HardwareProfile(
+                new GpuInfo("Some Ancient Adapter", "1.0.0", GpuInfo.FixProfile.GENERIC_OLD),
+                MemoryInfo.unknown(), DiskInfo.unknown());
+
+        assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE), FixProfileRules.resolve(profile));
+    }
+
+    @Test
+    void rotationalDiskActivatesIoStallSmoothingOnly() {
+        HardwareProfile profile = new HardwareProfile(GpuInfo.unknown(), MemoryInfo.unknown(), new DiskInfo(true));
+
+        assertEquals(Set.of(Fix.IO_STALL_SMOOTHING), FixProfileRules.resolve(profile));
+    }
+
+    @Test
+    void lowMemoryActivatesMemorySavingDefaultsOnly() {
+        HardwareProfile profile = new HardwareProfile(GpuInfo.unknown(), new MemoryInfo(4L * 1024 * 1024 * 1024), DiskInfo.unknown());
+
+        assertEquals(Set.of(Fix.MEMORY_SAVING_DEFAULTS), FixProfileRules.resolve(profile));
+    }
+
+    @Test
+    void memoryAboveTheCeilingIsNotConsideredLow() {
+        HardwareProfile profile = new HardwareProfile(GpuInfo.unknown(), new MemoryInfo(8L * 1024 * 1024 * 1024), DiskInfo.unknown());
+
+        assertEquals(Set.of(), FixProfileRules.resolve(profile));
+    }
+
+    @Test
+    void rulesAreAdditiveAcrossIndependentHardwareCharacteristics() {
+        // The i3-3110M reference laptop: Intel Gen7 + rotational HDD + 4GB RAM - matches three
+        // rules at once, exactly the scenario FixProfileRules' class javadoc is written around.
+        HardwareProfile profile = new HardwareProfile(
+                new GpuInfo("Intel(R) HD Graphics 4000", "15.33.53.5161", GpuInfo.FixProfile.INTEL_GEN7),
+                new MemoryInfo(4L * 1024 * 1024 * 1024),
+                new DiskInfo(true));
+
+        Set<Fix> resolved = FixProfileRules.resolve(profile);
+
+        assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE, Fix.SHADER_MIX_PATCH,
+                Fix.IO_STALL_SMOOTHING, Fix.MEMORY_SAVING_DEFAULTS), resolved);
+        assertTrue(resolved.size() == 4);
+    }
+}

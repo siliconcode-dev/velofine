@@ -21,6 +21,7 @@ package dev.velofine.launcher;
 
 import com.sun.tools.attach.VirtualMachine;
 import dev.velofine.core.config.ConfigManager;
+import dev.velofine.core.crash.CrashRecovery;
 import dev.velofine.optimus.OptimusEngine;
 
 import java.lang.reflect.Method;
@@ -56,6 +57,10 @@ public final class Main {
         }
 
         Path gameDir = captureGameDir(args);
+        // Earliest possible point, before self-attach even happens - so a self-attach or handoff
+        // failure (both currently uncaught, see selfAttachAgent/handOffToVanilla) is still caught
+        // as a startup crash by the next launch. See CrashRecovery's class javadoc for exactly how.
+        CrashRecovery.beginSession(gameDir);
         // Config must be loaded before anything reads it - LegacySupport/Optimus's
         // onAgentAttached (same JVM, right after self-attach below) and this method's own
         // threadPoolTuning check both depend on it already being in memory.

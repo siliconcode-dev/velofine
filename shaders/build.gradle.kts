@@ -35,6 +35,3 @@ dependencies {
     implementation("org.anarres:jcpp:1.4.14")
 }
 
-tasks.test {
-    failOnNoDiscoveredTests.set(false)
-}

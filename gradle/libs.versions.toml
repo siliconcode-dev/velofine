@@ -1,6 +1,8 @@
 [versions]
 java = "25"
 spotless = "8.9.0"
+junit = "5.11.4"
+mockito = "5.14.2"
 
 [plugins]
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

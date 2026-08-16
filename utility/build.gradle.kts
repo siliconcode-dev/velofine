@@ -16,7 +16,3 @@ dependencies {
     // shaders/build.gradle.kts); this module owns the engine-toggle wiring and GUI integration.
     implementation(project(":shaders"))
 }
-
-tasks.test {
-    failOnNoDiscoveredTests.set(false)
-}

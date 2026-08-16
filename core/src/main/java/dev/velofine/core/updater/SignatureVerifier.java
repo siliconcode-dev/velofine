@@ -53,18 +53,28 @@ final class SignatureVerifier {
             "MCowBQYDK2VwAyEA2CjKZl8XqX1syn1cqfVoOT+xRDIDh8Pc1c/6HIwGQuo=";
 
     boolean verify(Path checksumsFile, Path signatureFile) throws IOException, GeneralSecurityException {
+        return verify(checksumsFile, signatureFile, PUBLIC_KEY_BASE64);
+    }
+
+    /**
+     * Package-visible so {@code SignatureVerifierTest} can exercise real Ed25519 verify logic
+     * against a throwaway test keypair, without ever touching the real embedded production key
+     * (whose matching private half only exists as a GitHub Actions secret).
+     */
+    boolean verify(Path checksumsFile, Path signatureFile, String publicKeyBase64)
+            throws IOException, GeneralSecurityException {
         byte[] message = Files.readAllBytes(checksumsFile);
         byte[] signatureBytes = Base64.getDecoder().decode(Files.readString(signatureFile).trim());
 
-        PublicKey publicKey = loadPublicKey();
+        PublicKey publicKey = loadPublicKey(publicKeyBase64);
         Signature signature = Signature.getInstance("Ed25519");
         signature.initVerify(publicKey);
         signature.update(message);
         return signature.verify(signatureBytes);
     }
 
-    private static PublicKey loadPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        byte[] encoded = Base64.getDecoder().decode(PUBLIC_KEY_BASE64);
+    private static PublicKey loadPublicKey(String publicKeyBase64) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] encoded = Base64.getDecoder().decode(publicKeyBase64);
         KeyFactory factory = KeyFactory.getInstance("Ed25519");
         return factory.generatePublic(new X509EncodedKeySpec(encoded));
     }

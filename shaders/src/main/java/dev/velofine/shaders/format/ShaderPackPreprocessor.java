@@ -59,9 +59,17 @@ public final class ShaderPackPreprocessor {
      *               for a flag-only macro).
      */
     public static String preprocessProperties(String source, Map<String, String> macros) {
+        // String.split("\R") silently drops the trailing line terminator (Java's default
+        // zero-limit split trims trailing empty strings), so joining back with "\n" always lost
+        // the file's final newline - jcpp's StringLexerSource then raises "No newline before end
+        // of file" as a LexerException, which the catch below (correctly) treats as a hard failure
+        // and falls back to the raw, un-preprocessed source. That meant every #ifdef/#define in
+        // *every* real shaders.properties file silently never resolved - caught by
+        // ShaderPackPreprocessorTest/ShaderPropertiesTest, not by inspection. Appending the
+        // newline back explicitly is the fix.
         String sanitized = Arrays.stream(source.split("\\R"))
                 .map(line -> PROPERTIES_COMMENT_LINE.matcher(line).matches() ? "" : line)
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining("\n", "", "\n"));
 
         return process(sanitized, macros);
     }

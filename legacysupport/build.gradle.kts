@@ -22,6 +22,15 @@ dependencies {
     // for why that per-engine decision from Phase 4 was reversed. compileOnly, so shadowJar can
     // never bundle a fake net.minecraft.* class over the real one.
     compileOnly(project(":mcstubs"))
+
+    // GlBackendMixin's method body references real GLFW constants - Mixin's target-resolution
+    // step needs to load that class's metadata via the classloader (confirmed by
+    // VerifyMixinsHarness's own class javadoc), which only works if the real jar is genuinely on
+    // the classpath, not just compileOnly. testRuntimeOnly since production always gets LWJGL from
+    // Minecraft's own classpath (see the compileOnly comment above) - this is purely so
+    // VerifyMixinsHarness's live JUnit run can resolve it.
+    testRuntimeOnly("org.lwjgl:lwjgl:3.4.1")
+    testRuntimeOnly("org.lwjgl:lwjgl-glfw:3.4.1")
 }
 
 // mixins.legacysupport.json declares compatibilityLevel JAVA_16, not the higher JAVA_21 Mixin
@@ -32,9 +41,18 @@ dependencies {
 // ASM major version (>=9), which detects correctly, and comfortably covers the plain Java syntax
 // our mixins actually use.
 
-// VerifyMixinsHarness (src/test/java) is a manual diagnostic tool run directly via `java`, not a
-// JUnit test - CLAUDE.md's Testing section says manual QA is fine through Phase 8. Without this,
-// Gradle's default `test` task fails the build for finding test sources but no discoverable tests.
+// Phase 9: VerifyMixinsHarness is now a real JUnit test (see its own class javadoc for how it
+// conditionally attaches the real agent) - runs live when -Pvelofine.test.mcJarPath/
+// VELOFINE_TEST_MC_JAR points at a real 26.2 client jar, SKIPs cleanly otherwise. That wiring
+// lives here since it needs :launcher's build output.
 tasks.test {
-    failOnNoDiscoveredTests.set(false)
+    val mcJarPath = (findProperty("velofine.test.mcJarPath") as String?) ?: System.getenv("VELOFINE_TEST_MC_JAR")
+    if (mcJarPath != null) {
+        dependsOn(":launcher:shadowJar")
+        jvmArgs("-javaagent:${project(":launcher").tasks.named("shadowJar").get().outputs.files.singleFile}")
+        systemProperty("velofine.legacysupport.forceFixes",
+            "GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS")
+        systemProperty("velofine.test.mcJarPath", mcJarPath)
+        classpath += files(mcJarPath)
+    }
 }

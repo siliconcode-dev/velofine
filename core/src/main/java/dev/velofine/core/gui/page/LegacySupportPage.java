@@ -21,6 +21,7 @@ package dev.velofine.core.gui.page;
 
 import dev.velofine.core.config.Tri;
 import dev.velofine.core.config.VelofineConfig;
+import dev.velofine.core.crash.CrashRecovery;
 import dev.velofine.core.gui.Applies;
 import dev.velofine.core.gui.ConfigPage;
 import dev.velofine.core.gui.CycleRow;
@@ -103,7 +104,13 @@ public final class LegacySupportPage extends ConfigPage {
         String gpu = profile.gpu().adapterName() != null ? profile.gpu().adapterName() : "unknown GPU";
         String memory = profile.memory().isLowMemory() ? "low memory" : "memory OK";
         String disk = profile.disk().rotational() ? "HDD" : "SSD/unknown";
-        return "detected: " + gpu + "  |  " + memory + "  |  " + disk;
+        String base = "detected: " + gpu + "  |  " + memory + "  |  " + disk;
+
+        if (CrashRecovery.isSafeModeActiveThisLaunch()) {
+            return base + "  |  SAFE MODE ACTIVE (" + CrashRecovery.consecutiveStartupCrashes()
+                    + " consecutive startup crashes)";
+        }
+        return base;
     }
 
     private static OptionRow fixRow(VelofineConfig working, RowCursor cursor, Fix fix, String label,

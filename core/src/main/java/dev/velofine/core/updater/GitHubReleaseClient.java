@@ -44,7 +44,7 @@ import java.util.function.IntConsumer;
  */
 final class GitHubReleaseClient {
 
-    private static final String RELEASES_URL =
+    private static final String DEFAULT_RELEASES_URL =
             "https://api.github.com/repos/siliconcode-dev/velofine/releases?per_page=10";
 
     private static final Gson GSON = new Gson();
@@ -53,8 +53,19 @@ final class GitHubReleaseClient {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
+    private final String releasesUrl;
+
+    GitHubReleaseClient() {
+        this(DEFAULT_RELEASES_URL);
+    }
+
+    /** Package-visible so {@code GitHubReleaseClientTest} can point this at a local HTTP stub. */
+    GitHubReleaseClient(String releasesUrl) {
+        this.releasesUrl = releasesUrl;
+    }
+
     List<GitHubRelease> listRecentReleases() throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(RELEASES_URL))
+        HttpRequest request = HttpRequest.newBuilder(URI.create(releasesUrl))
                 .header("Accept", "application/vnd.github+json")
                 .header("X-GitHub-Api-Version", "2022-11-28")
                 .header("User-Agent", "Velofine-Updater/" + BuildInfo.velofineVersion())

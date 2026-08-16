@@ -22,6 +22,7 @@ package dev.velofine.legacysupport;
 import dev.velofine.core.config.ConfigManager;
 import dev.velofine.core.config.Tri;
 import dev.velofine.core.config.VelofineConfig;
+import dev.velofine.core.crash.CrashRecovery;
 import dev.velofine.core.gpu.GpuInfo;
 import dev.velofine.core.hardware.DiskInfo;
 import dev.velofine.core.hardware.Fix;
@@ -144,6 +145,15 @@ public final class LegacySupportEngine {
                 resolved.add(fix);
             }
         }
+
+        // Phase 9 safe mode: a real crash loop escalates past whatever detection/overrides decided
+        // for this one launch only - never written back to config.json, and it reverts on its own
+        // the moment a session reaches a healthy running state. See CrashRecovery's class javadoc.
+        if (CrashRecovery.isSafeModeActiveThisLaunch()) {
+            resolved.add(Fix.GL_COMPATIBILITY_PROFILE);
+            resolved.add(Fix.SHADER_MIX_PATCH);
+        }
+
         return resolved;
     }
 

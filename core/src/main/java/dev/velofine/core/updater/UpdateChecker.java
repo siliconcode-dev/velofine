@@ -38,9 +38,19 @@ import java.util.Optional;
  */
 final class UpdateChecker {
 
-    private final GitHubReleaseClient client = new GitHubReleaseClient();
-    private final ManifestFetcher manifests = new ManifestFetcher(client);
+    private final GitHubReleaseClient client;
+    private final ManifestFetcher manifests;
     private final VersionComparator versions = new VersionComparator();
+
+    UpdateChecker() {
+        this(new GitHubReleaseClient());
+    }
+
+    /** Package-visible so {@code UpdateCheckerTest} can inject a client pointed at a local HTTP stub. */
+    UpdateChecker(GitHubReleaseClient client) {
+        this.client = client;
+        this.manifests = new ManifestFetcher(client);
+    }
 
     Optional<AvailableUpdate> check() throws IOException, InterruptedException {
         VelofineConfig config = ConfigManager.get();

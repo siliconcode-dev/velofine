@@ -14,6 +14,14 @@ val jpackageInputDir = layout.buildDirectory.dir("jpackage-input")
 val jpackageOutputDir = layout.buildDirectory.dir("jpackage")
 val innoOutputDir = layout.buildDirectory.dir("innosetup")
 
+// jpackage's Windows --app-version validates strictly numeric dot-separated components (confirmed
+// empirically: "1.0.0-Beta" fails with "contains invalid component [0-Beta]") - it's baked into
+// the exe's Win32 FILEVERSION resource, which has no room for a pre-release suffix at all. The
+// real project.version ("1.0.0-Beta") stays the actual source of truth everywhere else (BuildInfo,
+// release tags, Inno's AppVersion, which is just a display string with no such restriction) - only
+// jpackage's own numeric-only requirement gets a derived, stripped-down value.
+val jpackageAppVersion = Regex("^[0-9]+(\\.[0-9]+)*").find(project.version.toString())?.value ?: "1.0.0"
+
 // launcher ships as one self-contained shaded jar (see launcher/build.gradle.kts) - no separate
 // runtimeClasspath jars need staging alongside it.
 val launcherJar = project(":launcher").tasks.named("shadowJar")
@@ -43,7 +51,7 @@ val jpackageAppImage = tasks.register<Exec>("jpackageAppImage") {
         "--main-jar", mainJarName,
         "--main-class", "dev.velofine.launcher.Main",
         "--name", appName,
-        "--app-version", project.version.toString(),
+        "--app-version", jpackageAppVersion,
         "--vendor", "siliconcode-dev",
         "--icon", file("branding/velofine.ico").absolutePath,
         "--dest", jpackageOutputDir.get().asFile.absolutePath

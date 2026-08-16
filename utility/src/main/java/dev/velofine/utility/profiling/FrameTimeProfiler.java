@@ -51,6 +51,14 @@ public final class FrameTimeProfiler {
     private FrameTimeProfiler() {
     }
 
+    /** Package-visible for {@code FrameTimeProfilerTest} - static state otherwise leaks across test methods. */
+    static void resetForTest() {
+        sampleCount = 0;
+        nextIndex = 0;
+        lastFrameNanos = 0;
+        LiveStatus.setFps("fps: --");
+    }
+
     public static void onFrame() {
         long now = System.nanoTime();
         if (lastFrameNanos != 0) {

@@ -73,6 +73,16 @@ public final class ProfileInstaller {
         Path minecraftDir = Path.of(args[0]).toAbsolutePath();
         String vanillaVersion = args.length >= 2 ? args[1] : "26.2";
 
+        install(minecraftDir, vanillaVersion, Files.readAllBytes(currentJarPath()));
+    }
+
+    /**
+     * Package-visible so {@code ProfileInstallerTest} can supply synthetic jar bytes -
+     * {@link #currentJarPath()} resolves to an exploded {@code build/classes/...} directory (not
+     * an actual jar file) under a normal Gradle test run, which {@code Files.readAllBytes} cannot
+     * read, so real-jar-byte acquisition is deliberately kept out of the testable core here.
+     */
+    static void install(Path minecraftDir, String vanillaVersion, byte[] launcherJarBytes) throws IOException {
         Path vanillaJsonPath = minecraftDir.resolve("versions").resolve(vanillaVersion).resolve(vanillaVersion + ".json");
         if (!Files.isRegularFile(vanillaJsonPath)) {
             throw new IllegalStateException("Vanilla Minecraft " + vanillaVersion + " was not found at "
@@ -100,8 +110,6 @@ public final class ProfileInstaller {
         JsonObject velofine = vanilla.deepCopy();
         velofine.addProperty("id", velofineId);
         velofine.addProperty("mainClass", "dev.velofine.launcher.Main");
-
-        byte[] launcherJarBytes = Files.readAllBytes(currentJarPath());
 
         JsonArray libraries = velofine.has("libraries") ? velofine.getAsJsonArray("libraries") : new JsonArray();
         if (!velofine.has("libraries")) {

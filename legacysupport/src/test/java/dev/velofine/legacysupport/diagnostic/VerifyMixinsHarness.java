@@ -20,151 +20,183 @@
 package dev.velofine.legacysupport.diagnostic;
 
 import dev.velofine.core.mixin.MixinBridge;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
- * Manual diagnostic tool, not a JUnit test (Phase 2 predates the Phase 9 automated-test buildout
- * per CLAUDE.md). Run with {@code -javaagent:<shaded launcher jar>} (triggers the real self-attach
- * path, which now runs {@code CoreEngine}, {@code LegacySupportEngine}, {@code OptimusEngine} and
- * {@code UtilityEngine} in sequence - CoreEngine's mixins and Optimus's are unconditional given
- * default config, so no force-flag is needed for those) and {@code
- * -Dvelofine.legacysupport.forceFixes=GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS} (so LegacySupport's mixins run regardless of this machine's real
- * GPU), then exercises Mixin's real transform pipeline directly against real vanilla 26.2 client
- * jar class bytes - without touching GLFW/the actual game. Running every engine's mixins in the
- * same JVM here also empirically confirms Phase 4's hoisted {@code MixinBridge}/{@code
- * VelofineMixinService} correctly applies multiple engines' independently-added
- * {@code Mixins.addConfiguration(...)} configs through the one shared transformer - Phase 5 adds a
- * third config ({@code mixins.velofine-core.json}) and two classes ({@code Minecraft},
- * {@code PauseScreen}... {@code VideoSettingsScreen}) targeted by more than one engine's mixins at
- * once, which is exactly the scenario that would expose a transformer-sharing regression.
+ * Phase 9: converted from Phase 2's manual {@code main()}-method diagnostic into a real JUnit 5
+ * test class, with its exact original verification logic unchanged - byte-diffing a real vanilla
+ * 26.2 class against {@link MixinBridge#transform} and checking every marker string listed below
+ * still appears in the transformed bytes.
  *
- * <p>Deliberately lives outside {@code dev.velofine.legacysupport.mixin}: Mixin forbids classes
- * inside an active mixin config's own package from being loaded directly, which would otherwise
- * break this class's own main-class loading (confirmed empirically before this fix existed).
+ * <p><b>Skips cleanly (not fails) whenever no real jar is configured</b> - {@code
+ * @EnabledIfSystemProperty} disables the whole class unless {@code velofine.test.mcJarPath} is set
+ * to a non-empty value, matching the "no reference hardware, so document a manual/optional
+ * verification path" pattern this project already applies to LegacySupport's own hardware-specific
+ * claims. This is the default for CI and for anyone without the (proprietary, non-committable)
+ * client jar.
  *
- * <p>The real vanilla 26.2 client jar must <em>also</em> be on the run classpath, not just passed
- * as an argument - Mixin's target-resolution step (building superclass/interface info for
- * {@code @Mixin} targets) loads the target class via the classloader, not just from the raw bytes
- * this harness reads directly.
+ * <p><b>How the real jar and a live Mixin bootstrap reach this test</b>: {@code
+ * legacysupport/build.gradle.kts}'s {@code tasks.test} block conditionally attaches the real agent
+ * (<code>-javaagent:&lt;launcher's shaded jar&gt;</code>) to this module's whole test JVM whenever
+ * {@code velofine.test.mcJarPath}/{@code VELOFINE_TEST_MC_JAR} is set - {@code
+ * VelofineAgent.premain} then runs automatically before any test code does, so
+ * {@code MixinBootstrap.init()}/every engine's {@code Mixins.addConfiguration(...)}/{@code
+ * MixinBridge.install(...)} are already done by the time these {@code @Test} methods run, exactly
+ * as they were when this class was a hand-run {@code java -javaagent:...} invocation.
  *
- * <p>Usage: {@code java -javaagent:launcher-<version>.jar -Dvelofine.legacysupport.forceFixes=GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS
- * -cp <runtime classpath>;<path to 26.2.jar> dev.velofine.legacysupport.diagnostic.VerifyMixinsHarness
- * <path to 26.2.jar> <output dir>}
+ * <p>Deliberately simplified from the original: no longer writes {@code .original.class}/{@code
+ * .transformed.class} dumps to disk - that existed for manual byte-level inspection convenience,
+ * not correctness, and is not needed for automated pass/fail.
+ *
+ * <p><b>Known gap, confirmed by actually running this live against the real 26.2 jar during
+ * Phase 9</b>: the two markers that depend on {@code mixins.shaders.json} (Shaders'
+ * {@code CompositeRenderMixin}/{@code GameRendererAccessor}/{@code ShaderManagerAccessor}) SKIP
+ * rather than run, since that config only installs once {@code ShaderEngine} sees a real game
+ * directory with a pack actually selected - a fixture this conversion does not construct. Every
+ * other marker (13 of 15) runs and passes live. See {@link #assumeShaderPipelineMixinsAreInstalled()}.
  */
-public final class VerifyMixinsHarness {
+@EnabledIfSystemProperty(named = "velofine.test.mcJarPath", matches = ".+")
+final class VerifyMixinsHarness {
 
-    private static final String GL_BACKEND = "com.mojang.blaze3d.opengl.GlBackend";
-    private static final String GL_DEVICE = "com.mojang.blaze3d.opengl.GlDevice";
-    private static final String CHUNK_MAP = "net.minecraft.server.level.ChunkMap";
-    private static final String OPTIONS = "net.minecraft.client.Options";
-    private static final String MOB = "net.minecraft.world.entity.Mob";
-    private static final String MINECRAFT = "net.minecraft.client.Minecraft";
-    private static final String VIDEO_SETTINGS_SCREEN = "net.minecraft.client.gui.screens.options.VideoSettingsScreen";
-    private static final String PAUSE_SCREEN = "net.minecraft.client.gui.screens.PauseScreen";
-    private static final String CAMERA = "net.minecraft.client.Camera";
-    private static final String FOG_RENDERER = "net.minecraft.client.renderer.fog.FogRenderer";
-    private static final String MOUSE_HANDLER = "net.minecraft.client.MouseHandler";
-    private static final String SECTION_OCCLUSION_GRAPH = "net.minecraft.client.renderer.SectionOcclusionGraph";
-    private static final String GAME_RENDERER = "net.minecraft.client.renderer.GameRenderer";
-    private static final String BLOCK_LIGHT_ENGINE = "net.minecraft.world.level.lighting.BlockLightEngine";
-    private static final String SHADER_MANAGER = "net.minecraft.client.renderer.ShaderManager";
-
-    private VerifyMixinsHarness() {
+    @Test
+    void glBackendMixinForcesCompatibilityProfile() throws IOException {
+        assertMixinApplied("com.mojang.blaze3d.opengl.GlBackend", "GlBackendMixin",
+                "compatibility profile forced");
     }
 
-    public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
-            System.err.println("Usage: VerifyMixinsHarness <path to 26.2.jar> <output dir>");
-            System.exit(2);
-            return;
-        }
-        Path clientJar = Path.of(args[0]);
-        Path outDir = Path.of(args[1]);
-        Files.createDirectories(outDir);
-
-        System.out.println("=== VerifyMixinsHarness ===");
-        boolean ok = true;
-        ok &= verifyClass(clientJar, outDir, GL_BACKEND, "GlBackendMixin",
-                new String[] {"compatibility profile forced"});
-        // Phase 7 moved this mixin from legacysupport to core (see ShaderSourceInterceptors'
-        // class javadoc) - it now installs unconditionally via CoreEngine, no forceFixes needed.
-        ok &= verifyClass(clientJar, outDir, GL_DEVICE, "core.mixin.GlDeviceMixin",
-                new String[] {"velofine$resolveShaderSource"});
-        ok &= verifyClass(clientJar, outDir, CHUNK_MAP, "ChunkMapMixin",
-                new String[] {"velofine$eagerSaveCap"});
-        ok &= verifyClass(clientJar, outDir, OPTIONS, "OptionsMixin",
-                new String[] {"velofine$renderDistanceDefault", "velofine$simulationDistanceDefault",
-                        "velofine$entityDistanceScalingDefault", "velofine$mipmapLevelsDefault", "velofine$particlesDefault"});
-        ok &= verifyClass(clientJar, outDir, MOB, "MobMixin",
-                new String[] {"velofine$goalSelectorUpdateInterval"});
-        // Minecraft is targeted by three independent mixin configs as of Phase 6 (Optimus's tick
-        // profiler/governor hook, core's config-keybind poll, and Utility's UtilityTickMixin) -
-        // every marker must survive in the same transform, the real test of the shared-transformer
-        // claim above, now stress-tested with a third independent injector on the same method.
-        ok &= verifyClass(clientJar, outDir, MINECRAFT, "MinecraftMixin + MinecraftKeybindMixin + UtilityTickMixin",
-                new String[] {"velofine$onTickStart", "velofine$onTickEnd", "velofine$pollConfigKeybind"});
-        ok &= verifyClass(clientJar, outDir, VIDEO_SETTINGS_SCREEN, "VideoSettingsScreenMixin",
-                new String[] {"velofine$addSettingsRow", "VELOFINE SETTINGS"});
-        ok &= verifyClass(clientJar, outDir, PAUSE_SCREEN, "PauseScreenMixin",
-                new String[] {"velofine$addPauseMenuButton", "VELOFINE"});
-
-        // Phase 6 - Utility's first real mixins.
-        ok &= verifyClass(clientJar, outDir, CAMERA, "CameraMixin",
-                new String[] {"velofine$applyZoom"});
-        ok &= verifyClass(clientJar, outDir, FOG_RENDERER, "FogRendererMixin",
-                new String[] {"velofine$applyFogControl"});
-        ok &= verifyClass(clientJar, outDir, MOUSE_HANDLER, "MouseScrollMixin",
-                new String[] {"velofine$routeZoomScroll"});
-        ok &= verifyClass(clientJar, outDir, SECTION_OCCLUSION_GRAPH, "RenderDistanceMixin",
-                new String[] {"velofine$applyVerticalDistance"});
-        ok &= verifyClass(clientJar, outDir, BLOCK_LIGHT_ENGINE, "BlockLightEngineMixin",
-                new String[] {"velofine$applyDynamicLight"});
-
-        // Phase 7 - GameRenderer is now targeted by three independent mixins at once: Utility's
-        // GameRenderMixin (Phase 6), core's shader-source redirect doesn't touch this class, and
-        // Shaders' own CompositeRenderMixin + GameRendererAccessor (both mixins.shaders.json) -
-        // another instance of the shared-transformer stress test noted throughout this file.
-        ok &= verifyClass(clientJar, outDir, GAME_RENDERER, "GameRenderMixin + CompositeRenderMixin + GameRendererAccessor",
-                new String[] {"velofine$onFrame", "velofine$processCompositePipeline", "velofine$getResourcePool"});
-        ok &= verifyClass(clientJar, outDir, SHADER_MANAGER, "ShaderManagerAccessor",
-                new String[] {"velofine$getPostChainProjection", "velofine$getPostChainProjectionMatrixBuffer"});
-
-        System.out.println("=== " + (ok ? "PASS" : "FAIL") + " ===");
-        System.exit(ok ? 0 : 1);
+    @Test
+    void coreGlDeviceMixinRedirectsShaderSource() throws IOException {
+        // Phase 7 moved this mixin from legacysupport to core (see ShaderSourceInterceptors' class
+        // javadoc) - it now installs unconditionally via CoreEngine, no forceFixes needed.
+        assertMixinApplied("com.mojang.blaze3d.opengl.GlDevice", "core.mixin.GlDeviceMixin",
+                "velofine$resolveShaderSource");
     }
 
-    private static boolean verifyClass(Path clientJar, Path outDir, String className, String mixinLabel, String[] mustContain)
-            throws IOException {
+    @Test
+    void chunkMapMixinCapsEagerSaves() throws IOException {
+        assertMixinApplied("net.minecraft.server.level.ChunkMap", "ChunkMapMixin",
+                "velofine$eagerSaveCap");
+    }
+
+    @Test
+    void optionsMixinLowersFirstRunDefaults() throws IOException {
+        assertMixinApplied("net.minecraft.client.Options", "OptionsMixin",
+                "velofine$renderDistanceDefault", "velofine$simulationDistanceDefault",
+                "velofine$entityDistanceScalingDefault", "velofine$mipmapLevelsDefault", "velofine$particlesDefault");
+    }
+
+    @Test
+    void mobMixinThrottlesGoalSelectorUpdates() throws IOException {
+        assertMixinApplied("net.minecraft.world.entity.Mob", "MobMixin",
+                "velofine$goalSelectorUpdateInterval");
+    }
+
+    @Test
+    void minecraftIsSharedByThreeIndependentMixinConfigsAtOnce() throws IOException {
+        // Optimus's tick profiler/governor hook, core's config-keybind poll, and Utility's
+        // UtilityTickMixin - every marker must survive in the same transform, the real test of the
+        // shared-transformer design (Phase 4/5/6, stress-tested further each phase since).
+        assertMixinApplied("net.minecraft.client.Minecraft", "MinecraftMixin + MinecraftKeybindMixin + UtilityTickMixin",
+                "velofine$onTickStart", "velofine$onTickEnd", "velofine$pollConfigKeybind");
+    }
+
+    @Test
+    void videoSettingsScreenMixinAddsTheVelofineSettingsRow() throws IOException {
+        assertMixinApplied("net.minecraft.client.gui.screens.options.VideoSettingsScreen", "VideoSettingsScreenMixin",
+                "velofine$addSettingsRow", "VELOFINE SETTINGS");
+    }
+
+    @Test
+    void pauseScreenMixinAddsTheVelofineButton() throws IOException {
+        assertMixinApplied("net.minecraft.client.gui.screens.PauseScreen", "PauseScreenMixin",
+                "velofine$addPauseMenuButton", "VELOFINE");
+    }
+
+    @Test
+    void cameraMixinAppliesZoom() throws IOException {
+        assertMixinApplied("net.minecraft.client.Camera", "CameraMixin", "velofine$applyZoom");
+    }
+
+    @Test
+    void fogRendererMixinAppliesFogControl() throws IOException {
+        assertMixinApplied("net.minecraft.client.renderer.fog.FogRenderer", "FogRendererMixin",
+                "velofine$applyFogControl");
+    }
+
+    @Test
+    void mouseScrollMixinRoutesZoomScroll() throws IOException {
+        assertMixinApplied("net.minecraft.client.MouseHandler", "MouseScrollMixin",
+                "velofine$routeZoomScroll");
+    }
+
+    @Test
+    void renderDistanceMixinAppliesVerticalDistance() throws IOException {
+        assertMixinApplied("net.minecraft.client.renderer.SectionOcclusionGraph", "RenderDistanceMixin",
+                "velofine$applyVerticalDistance");
+    }
+
+    @Test
+    void blockLightEngineMixinAppliesDynamicLight() throws IOException {
+        assertMixinApplied("net.minecraft.world.level.lighting.BlockLightEngine", "BlockLightEngineMixin",
+                "velofine$applyDynamicLight");
+    }
+
+    @Test
+    void gameRendererIsSharedByThreeIndependentMixinsAtOnce() throws IOException {
+        assumeShaderPipelineMixinsAreInstalled();
+        // Utility's GameRenderMixin (Phase 6) and Shaders' CompositeRenderMixin +
+        // GameRendererAccessor (both mixins.shaders.json) - another shared-transformer stress test.
+        assertMixinApplied("net.minecraft.client.renderer.GameRenderer",
+                "GameRenderMixin + CompositeRenderMixin + GameRendererAccessor",
+                "velofine$onFrame", "velofine$processCompositePipeline", "velofine$getResourcePool");
+    }
+
+    @Test
+    void shaderManagerAccessorExposesPostChainInternals() throws IOException {
+        assumeShaderPipelineMixinsAreInstalled();
+        assertMixinApplied("net.minecraft.client.renderer.ShaderManager", "ShaderManagerAccessor",
+                "velofine$getPostChainProjection", "velofine$getPostChainProjectionMatrixBuffer");
+    }
+
+    /**
+     * {@code mixins.shaders.json} (CompositeRenderMixin/GameRendererAccessor/ShaderManagerAccessor)
+     * only installs when {@code ShaderEngine.onAgentAttached} sees a real game directory with
+     * {@code utility.shader.enabled=true} and a pack actually selected (see that class's own
+     * javadoc) - this JUnit conversion does not construct that full environment (a synthetic
+     * shaderpack + pre-seeded config, on top of everything else here), so these two markers are
+     * skipped rather than asserted, honestly, until that fixture exists - flagged as a real,
+     * tracked gap rather than silently faked green.
+     */
+    private static void assumeShaderPipelineMixinsAreInstalled() {
+        String gameDir = System.getProperty("velofine.gameDir");
+        Assumptions.assumeTrue(gameDir != null && !gameDir.isBlank(),
+                "mixins.shaders.json needs a real game directory with a shaderpack selected - "
+                        + "not constructed by this test run, see this method's javadoc");
+    }
+
+    private static void assertMixinApplied(String className, String mixinLabel, String... mustContain) throws IOException {
+        Path clientJar = Path.of(System.getProperty("velofine.test.mcJarPath"));
         byte[] original = readClassFromJar(clientJar, className);
-        if (original == null) {
-            System.out.println("[FAIL] " + className + " not found in " + clientJar);
-            return false;
-        }
+        assertTrue(original != null, className + " not found in " + clientJar);
 
         byte[] transformed = MixinBridge.transform(className, className, original);
 
-        Files.write(outDir.resolve(simpleName(className) + ".original.class"), original);
-        Files.write(outDir.resolve(simpleName(className) + ".transformed.class"), transformed);
-
-        boolean changed = !java.util.Arrays.equals(original, transformed);
-        System.out.println((changed ? "[OK]  " : "[FAIL]") + " " + className + " bytes changed by " + mixinLabel + ": " + changed);
-
-        boolean allMarkersFound = true;
+        assertTrue(!java.util.Arrays.equals(original, transformed),
+                className + "'s bytes were not changed by " + mixinLabel);
         for (String marker : mustContain) {
-            boolean found = containsAscii(transformed, marker);
-            System.out.println((found ? "[OK]  " : "[FAIL]") + " " + className + " transformed bytes contain \"" + marker + "\": " + found);
-            allMarkersFound &= found;
+            assertTrue(containsAscii(transformed, marker),
+                    className + "'s transformed bytes are missing the \"" + marker + "\" marker (" + mixinLabel + ")");
         }
-
-        System.out.println("  original size=" + original.length + " transformed size=" + transformed.length
-                + " (class files written to " + outDir + ")");
-
-        return changed && allMarkersFound;
     }
 
     private static byte[] readClassFromJar(Path jarPath, String className) throws IOException {
@@ -181,7 +213,7 @@ public final class VerifyMixinsHarness {
     }
 
     private static boolean containsAscii(byte[] haystack, String needle) {
-        byte[] needleBytes = needle.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+        byte[] needleBytes = needle.getBytes(StandardCharsets.US_ASCII);
         outer:
         for (int i = 0; i <= haystack.length - needleBytes.length; i++) {
             for (int j = 0; j < needleBytes.length; j++) {
@@ -192,10 +224,5 @@ public final class VerifyMixinsHarness {
             return true;
         }
         return false;
-    }
-
-    private static String simpleName(String className) {
-        int idx = className.lastIndexOf('.');
-        return idx < 0 ? className : className.substring(idx + 1);
     }
 }

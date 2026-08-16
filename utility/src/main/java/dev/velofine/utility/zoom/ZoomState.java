@@ -55,6 +55,14 @@ public final class ZoomState {
     private ZoomState() {
     }
 
+    /** Package-visible for {@code ZoomStateTest} - static state otherwise leaks across test methods. */
+    static void resetForTest() {
+        wasKeyDown = false;
+        targetFactor = 1.0;
+        currentFactor = 1.0;
+        lastFrameNanos = 0;
+    }
+
     /** Called once per client tick. Only edge-detects the zoom key - see class javadoc. */
     public static void onTick(boolean keyDown) {
         VelofineConfig.ZoomSection zoom = ConfigManager.get().utility.zoom;

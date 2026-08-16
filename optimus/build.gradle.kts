@@ -14,8 +14,5 @@ dependencies {
 
 // Optimus's mixins are verified by legacysupport's VerifyMixinsHarness (which loads both engines'
 // mixin configs into one JVM on purpose - that is also how the shared MixinBridge transformer gets
-// exercised with more than one config). This module has no test sources of its own; the flag keeps
-// `check` green if that ever changes to an empty source set.
-tasks.test {
-    failOnNoDiscoveredTests.set(false)
-}
+// exercised with more than one config). Phase 9 adds real unit tests for this module's pure logic
+// (PerformanceGovernor/FpsSampler) instead - see src/test/java.

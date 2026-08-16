@@ -17,7 +17,7 @@ subprojects {
     apply(plugin = "jacoco")
 
     group = "dev.velofine"
-    version = "1.0.0-Beta"
+    version = "1.0.0-Beta2"
 
     configure<JavaPluginExtension> {
         toolchain {

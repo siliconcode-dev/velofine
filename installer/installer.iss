@@ -2,7 +2,7 @@
 ; /D flags from the :installer:innoSetupCompile Gradle task; the #ifndef fallbacks below let this
 ; also compile standalone from the Inno Setup IDE for manual iteration.
 #ifndef AppVersion
-  #define AppVersion "1.0.0-Beta"
+  #define AppVersion "1.0.0-Beta2"
 #endif
 #ifndef JpackageOutputDir
   #define JpackageOutputDir "build\jpackage"
@@ -69,6 +69,12 @@ end;
 // not the OS default. Without this, a silent re-run would silently reset a non-default Minecraft
 // directory back to {userappdata}\.minecraft. Same LoadStringFromFile pattern GetSavedMinecraftDir
 // already uses for the uninstaller.
+//
+// {app} cannot be expanded until after the standard "Select Destination Location" page has run -
+// calling ExpandConstant('{app}...') any earlier (e.g. from InitializeWizard, confirmed the hard
+// way) throws "Runtime error: An attempt was made to expand the 'app' constant before it was
+// initialized" unconditionally, breaking the installer for every user, not just silent ones.
+// Callers must only invoke this from CurPageChanged or later, never from InitializeWizard.
 function PreviouslyInstalledMinecraftDir(): String;
 var
   Contents: AnsiString;
@@ -80,8 +86,6 @@ begin
 end;
 
 procedure InitializeWizard;
-var
-  PreviousDir: String;
 begin
   MinecraftDirPage := CreateInputDirPage(wpSelectDir,
     'Select Minecraft Directory', 'Where is your .minecraft folder?',
@@ -90,12 +94,22 @@ begin
     'Vanilla Minecraft must already be installed and have been launched at least once.',
     False, '');
   MinecraftDirPage.Add('');
+  // {app} is not valid to expand yet at this point in the wizard lifecycle - a safe default that
+  // doesn't need it. Upgraded to a real previous install's directory (if any) in CurPageChanged,
+  // once the standard directory page has actually resolved {app}.
+  MinecraftDirPage.Values[0] := DefaultMinecraftDir();
+end;
 
-  PreviousDir := PreviouslyInstalledMinecraftDir();
-  if PreviousDir <> '' then
-    MinecraftDirPage.Values[0] := PreviousDir
-  else
-    MinecraftDirPage.Values[0] := DefaultMinecraftDir();
+procedure CurPageChanged(CurPageID: Integer);
+var
+  PreviousDir: String;
+begin
+  if CurPageID = MinecraftDirPage.ID then
+  begin
+    PreviousDir := PreviouslyInstalledMinecraftDir();
+    if PreviousDir <> '' then
+      MinecraftDirPage.Values[0] := PreviousDir;
+  end;
 end;
 
 function GetMinecraftDir(Param: String): String;

@@ -67,7 +67,7 @@ public final class BuildInfo {
         return TARGET_MC_VERSION;
     }
 
-    /** Masterdoc 1's display scheme: {@code "Velofine P<patch> MC <version>"}, e.g. "Velofine 1.0.0-Beta MC 26.2". */
+    /** Masterdoc 1's display scheme: {@code "Velofine P<patch> MC <version>"}, e.g. "Velofine 1.0.0-Beta2 MC 26.2". */
     public static String displayString() {
         return "Velofine " + VELOFINE_VERSION + " MC " + TARGET_MC_VERSION;
     }

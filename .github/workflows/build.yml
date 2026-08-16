@@ -50,3 +50,15 @@ jobs:
           name: Velofine-Setup
           path: installer/build/innosetup/Velofine-Setup.exe
           if-no-files-found: error
+
+      # diagnostic.exe (v1.5 Phase 1) - a standalone tool, built and uploaded separately from the
+      # main installer since it must run correctly on a machine that has never installed Velofine.
+      - name: Build diagnostics-tool
+        run: ./gradlew :diagnostics-tool:jpackageAppImage :diagnostics-tool:zipDistribution
+
+      - name: Upload diagnostics-tool artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: VelofineDiagnostic
+          path: diagnostics-tool/build/dist/VelofineDiagnostic-*-win64.zip
+          if-no-files-found: error

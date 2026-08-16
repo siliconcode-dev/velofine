@@ -87,6 +87,22 @@ jobs:
       # build-metadata parsing entirely (see core.updater.UpdateManifest's javadoc). Hardcoded to
       # 26.2 for now, the only real track that exists; a future parallel MC-version track would set
       # this from a workflow input instead.
+      # diagnostic.exe (v1.5 Phase 1) has its own independent version line (diagnostics-tool/
+      # build.gradle.kts) - deliberately not gated by the "version matches tag" check above, which
+      # is specific to Velofine's own release version. No SHA256/Ed25519 signing either (not part of
+      # the auto-updater's manifest flow, and the project ships unsigned per its no-code-signing
+      # policy) - just bundled as an extra release file alongside the installer.
+      - name: Build diagnostics-tool
+        run: ./gradlew :diagnostics-tool:jpackageAppImage :diagnostics-tool:zipDistribution
+
+      - name: Locate diagnostics-tool zip
+        id: diagnostics
+        shell: bash
+        run: |
+          set -e
+          SRC=$(ls diagnostics-tool/build/dist/VelofineDiagnostic-*-win64.zip)
+          echo "diagnosticZipPath=$SRC" >> "$GITHUB_OUTPUT"
+
       - name: Generate manifest.json
         shell: bash
         run: |
@@ -106,4 +122,5 @@ jobs:
             installer/build/innosetup/SHA256SUMS.txt
             installer/build/innosetup/SHA256SUMS.txt.sig
             installer/build/innosetup/manifest.json
+            ${{ steps.diagnostics.outputs.diagnosticZipPath }}
           generate_release_notes: true

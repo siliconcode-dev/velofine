@@ -21,11 +21,13 @@ package dev.velofine.launcher;
 
 import dev.velofine.core.CoreEngine;
 import dev.velofine.core.agent.AgentContext;
+import dev.velofine.core.config.ConfigManager;
 import dev.velofine.legacysupport.LegacySupportEngine;
 import dev.velofine.optimus.OptimusEngine;
 import dev.velofine.utility.UtilityEngine;
 
 import java.lang.instrument.Instrumentation;
+import java.nio.file.Path;
 
 /**
  * Velofine's java.lang.instrument agent. Loaded via {@link Main}'s self-attach at normal
@@ -37,6 +39,15 @@ import java.lang.instrument.Instrumentation;
  * the config UI's entry-point mixins, which must stay reachable even when every other engine below
  * it is switched off in {@code config.json}, otherwise a user who disables all three has locked
  * themselves out of the only place to turn them back on.
+ *
+ * <p>Also (re-)loads config here, not just relying on {@link Main#main}'s own call: a literal
+ * {@code -javaagent:} attachment (this class's own documented manual-testing path, and how {@code
+ * VerifyMixinsHarness} exercises the real agent) skips {@code Main.main()} entirely, so nothing
+ * else would ever call {@code ConfigManager.load(...)} - every engine would see pure in-memory
+ * defaults regardless of a real {@code config.json} on disk, a real gap this closes. Harmless in
+ * the normal self-attach flow: {@code Main.main()} already set {@code -Dvelofine.gameDir} and
+ * loaded config before self-attaching, so this just re-reads the same file into the same static
+ * field a second time - a little redundant I/O, not a correctness issue.
  */
 public final class VelofineAgent {
 
@@ -57,6 +68,9 @@ public final class VelofineAgent {
         System.out.println("[Velofine] agent attached: Instrumentation acquired "
                 + "(canRetransform=" + inst.isRetransformClassesSupported()
                 + ", canRedefine=" + inst.isRedefineClassesSupported() + ")");
+
+        String gameDirProperty = System.getProperty("velofine.gameDir");
+        ConfigManager.load(gameDirProperty != null ? Path.of(gameDirProperty) : null);
 
         CoreEngine.onAgentAttached(inst);
         LegacySupportEngine.onAgentAttached(inst);

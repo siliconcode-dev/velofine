@@ -2,6 +2,26 @@
 // plumbing, and - since Phase 5 - the in-game config UI). Configuration inherited from the root
 // project's `subprojects` block.
 
+// Phase 8: the single source of truth for "what version am I" (BuildInfo) is generated here from
+// project.version - not a second hardcoded literal in ProfileInstaller like before. targetMcVersion
+// defaults to 26.2 but is a project property so a future parallel MC-version track can override it
+// (`-PtargetMcVersion=...`) without touching this file.
+val targetMcVersion = (findProperty("targetMcVersion") as String?) ?: "26.2"
+// Captured at configuration time, not read inside the execution-time `expand` closure below -
+// `Task.project` is deprecated for execution-time access (breaks the configuration cache).
+val velofineVersionForResource = project.version.toString()
+
+tasks.named<org.gradle.language.jvm.tasks.ProcessResources>("processResources") {
+    inputs.property("velofineVersion", velofineVersionForResource)
+    inputs.property("targetMcVersion", targetMcVersion)
+    filesMatching("velofine-build-info.properties") {
+        expand(
+            "velofineVersion" to velofineVersionForResource,
+            "targetMcVersion" to targetMcVersion
+        )
+    }
+}
+
 dependencies {
     // `api`, not `implementation`, since Phase 5: dev.velofine.core.config types are read and
     // mutated by every engine module and by the UI, and ConfigManager exposes Gson-serialized

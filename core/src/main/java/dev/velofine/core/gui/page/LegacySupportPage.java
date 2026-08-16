@@ -28,6 +28,7 @@ import dev.velofine.core.gui.OptionRow;
 import dev.velofine.core.hardware.Fix;
 import dev.velofine.core.hardware.HardwareProfile;
 import dev.velofine.core.hardware.HardwareProfiles;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public final class LegacySupportPage extends ConfigPage {
     }
 
     @Override
-    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor) {
+    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor, Screen screen) {
         List<OptionRow> rows = new ArrayList<>();
 
         rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),

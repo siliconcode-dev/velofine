@@ -26,6 +26,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ShaderManager;
+import net.minecraft.client.renderer.texture.TextureManager;
 
 public class Minecraft {
 
@@ -53,8 +55,27 @@ public class Minecraft {
         throw new UnsupportedOperationException("stub");
     }
 
+    public ShaderManager getShaderManager() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public TextureManager getTextureManager() {
+        throw new UnsupportedOperationException("stub");
+    }
+
     /** {@code Gui.setScreen} plus a forced frame - what vanilla's own menu buttons use. */
     public void setScreenAndShow(Screen screen) {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    /**
+     * Confirmed real via javap against the real 26.2 jar - the entire method body is
+     * {@code this.running = false; return;}, the same {@code running} field {@link #isRunning()}
+     * reads. The main loop notices on its next iteration and unwinds through vanilla's own
+     * shutdown path (world save, resource cleanup via {@code close()}), not a hard process exit -
+     * used by Phase 8's "Update &amp; Restart" instead of {@code System.exit()}.
+     */
+    public void stop() {
         throw new UnsupportedOperationException("stub");
     }
 }

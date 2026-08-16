@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.velofine.core.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "GlDeviceMixin"
+  ]
+}

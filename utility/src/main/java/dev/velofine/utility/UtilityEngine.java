@@ -22,6 +22,7 @@ package dev.velofine.utility;
 import dev.velofine.core.config.ConfigManager;
 import dev.velofine.core.log.VelofineLog;
 import dev.velofine.core.mixin.MixinBridge;
+import dev.velofine.shaders.ShaderEngine;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigSource;
@@ -59,6 +60,17 @@ public final class UtilityEngine {
                     + (SafeDefaultsPolicy.shouldStartSafe() ? "starting SAFE on this hardware" : "starting FULL"));
         } catch (Throwable t) {
             VelofineLog.warn("Utility", "Failed to initialize Mixin pipeline; Utility disabled: " + t);
+            t.printStackTrace();
+        }
+
+        // Shaders (Phase 7) is a Utility Engine feature per Masterdoc 4.3 - no separate
+        // engines.* toggle, gated by its own working.utility.shader.enabled instead. Runs
+        // regardless of whether the mixin pipeline above succeeded, since it doesn't need
+        // mixins.utility.json itself (see ShaderEngine's own javadoc).
+        try {
+            ShaderEngine.onAgentAttached(instrumentation);
+        } catch (Throwable t) {
+            VelofineLog.warn("Utility", "Failed to initialize shader pipeline: " + t);
             t.printStackTrace();
         }
     }

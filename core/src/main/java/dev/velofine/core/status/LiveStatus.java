@@ -37,6 +37,7 @@ public final class LiveStatus {
     private static volatile String governor = "governor: idle";
     private static volatile String fps = "fps: --";
     private static volatile String zoom = "zoom: idle";
+    private static volatile String updater = "updater: idle";
 
     private LiveStatus() {
     }
@@ -63,5 +64,13 @@ public final class LiveStatus {
 
     public static String zoom() {
         return zoom;
+    }
+
+    public static void setUpdater(String status) {
+        updater = status;
+    }
+
+    public static String updater() {
+        return updater;
     }
 }

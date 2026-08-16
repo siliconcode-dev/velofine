@@ -24,6 +24,7 @@ import dev.velofine.core.config.VelofineConfig;
 import dev.velofine.core.gui.page.GeneralPage;
 import dev.velofine.core.gui.page.LegacySupportPage;
 import dev.velofine.core.gui.page.OptimusPage;
+import dev.velofine.core.gui.page.UpdaterPage;
 import dev.velofine.core.gui.page.UtilityPage;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -64,7 +65,8 @@ public final class VelofineConfigScreen extends Screen {
 
     private final Screen parent;
     private final List<ConfigPage> pages =
-            List.of(new GeneralPage(), new LegacySupportPage(), new OptimusPage(), new UtilityPage());
+            List.of(new GeneralPage(), new LegacySupportPage(), new OptimusPage(), new UtilityPage(),
+                    new UpdaterPage());
     private final List<OptionRow> rows = new ArrayList<>();
 
     private VelofineConfig working = ConfigManager.copyOfLive();
@@ -135,7 +137,7 @@ public final class VelofineConfigScreen extends Screen {
         int listX = boxLeft + RAIL_WIDTH;
         int listWidth = boxWidth - RAIL_WIDTH - VelofineTheme.PADDING;
         ConfigPage.RowCursor cursor = new ConfigPage.RowCursor(listX, listTop, listWidth);
-        rows.addAll(pages.get(pageIndex).buildRows(working, cursor));
+        rows.addAll(pages.get(pageIndex).buildRows(working, cursor, this));
         for (OptionRow row : rows) {
             // addWidget, not addRenderableWidget: rows are drawn by this screen inside a scissored
             // region so a long page can scroll without the rail and button bar scrolling with it.

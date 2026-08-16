@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.velofine.shaders.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "ShaderManagerAccessor",
+    "GameRendererAccessor",
+    "CompositeRenderMixin"
+  ]
+}

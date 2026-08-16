@@ -20,6 +20,7 @@
 package dev.velofine.core.gui;
 
 import dev.velofine.core.config.VelofineConfig;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 
@@ -38,7 +39,14 @@ public abstract class ConfigPage {
     /** Shown in the tab rail. */
     public abstract String title();
 
-    public abstract List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor);
+    /**
+     * @param screen the config screen itself - needed by pages that open a sub-screen (e.g.
+     *               Utility's shader-options row) and want to return to this one, not some
+     *               ambiently-guessed "current screen" (there is no such accessor on {@code
+     *               Minecraft} - confirmed via javap, no plain {@code Screen}-typed field exists).
+     *               Pages that don't need it simply ignore the parameter.
+     */
+    public abstract List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor, Screen screen);
 
     /** Whether this page's engine is currently switched on, for the rail's dimmed state. */
     public abstract boolean engineEnabled(VelofineConfig working);

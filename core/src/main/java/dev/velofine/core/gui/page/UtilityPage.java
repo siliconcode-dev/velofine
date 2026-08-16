@@ -25,10 +25,14 @@ import dev.velofine.core.gui.ConfigPage;
 import dev.velofine.core.gui.CycleRow;
 import dev.velofine.core.gui.IntRow;
 import dev.velofine.core.gui.KeybindRow;
+import dev.velofine.core.gui.NavigateRow;
 import dev.velofine.core.gui.OptionRow;
+import dev.velofine.core.gui.ShaderOptionsScreen;
 import dev.velofine.core.hardware.HardwareProfiles;
+import dev.velofine.core.shader.ShaderPackBrowserRegistry;
 import dev.velofine.core.status.LiveStatus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +61,7 @@ public final class UtilityPage extends ConfigPage {
     }
 
     @Override
-    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor) {
+    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor, Screen screen) {
         List<OptionRow> rows = new ArrayList<>();
         Minecraft mc = Minecraft.getInstance();
 
@@ -201,6 +205,37 @@ public final class UtilityPage extends ConfigPage {
                 () -> mc.options.enableVsync().get(),
                 value -> mc.options.enableVsync().set(value),
                 true));
+
+        rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),
+                "Shaders",
+                "OptiFine/Iris-format shader pack support. v1 targets vanilla 26.2's own real GLSL "
+                        + "attribute/uniform names directly, not OptiFine's traditional gl_Vertex-style "
+                        + "convention - a real pack authored for OptiFine/Iris will likely need porting.",
+                Applies.RESTART,
+                () -> working.utility.shader.enabled,
+                value -> working.utility.shader.enabled = value,
+                false));
+
+        List<String> packNames = new ArrayList<>();
+        packNames.add("NONE");
+        packNames.addAll(ShaderPackBrowserRegistry.listPackNames());
+        rows.add(new CycleRow<>(cursor.x(), cursor.nextY(), cursor.width(),
+                "Shader pack",
+                "Selected from shaderpacks/ (drop a pack folder or .zip in there, then reopen this "
+                        + "menu to see it listed). Ignored while Shaders above is off.",
+                Applies.RESTART,
+                packNames,
+                value -> value,
+                () -> working.utility.shader.selectedPackName == null ? "NONE" : working.utility.shader.selectedPackName,
+                value -> working.utility.shader.selectedPackName = "NONE".equals(value) ? null : value,
+                "NONE"));
+
+        rows.add(new NavigateRow(cursor.x(), cursor.nextY(), cursor.width(),
+                "Shader pack options",
+                "The active pack's own tunable #define options, if it declares any - discovered by "
+                        + "scanning its GLSL source. Editing one reloads the pack immediately.",
+                "OPEN >",
+                () -> mc.setScreenAndShow(new ShaderOptionsScreen(screen))));
 
         return rows;
     }

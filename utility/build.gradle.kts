@@ -11,6 +11,10 @@ dependencies {
 
     // Zoom/Fog mixins reference Camera/FogRenderer/FogData/Options/Minecraft signatures.
     compileOnly(project(":mcstubs"))
+
+    // Phase 7: the shader pipeline itself lives in :shaders (split out given its scope - see
+    // shaders/build.gradle.kts); this module owns the engine-toggle wiring and GUI integration.
+    implementation(project(":shaders"))
 }
 
 tasks.test {

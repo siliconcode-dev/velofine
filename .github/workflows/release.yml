@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Resolve version from tag
+        id: version
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # project.version (build.gradle.kts) is the one real source of truth (see BuildInfo /
+      # core/build.gradle.kts) - deliberately not overridden with a `-Pversion=` flag here, since
+      # that would reintroduce a second source of truth at release time. Bump build.gradle.kts's
+      # version in the same commit the tag points at; this step fails loudly instead of silently
+      # publishing a release whose running app disagrees with its own release tag.
+      - name: Verify build.gradle.kts version matches the tag
+        shell: bash
+        run: |
+          set -e
+          GRADLE_VERSION=$(grep -oP 'version = "\K[^"]+' build.gradle.kts)
+          if [ "$GRADLE_VERSION" != "${{ steps.version.outputs.version }}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match build.gradle.kts's version ($GRADLE_VERSION)."
+            echo "Bump build.gradle.kts's version in the same commit the tag points at before tagging a release."
+            exit 1
+          fi
+
+      - name: Build installer
+        run: ./gradlew :installer:jpackageAppImage :installer:innoSetupCompile
+
+      - name: Rename installer to a versioned filename
+        id: rename
+        shell: bash
+        run: |
+          set -e
+          VERSION="${{ steps.version.outputs.version }}"
+          SRC="installer/build/innosetup/Velofine-Setup.exe"
+          NAME="Velofine-Setup-${VERSION}.exe"
+          DEST="installer/build/innosetup/${NAME}"
+          mv "$SRC" "$DEST"
+          echo "installerPath=$DEST" >> "$GITHUB_OUTPUT"
+          echo "installerName=$NAME" >> "$GITHUB_OUTPUT"
+
+      # Self-published, sha256sum-compatible checksums - more portable than relying solely on
+      # GitHub's own asset digests, and what SignatureVerifier's Ed25519 signature covers.
+      - name: Compute SHA-256 checksum
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash -Algorithm SHA256 "${{ steps.rename.outputs.installerPath }}").Hash.ToLower()
+          Set-Content -Path "installer/build/innosetup/SHA256SUMS.txt" -Value "$hash  ${{ steps.rename.outputs.installerName }}" -Encoding ascii -NoNewline
+
+      # Standalone script outside the module graph on purpose - see tools/release-signer/Signer.java's
+      # own javadoc for why private-key-handling code must never live inside core/installer.
+      - name: Sign checksums (Ed25519)
+        shell: bash
+        env:
+          VELOFINE_SIGNING_KEY: ${{ secrets.VELOFINE_SIGNING_KEY }}
+        run: |
+          java tools/release-signer/Signer.java "installer/build/innosetup/SHA256SUMS.txt" "installer/build/innosetup/SHA256SUMS.txt.sig"
+
+      # targetMcVersion is a manifest field, not encoded into the tag string - avoids semver
+      # build-metadata parsing entirely (see core.updater.UpdateManifest's javadoc). Hardcoded to
+      # 26.2 for now, the only real track that exists; a future parallel MC-version track would set
+      # this from a workflow input instead.
+      - name: Generate manifest.json
+        shell: bash
+        run: |
+          cat > installer/build/innosetup/manifest.json <<EOF
+          {
+            "velofineVersion": "${{ steps.version.outputs.version }}",
+            "targetMcVersion": "26.2",
+            "notes": "See the GitHub Release notes for ${{ github.ref_name }}."
+          }
+          EOF
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ steps.rename.outputs.installerPath }}
+            installer/build/innosetup/SHA256SUMS.txt
+            installer/build/innosetup/SHA256SUMS.txt.sig
+            installer/build/innosetup/manifest.json
+          generate_release_notes: true

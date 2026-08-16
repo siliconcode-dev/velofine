@@ -31,12 +31,15 @@ import dev.velofine.core.hardware.HardwareProfiles;
 import dev.velofine.core.hardware.MemoryInfo;
 import dev.velofine.core.log.VelofineLog;
 import dev.velofine.core.mixin.MixinBridge;
+import dev.velofine.core.shader.ShaderSourceInterceptors;
+import dev.velofine.legacysupport.shader.ShaderPatcher;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigSource;
 
 import java.lang.instrument.Instrumentation;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,6 +92,14 @@ public final class LegacySupportEngine {
             // MixinEnvironment.getDefaultEnvironment() as the fallback instead.
             Mixins.addConfiguration("mixins.legacysupport.json", (IMixinConfigSource) null);
             MixinBridge.install(instrumentation);
+
+            if (activeFixes.contains(Fix.SHADER_MIX_PATCH)) {
+                // core owns the actual @Redirect on GlDevice.compileShader's ShaderSource.get()
+                // call (see ShaderSourceInterceptors' class javadoc for why this moved out of
+                // legacysupport in Phase 7) - this just registers our patch as one candidate.
+                ShaderSourceInterceptors.register(ShaderSourceInterceptors.PRIORITY_LEGACY_SUPPORT,
+                        (id, type, vanillaSource) -> Optional.of(ShaderPatcher.patch(vanillaSource, String.valueOf(id))));
+            }
 
             VelofineLog.info("LegacySupport", "active fixes: "
                     + activeFixes.stream().map(Enum::name).collect(Collectors.joining(", ")));

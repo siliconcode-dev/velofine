@@ -72,6 +72,7 @@ public final class VerifyMixinsHarness {
     private static final String SECTION_OCCLUSION_GRAPH = "net.minecraft.client.renderer.SectionOcclusionGraph";
     private static final String GAME_RENDERER = "net.minecraft.client.renderer.GameRenderer";
     private static final String BLOCK_LIGHT_ENGINE = "net.minecraft.world.level.lighting.BlockLightEngine";
+    private static final String SHADER_MANAGER = "net.minecraft.client.renderer.ShaderManager";
 
     private VerifyMixinsHarness() {
     }
@@ -90,8 +91,10 @@ public final class VerifyMixinsHarness {
         boolean ok = true;
         ok &= verifyClass(clientJar, outDir, GL_BACKEND, "GlBackendMixin",
                 new String[] {"compatibility profile forced"});
-        ok &= verifyClass(clientJar, outDir, GL_DEVICE, "GlDeviceMixin",
-                new String[] {"velofine$maybePatchShaderSource"});
+        // Phase 7 moved this mixin from legacysupport to core (see ShaderSourceInterceptors'
+        // class javadoc) - it now installs unconditionally via CoreEngine, no forceFixes needed.
+        ok &= verifyClass(clientJar, outDir, GL_DEVICE, "core.mixin.GlDeviceMixin",
+                new String[] {"velofine$resolveShaderSource"});
         ok &= verifyClass(clientJar, outDir, CHUNK_MAP, "ChunkMapMixin",
                 new String[] {"velofine$eagerSaveCap"});
         ok &= verifyClass(clientJar, outDir, OPTIONS, "OptionsMixin",
@@ -119,10 +122,17 @@ public final class VerifyMixinsHarness {
                 new String[] {"velofine$routeZoomScroll"});
         ok &= verifyClass(clientJar, outDir, SECTION_OCCLUSION_GRAPH, "RenderDistanceMixin",
                 new String[] {"velofine$applyVerticalDistance"});
-        ok &= verifyClass(clientJar, outDir, GAME_RENDERER, "GameRenderMixin",
-                new String[] {"velofine$onFrame"});
         ok &= verifyClass(clientJar, outDir, BLOCK_LIGHT_ENGINE, "BlockLightEngineMixin",
                 new String[] {"velofine$applyDynamicLight"});
+
+        // Phase 7 - GameRenderer is now targeted by three independent mixins at once: Utility's
+        // GameRenderMixin (Phase 6), core's shader-source redirect doesn't touch this class, and
+        // Shaders' own CompositeRenderMixin + GameRendererAccessor (both mixins.shaders.json) -
+        // another instance of the shared-transformer stress test noted throughout this file.
+        ok &= verifyClass(clientJar, outDir, GAME_RENDERER, "GameRenderMixin + CompositeRenderMixin + GameRendererAccessor",
+                new String[] {"velofine$onFrame", "velofine$processCompositePipeline", "velofine$getResourcePool"});
+        ok &= verifyClass(clientJar, outDir, SHADER_MANAGER, "ShaderManagerAccessor",
+                new String[] {"velofine$getPostChainProjection", "velofine$getPostChainProjectionMatrixBuffer"});
 
         System.out.println("=== " + (ok ? "PASS" : "FAIL") + " ===");
         System.exit(ok ? 0 : 1);

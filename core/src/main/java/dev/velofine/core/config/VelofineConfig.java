@@ -22,6 +22,7 @@ package dev.velofine.core.config;
 import dev.velofine.core.hardware.Fix;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -47,6 +48,7 @@ public final class VelofineConfig {
     public OptimusSection optimus = new OptimusSection();
     public UtilitySection utility = new UtilitySection();
     public UiSection ui = new UiSection();
+    public UpdaterSection updater = new UpdaterSection();
 
     /** Master on/off per engine. Turning one off skips its mixin config entirely at next launch. */
     public static final class EnginesSection {
@@ -138,6 +140,7 @@ public final class VelofineConfig {
         public RenderDistanceSection renderDistance = new RenderDistanceSection();
         public FpsOverlaySection fpsOverlay = new FpsOverlaySection();
         public DynamicLightsSection dynamicLights = new DynamicLightsSection();
+        public ShaderSection shader = new ShaderSection();
     }
 
     /**
@@ -191,11 +194,51 @@ public final class VelofineConfig {
         public int updateIntervalTicks = 1;
     }
 
+    /**
+     * Phase 7 (OptiFine/Iris-format shader pipeline). {@code selectedPackName} is a folder/zip name
+     * under {@code shaderpacks/}, not a path - packs are discovered by scanning that directory, the
+     * same drop-in convention OptiFine/Iris themselves use, rather than an in-game file picker (no
+     * such widget exists in {@code dev.velofine.core.gui} today). {@code packOptions} holds one flat
+     * {@code optionName -> chosenValue} map per pack name so a user's in-game edits to a pack's own
+     * {@code [SETTING]}-defined options survive a restart without needing per-pack schema baked into
+     * this config file - {@code ShaderPackOptions} (shaders module) is the source of truth for what
+     * each option's valid values/defaults are; a stale or unrecognized entry here is simply ignored
+     * rather than treated as an error, since packs come and go independently of Velofine's own
+     * version.
+     */
+    public static final class ShaderSection {
+        public boolean enabled = false;
+        public String selectedPackName = null;
+        public Map<String, Map<String, String>> packOptions = new HashMap<>();
+    }
+
     public static final class UiSection {
         /**
          * GLFW key code that opens the Velofine config screen in-game. {@code -1} is unbound,
          * which is the default - Velofine should not steal a key the player already uses.
          */
         public int openConfigKey = -1;
+    }
+
+    /**
+     * Phase 8 (in-app updater). Unlike LegacySupport/Optimus/Utility, the updater has no vanilla+
+     * feature to disable when "off" - it installs no mixins, so there is nothing for an
+     * {@code engines.updater} master toggle to gate. {@link #autoCheckOnLaunch} alone covers "don't
+     * check automatically"; a manual "Check for Updates" button always works regardless.
+     */
+    public static final class UpdaterSection {
+        public boolean autoCheckOnLaunch = true;
+        /** Epoch millis of the last check (auto or manual) - rate-limits the passive launch check. */
+        public long lastCheckedEpochMillis = 0L;
+        /** A version the user explicitly dismissed via "Later" - not re-announced until a newer one ships. */
+        public String skippedVersion = null;
+        /**
+         * The vanilla Minecraft version this install is patching - written by
+         * {@code ProfileInstaller.install()} at install time, since that is the one place the
+         * actually-targeted version is known. Filters which releases' {@code manifest.json} the
+         * updater considers, so a future parallel MC-version track never offers a cross-version
+         * update. {@code null} until the profile has been installed at least once.
+         */
+        public String trackedMcVersion = null;
     }
 }

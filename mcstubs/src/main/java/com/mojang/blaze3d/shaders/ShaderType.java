@@ -19,5 +19,8 @@
 
 package com.mojang.blaze3d.shaders;
 
+/** Confirmed real via javap against the real 26.2 jar - exactly two constants, no COMPUTE. */
 public enum ShaderType {
+    VERTEX,
+    FRAGMENT
 }

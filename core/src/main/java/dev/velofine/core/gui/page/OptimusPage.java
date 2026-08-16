@@ -27,6 +27,7 @@ import dev.velofine.core.gui.CycleRow;
 import dev.velofine.core.gui.IntRow;
 import dev.velofine.core.gui.OptionRow;
 import dev.velofine.core.status.LiveStatus;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public final class OptimusPage extends ConfigPage {
     }
 
     @Override
-    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor) {
+    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor, Screen screen) {
         List<OptionRow> rows = new ArrayList<>();
         VelofineConfig.GovernorSection governor = working.optimus.governor;
 

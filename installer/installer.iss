@@ -63,7 +63,25 @@ begin
   Result := ExpandConstant('{userappdata}\.minecraft');
 end;
 
+// Phase 8: a silent update (/VERYSILENT etc., spawned by the in-game updater once Minecraft has
+// exited) skips this wizard page entirely and installs using whatever default value it already
+// holds - so on an update, that default must be the directory the user actually picked last time,
+// not the OS default. Without this, a silent re-run would silently reset a non-default Minecraft
+// directory back to {userappdata}\.minecraft. Same LoadStringFromFile pattern GetSavedMinecraftDir
+// already uses for the uninstaller.
+function PreviouslyInstalledMinecraftDir(): String;
+var
+  Contents: AnsiString;
+begin
+  if LoadStringFromFile(ExpandConstant('{app}\minecraft-dir.txt'), Contents) then
+    Result := String(Contents)
+  else
+    Result := '';
+end;
+
 procedure InitializeWizard;
+var
+  PreviousDir: String;
 begin
   MinecraftDirPage := CreateInputDirPage(wpSelectDir,
     'Select Minecraft Directory', 'Where is your .minecraft folder?',
@@ -72,7 +90,12 @@ begin
     'Vanilla Minecraft must already be installed and have been launched at least once.',
     False, '');
   MinecraftDirPage.Add('');
-  MinecraftDirPage.Values[0] := DefaultMinecraftDir();
+
+  PreviousDir := PreviouslyInstalledMinecraftDir();
+  if PreviousDir <> '' then
+    MinecraftDirPage.Values[0] := PreviousDir
+  else
+    MinecraftDirPage.Values[0] := DefaultMinecraftDir();
 end;
 
 function GetMinecraftDir(Param: String): String;
@@ -88,10 +111,11 @@ end;
 
 function GetSavedMinecraftDir(Param: String): String;
 var
-  Contents: AnsiString;
+  Saved: String;
 begin
-  if LoadStringFromFile(ExpandConstant('{app}\minecraft-dir.txt'), Contents) then
-    Result := String(Contents)
+  Saved := PreviouslyInstalledMinecraftDir();
+  if Saved <> '' then
+    Result := Saved
   else
     Result := DefaultMinecraftDir();
 end;

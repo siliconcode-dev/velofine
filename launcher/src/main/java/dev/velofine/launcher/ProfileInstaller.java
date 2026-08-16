@@ -24,6 +24,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import dev.velofine.core.BuildInfo;
+import dev.velofine.core.config.ConfigManager;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -57,7 +59,6 @@ import java.util.HexFormat;
  */
 public final class ProfileInstaller {
 
-    private static final String VELOFINE_VERSION = "0.1.0";
     private static final String VELOFINE_SUFFIX = "-velofine";
     private static final String LIBRARY_GROUP_PATH = "dev/velofine/velofine-launcher";
 
@@ -142,11 +143,18 @@ public final class ProfileInstaller {
         }
 
         Path libraryDest = minecraftDir.resolve("libraries").resolve(LIBRARY_GROUP_PATH)
-                .resolve(VELOFINE_VERSION).resolve("velofine-launcher-" + VELOFINE_VERSION + ".jar");
+                .resolve(BuildInfo.velofineVersion()).resolve("velofine-launcher-" + BuildInfo.velofineVersion() + ".jar");
         Files.createDirectories(libraryDest.getParent());
         Files.write(libraryDest, launcherJarBytes);
 
         registerProfile(gson, minecraftDir, vanillaVersion, velofineId);
+
+        // Phase 8: the one place the actually-targeted vanilla version is known - persisted so the
+        // updater can filter releases to this install's own MC-version track (a release's
+        // manifest.json targetMcVersion must match this to ever be offered).
+        ConfigManager.load(minecraftDir);
+        ConfigManager.get().updater.trackedMcVersion = vanillaVersion;
+        ConfigManager.save();
 
         System.out.println("[Velofine] Profile installed: " + velofineId);
         System.out.println("[Velofine]   version JSON: " + velofineJsonDir.resolve(velofineId + ".json"));
@@ -207,11 +215,12 @@ public final class ProfileInstaller {
      * (no remote source; local-only, matched-by-hash is enough for a launcher to accept it).
      */
     private static JsonObject velofineLibraryEntry(byte[] jarBytes) {
+        String velofineVersion = BuildInfo.velofineVersion();
         JsonObject library = new JsonObject();
-        library.addProperty("name", "dev.velofine:velofine-launcher:" + VELOFINE_VERSION);
+        library.addProperty("name", "dev.velofine:velofine-launcher:" + velofineVersion);
 
         JsonObject artifact = new JsonObject();
-        artifact.addProperty("path", LIBRARY_GROUP_PATH + "/" + VELOFINE_VERSION + "/velofine-launcher-" + VELOFINE_VERSION + ".jar");
+        artifact.addProperty("path", LIBRARY_GROUP_PATH + "/" + velofineVersion + "/velofine-launcher-" + velofineVersion + ".jar");
         artifact.addProperty("sha1", sha1Hex(jarBytes));
         artifact.addProperty("size", jarBytes.length);
         artifact.addProperty("url", "");

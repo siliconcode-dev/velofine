@@ -23,6 +23,7 @@ import dev.velofine.core.config.VelofineConfig;
 import dev.velofine.core.gui.ConfigPage;
 import dev.velofine.core.gui.KeybindRow;
 import dev.velofine.core.gui.OptionRow;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public final class GeneralPage extends ConfigPage {
     }
 
     @Override
-    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor) {
+    public List<OptionRow> buildRows(VelofineConfig working, RowCursor cursor, Screen screen) {
         List<OptionRow> rows = new ArrayList<>();
 
         rows.add(new KeybindRow(cursor.x(), cursor.nextY(), cursor.width(),

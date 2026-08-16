@@ -19,6 +19,7 @@
 
 package net.minecraft.client.renderer;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.resources.Identifier;
 
 /**
@@ -40,6 +41,10 @@ public class GameRenderer {
     }
 
     public Identifier currentPostEffect() {
+        throw new UnsupportedOperationException("stub");
+    }
+
+    public RenderTarget mainRenderTarget() {
         throw new UnsupportedOperationException("stub");
     }
 }

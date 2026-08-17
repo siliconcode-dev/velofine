@@ -2,7 +2,7 @@
 ; /D flags from the :installer:innoSetupCompile Gradle task; the #ifndef fallbacks below let this
 ; also compile standalone from the Inno Setup IDE for manual iteration.
 #ifndef AppVersion
-  #define AppVersion "1.0.0-Beta2"
+  #define AppVersion "1.5.0-Beta"
 #endif
 #ifndef JpackageOutputDir
   #define JpackageOutputDir "build\jpackage"

@@ -7,7 +7,7 @@ Three independent engines, each with its own on/off toggle and in-game config pa
 - **Optimus** — OpenGL-focused performance optimization, including an adaptive FPS-based render-distance governor.
 - **Utility** — OptiFine-parity QoL features and full OptiFine/Iris-format shader pack support.
 
-**Status:** `1.5.0-Beta`. v1 (all nine build phases — see `Build_plan_v1.5.md`'s history section for the original phased plan) shipped without a confirmed fix for the flagship Intel Gen7 rendering bug; v1.5 adds targeted shader patches plus a standalone `diagnostic.exe` tool, gated behind an opt-in "Experimental Legacy Fix" toggle. Several LegacySupport/Optimus findings are research-grounded and bytecode-verified but **not yet confirmed on the actual reference hardware** (an Intel HD 4000 laptop and an HD Graphics 2500 desktop) — that's pending community testers; see `CLAUDE.md` for exactly which claims are and aren't confirmed.
+**Status:** `1.5-Beta`. v1 (all nine build phases — see `Build_plan_v1.5.md`'s history section for the original phased plan) shipped without a confirmed fix for the flagship Intel Gen7 rendering bug; v1.5 adds targeted shader patches plus a standalone `diagnostic.exe` tool, gated behind an opt-in "Experimental Legacy Fix" toggle. Several LegacySupport/Optimus findings are research-grounded and bytecode-verified but **not yet confirmed on the actual reference hardware** (an Intel HD 4000 laptop and an HD Graphics 2500 desktop) — that's pending community testers; see `CLAUDE.md` for exactly which claims are and aren't confirmed.
 
 ## Features
 

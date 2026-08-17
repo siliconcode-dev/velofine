@@ -24,6 +24,7 @@ import dev.velofine.core.config.VelofineConfig;
 import dev.velofine.core.gui.Applies;
 import dev.velofine.core.gui.ConfigPage;
 import dev.velofine.core.gui.CycleRow;
+import dev.velofine.core.gui.InfoRow;
 import dev.velofine.core.gui.NavigateRow;
 import dev.velofine.core.gui.OptionRow;
 import dev.velofine.core.log.VelofineLog;
@@ -33,6 +34,9 @@ import dev.velofine.core.updater.UpdatePhase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,41 +74,71 @@ public final class UpdaterPage extends ConfigPage {
 
         rows.add(new NavigateRow(cursor.x(), cursor.nextY(), cursor.width(),
                 "This build",
-                "The Velofine version currently running and the Minecraft version it targets.",
+                "The Velofine version currently running.",
                 BuildInfo.displayString(),
                 () -> {
-                }));
+                })
+                .withDetail("The Velofine version currently running and the Minecraft version it targets."));
 
         rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),
                 "Auto-check on launch",
-                "Checks for a newer Velofine release once every ~24 hours when the game starts. "
-                        + "Metadata only (which version exists) - never sends anything about you or "
-                        + "your system.",
+                "Checks for updates automatically when the game starts.",
                 Applies.LIVE,
                 () -> working.updater.autoCheckOnLaunch,
                 value -> working.updater.autoCheckOnLaunch = value,
-                true));
+                true)
+                .withDetail("Checks for a newer Velofine release once every ~24 hours when the game starts. "
+                        + "Metadata only (which version exists) - never sends anything about you or "
+                        + "your system."));
 
         rows.add(new NavigateRow(cursor.x(), cursor.nextY(), cursor.width(),
                 "Check for updates",
-                "Looks for a newer release matching this install's Minecraft version, and - if "
+                "Looks for a newer Velofine release right now.",
+                "CHECK >",
+                UpdateOrchestrator::checkNow)
+                .withDetail("Looks for a newer release matching this install's Minecraft version, and - if "
                         + "one exists - downloads it and checks its SHA-256 checksum and Ed25519 "
                         + "signature automatically. Nothing is ever installed without a further, "
-                        + "separate confirmation below.",
-                "CHECK >",
-                UpdateOrchestrator::checkNow));
+                        + "separate confirmation below."));
+
+        rows.add(new InfoRow(cursor.x(), cursor.nextY(), cursor.width(),
+                "Last successful check: " + formatLastCheck(working.updater.lastCheckedEpochMillis)));
 
         UpdatePhase phase = UpdateOrchestrator.phase();
         if (phase == UpdatePhase.VERIFIED) {
             rows.add(new NavigateRow(cursor.x(), cursor.nextY(), cursor.width(),
                     "Update & restart",
-                    "Closes Minecraft and silently installs the verified update. You will need to "
-                            + "launch Minecraft again afterward from your launcher.",
+                    "Installs the update and restarts the game.",
                     "UPDATE & RESTART >",
-                    UpdaterPage::applyAndExit));
+                    UpdaterPage::applyAndExit)
+                    .withDetail("Closes Minecraft and silently installs the verified update. You will need to "
+                            + "launch Minecraft again afterward from your launcher."));
+        }
+
+        // item 12: never leave a raw exception as the only place to find out what actually went
+        // wrong - this row only appears on failure, and its own short line stays plain-language;
+        // the technical detail (LiveStatus.updaterDetail()) only shows up if this row is hovered.
+        if (phase == UpdatePhase.FAILED) {
+            rows.add(new NavigateRow(cursor.x(), cursor.nextY(), cursor.width(),
+                    "Update error",
+                    "Hover for the technical error message.",
+                    "VIEW DETAILS >",
+                    () -> {
+                    })
+                    .withDetail(LiveStatus.updaterDetail().isEmpty()
+                            ? "No further detail was captured for this failure."
+                            : LiveStatus.updaterDetail()));
         }
 
         return rows;
+    }
+
+    private static String formatLastCheck(long epochMillis) {
+        if (epochMillis <= 0) {
+            return "Never";
+        }
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
+                .format(Instant.ofEpochMilli(epochMillis));
     }
 
     @Override

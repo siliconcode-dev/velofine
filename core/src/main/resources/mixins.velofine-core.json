@@ -6,6 +6,7 @@
   "mixins": [
     "VideoSettingsScreenMixin",
     "PauseScreenMixin",
-    "MinecraftKeybindMixin"
+    "MinecraftKeybindMixin",
+    "TitleScreenMixin"
   ]
 }

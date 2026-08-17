@@ -70,8 +70,8 @@ public final class CoreEngine {
             Mixins.addConfiguration("mixins.core-shader.json", (IMixinConfigSource) null);
             MixinBridge.install(instrumentation);
 
-            VelofineLog.info("core", "config UI entry points active (video settings, pause menu, keybind); "
-                    + "shader source redirect active");
+            VelofineLog.info("core", "config UI entry points active (video settings, pause menu, keybind, "
+                    + "title screen branding); shader source redirect active");
         } catch (Throwable t) {
             VelofineLog.warn("core", "Failed to install config UI entry points: " + t);
             t.printStackTrace();

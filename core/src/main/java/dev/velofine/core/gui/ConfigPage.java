@@ -61,11 +61,13 @@ public abstract class ConfigPage {
 
         private final int x;
         private final int width;
+        private final int startY;
         private int y;
 
         public RowCursor(int x, int y, int width) {
             this.x = x;
             this.y = y;
+            this.startY = y;
             this.width = width;
         }
 
@@ -80,8 +82,17 @@ public abstract class ConfigPage {
         /** Y for the next row, advancing the cursor past it. */
         public int nextY() {
             int current = y;
-            y += VelofineTheme.ROW_HEIGHT + VelofineTheme.ROW_SPACING;
+            y += VelofineTheme.CONTENT_ROW_HEIGHT + VelofineTheme.ROW_SPACING;
             return current;
+        }
+
+        /**
+         * How much vertical space this page's rows actually used - lets
+         * {@code VelofineConfigScreen} size the row-list area to real content instead of a fixed
+         * window-relative height (the source of the "300px of dead space on a 5-row page" bug).
+         */
+        public int usedHeight() {
+            return y - startY;
         }
     }
 }

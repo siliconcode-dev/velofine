@@ -55,9 +55,12 @@ final class FrameTimeProfilerTest {
             FrameTimeProfiler.onFrame();
         }
         assertNotEquals("fps: --", LiveStatus.fps());
-        assertTrue(LiveStatus.fps().startsWith("fps: avg"));
-        assertTrue(LiveStatus.fps().contains("1% low"));
-        assertTrue(LiveStatus.fps().contains("0.1% low"));
+        assertTrue(LiveStatus.fps().startsWith("FPS"));
+        assertTrue(LiveStatus.fps().contains("1% LOW"));
+        assertTrue(LiveStatus.fps().contains("0.1% LOW"));
+        // v1.5 settings-UI overhaul: the numeric breakdown is now reachable independent of the
+        // formatted string too - see FrameStats' class javadoc for why that matters.
+        assertTrue(LiveStatus.fpsStats().avgFps() > 0, "structured stats should be published alongside the string");
     }
 
     @Test
@@ -66,6 +69,6 @@ final class FrameTimeProfilerTest {
         for (int i = 0; i < 600; i++) {
             FrameTimeProfiler.onFrame();
         }
-        assertTrue(LiveStatus.fps().startsWith("fps: avg"), "should still produce a well-formed summary past capacity");
+        assertTrue(LiveStatus.fps().startsWith("FPS"), "should still produce a well-formed summary past capacity");
     }
 }

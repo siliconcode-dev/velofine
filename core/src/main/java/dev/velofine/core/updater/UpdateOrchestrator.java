@@ -140,7 +140,8 @@ public final class UpdateOrchestrator {
             }
         } catch (Exception e) {
             phase = UpdatePhase.FAILED;
-            LiveStatus.setUpdater("check failed: " + e.getMessage());
+            LiveStatus.setUpdater("Unable to check for updates. " + UpdateFailureReason.friendly(e));
+            LiveStatus.setUpdaterDetail(e.toString());
             VelofineLog.warn("updater", "Update check failed: " + e);
         }
     }
@@ -177,7 +178,8 @@ public final class UpdateOrchestrator {
             LiveStatus.setUpdater("verified " + update.manifest().velofineVersion + " - click Update & Restart");
         } catch (Exception e) {
             phase = UpdatePhase.FAILED;
-            LiveStatus.setUpdater("download/verify failed: " + e.getMessage());
+            LiveStatus.setUpdater("Unable to download the update. " + UpdateFailureReason.friendly(e));
+            LiveStatus.setUpdaterDetail(e.toString());
             VelofineLog.warn("updater", "Update download/verify failed: " + e);
             if (stagedInstaller != null) {
                 UpdateDownloader.deleteStaged(stagedInstaller.getParent());

@@ -19,10 +19,19 @@
 
 package net.minecraft.client.gui.components.events;
 
+import net.minecraft.client.input.CharacterEvent;
+
 /**
- * Empty marker. The real interface declares ~18 default methods, none of which Velofine calls;
- * it exists here only because it is the erasure of {@code Screen.addRenderableWidget}'s type
- * parameter.
+ * Real interface declares ~18 default methods; still mostly an empty marker (it exists primarily
+ * because it is the erasure of {@code Screen.addRenderableWidget}'s type parameter) except for
+ * {@code charTyped}, added for the v1.5 search overlay - confirmed via javap that real
+ * {@code Screen} does NOT redeclare {@code charTyped} the way it redeclares {@code keyPressed}, so
+ * it must be reachable here for {@code Screen} (which the real class really does implement this
+ * interface through) to expose an overridable {@code charTyped} at all.
  */
 public interface GuiEventListener {
+
+    default boolean charTyped(CharacterEvent event) {
+        return false;
+    }
 }

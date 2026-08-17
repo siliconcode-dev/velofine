@@ -63,7 +63,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code CompositeRenderMixin}/{@code GameRendererAccessor}/{@code ShaderManagerAccessor}) SKIP
  * rather than run, since that config only installs once {@code ShaderEngine} sees a real game
  * directory with a pack actually selected - a fixture this conversion does not construct. Every
- * other marker (13 of 15) runs and passes live. See {@link #assumeShaderPipelineMixinsAreInstalled()}.
+ * other marker (14 of 16, since v1.5 Phase 2's {@code TitleScreenMixin} addition) runs and passes
+ * live. See {@link #assumeShaderPipelineMixinsAreInstalled()}.
  */
 @EnabledIfSystemProperty(named = "velofine.test.mcJarPath", matches = ".+")
 final class VerifyMixinsHarness {
@@ -120,6 +121,12 @@ final class VerifyMixinsHarness {
     void pauseScreenMixinAddsTheVelofineButton() throws IOException {
         assertMixinApplied("net.minecraft.client.gui.screens.PauseScreen", "PauseScreenMixin",
                 "velofine$addPauseMenuButton", "VELOFINE");
+    }
+
+    @Test
+    void titleScreenMixinRebrandsVersionWatermark() throws IOException {
+        assertMixinApplied("net.minecraft.client.gui.screens.TitleScreen", "TitleScreenMixin",
+                "velofine$rebrandVersionText", "Velofine ");
     }
 
     @Test

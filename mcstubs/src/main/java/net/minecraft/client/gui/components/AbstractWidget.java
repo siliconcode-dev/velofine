@@ -67,6 +67,17 @@ public abstract class AbstractWidget implements GuiEventListener, Renderable, Na
         throw new UnsupportedOperationException("stub");
     }
 
+    /**
+     * v1.5 settings-UI overhaul: confirmed via javap against the real 26.2 jar - {@code
+     * mouseDragged(MouseButtonEvent, double, double)} is the public vanilla dispatcher (mirroring
+     * {@code mouseClicked}/{@code onClick}'s pattern) and delegates to this protected hook.
+     * {@code IntRow}'s slider needs this for drag-to-adjust; nothing else in this codebase did
+     * before now, which is why it wasn't stubbed until this change.
+     */
+    protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
+        throw new UnsupportedOperationException("stub");
+    }
+
     public boolean keyPressed(KeyEvent event) {
         throw new UnsupportedOperationException("stub");
     }

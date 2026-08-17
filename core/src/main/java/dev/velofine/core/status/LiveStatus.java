@@ -38,6 +38,13 @@ public final class LiveStatus {
     private static volatile String fps = "fps: --";
     private static volatile String zoom = "zoom: idle";
     private static volatile String updater = "updater: idle";
+    private static volatile FrameStats fpsStats = FrameStats.unknown();
+    /**
+     * The full technical error behind {@link #updater()} when it's a failure message - kept
+     * separate so the UI can show a friendly reason by default and put this behind an explicit
+     * "view details" action (item 12) instead of interpolating it into the primary message.
+     */
+    private static volatile String updaterDetail = "";
 
     private LiveStatus() {
     }
@@ -58,6 +65,15 @@ public final class LiveStatus {
         return fps;
     }
 
+    /** The numeric breakdown behind {@link #fps()} - see {@link FrameStats}'s class javadoc. */
+    public static void setFpsStats(FrameStats stats) {
+        fpsStats = stats;
+    }
+
+    public static FrameStats fpsStats() {
+        return fpsStats;
+    }
+
     public static void setZoom(String status) {
         zoom = status;
     }
@@ -72,5 +88,13 @@ public final class LiveStatus {
 
     public static String updater() {
         return updater;
+    }
+
+    public static void setUpdaterDetail(String detail) {
+        updaterDetail = detail;
+    }
+
+    public static String updaterDetail() {
+        return updaterDetail;
     }
 }

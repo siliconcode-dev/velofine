@@ -22,6 +22,7 @@ package dev.velofine.core.gui.page;
 import dev.velofine.core.config.GovernorMode;
 import dev.velofine.core.config.VelofineConfig;
 import dev.velofine.core.gui.Applies;
+import dev.velofine.core.gui.CategoryHeaderRow;
 import dev.velofine.core.gui.ConfigPage;
 import dev.velofine.core.gui.CycleRow;
 import dev.velofine.core.gui.IntRow;
@@ -59,95 +60,110 @@ public final class OptimusPage extends ConfigPage {
         List<OptionRow> rows = new ArrayList<>();
         VelofineConfig.GovernorSection governor = working.optimus.governor;
 
+        rows.add(new CategoryHeaderRow(cursor.x(), cursor.nextY(), cursor.width(), "Engine"));
+
         rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),
                 "Optimus engine",
-                "Master switch for all performance work: thread-pool sizing, the AI tick throttle "
-                        + "and the governor.",
+                "Turns all Optimus performance features on or off.",
                 Applies.RESTART,
                 () -> working.engines.optimus,
                 value -> working.engines.optimus = value,
-                true));
+                true)
+                .withDetail("Master switch for all performance work: thread-pool sizing, the AI tick throttle "
+                        + "and the governor."));
 
         rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),
                 "Background thread pool",
-                "Pins vanilla's background worker count to (CPU cores - 1). Vanilla already uses "
-                        + "that formula implicitly; this makes it explicit and auditable. Read once "
-                        + "when the game's Util class loads, so it cannot change mid-session.",
+                "Tunes the background thread count for your CPU.",
                 Applies.RESTART,
                 () -> working.optimus.threadPoolTuning,
                 value -> working.optimus.threadPoolTuning = value,
-                true));
+                true)
+                .withDetail("Pins vanilla's background worker count to (CPU cores - 1). Vanilla already uses "
+                        + "that formula implicitly; this makes it explicit and auditable. Read once "
+                        + "when the game's Util class loads, so it cannot change mid-session."));
 
         rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),
                 "AI goal throttle",
-                "Re-evaluates each mob's goal selector every 3 ticks instead of vanilla's 2. "
-                        + "Currently-running goals still tick every tick, so behaviour is unchanged - "
-                        + "only how often mobs reconsider.",
+                "Mobs reconsider their goals slightly less often to save CPU.",
                 Applies.LIVE,
                 () -> working.optimus.goalSelectorThrottle,
                 value -> working.optimus.goalSelectorThrottle = value,
-                true));
+                true)
+                .withDetail("Re-evaluates each mob's goal selector every 3 ticks instead of vanilla's 2. "
+                        + "Currently-running goals still tick every tick, so behaviour is unchanged - "
+                        + "only how often mobs reconsider."));
 
-        rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),
-                "Tick-time profiler",
-                "Logs min/avg/max client tick time every 100 ticks. A diagnostic for reporting "
-                        + "back on slow hardware, not a speed-up - off by default.",
-                Applies.LIVE,
-                () -> working.optimus.tickProfiler,
-                value -> working.optimus.tickProfiler = value,
-                false));
+        rows.add(new CategoryHeaderRow(cursor.x(), cursor.nextY(), cursor.width(), "Governor"));
 
         rows.add(new CycleRow<>(cursor.x(), cursor.nextY(), cursor.width(),
                 "Governor mode",
-                "OFF leaves render distance alone. ADAPTIVE lowers it when FPS drops and restores "
-                        + "it as FPS recovers, never going above your own setting. MANUAL just pins "
-                        + "one fixed distance on world join.",
+                "Automatically adjusts render distance to hold your target FPS.",
                 Applies.LIVE,
                 MODES, Enum::name,
                 () -> governor.mode,
                 value -> governor.mode = value,
-                GovernorMode.OFF));
+                GovernorMode.OFF)
+                .withDetail("OFF leaves render distance alone. ADAPTIVE lowers it when FPS drops and restores "
+                        + "it as FPS recovers, never going above your own setting. MANUAL just pins "
+                        + "one fixed distance on world join."));
 
         rows.add(new IntRow(cursor.x(), cursor.nextY(), cursor.width(),
                 "Lower below FPS",
-                "When the 5-second average frame rate falls under this, the governor drops render "
-                        + "distance by two chunks.",
+                "Render distance drops if FPS falls below this.",
                 Applies.LIVE,
                 15, 240, 5, " fps",
                 () -> governor.minFps,
                 value -> governor.minFps = value,
-                45));
+                45)
+                .withDetail("When the 5-second average frame rate falls under this, the governor drops render "
+                        + "distance by two chunks."));
 
         rows.add(new IntRow(cursor.x(), cursor.nextY(), cursor.width(),
                 "Raise above FPS",
-                "When the average climbs past this, the governor gives back one chunk at a time - "
-                        + "slower than it takes away, so a borderline machine settles instead of "
-                        + "oscillating.",
+                "Render distance recovers once FPS climbs above this.",
                 Applies.LIVE,
                 20, 300, 5, " fps",
                 () -> governor.maxFps,
                 value -> governor.maxFps = value,
-                75));
+                75)
+                .withDetail("When the average climbs past this, the governor gives back one chunk at a time - "
+                        + "slower than it takes away, so a borderline machine settles instead of "
+                        + "oscillating."));
 
         rows.add(new IntRow(cursor.x(), cursor.nextY(), cursor.width(),
                 "Minimum distance",
-                "The governor will never lower render distance below this, however bad the frame "
-                        + "rate gets.",
+                "Render distance never drops below this, no matter what.",
                 Applies.LIVE,
                 2, 16, 1, " chunks",
                 () -> governor.floorRenderDistance,
                 value -> governor.floorRenderDistance = value,
-                4));
+                4)
+                .withDetail("The governor will never lower render distance below this, however bad the frame "
+                        + "rate gets."));
 
         rows.add(new IntRow(cursor.x(), cursor.nextY(), cursor.width(),
                 "Manual distance",
-                "The fixed render distance applied on world join in MANUAL mode. Ignored in the "
-                        + "other two modes.",
+                "Fixed render distance used in Manual mode.",
                 Applies.LIVE,
                 2, 32, 1, " chunks",
                 () -> governor.manualRenderDistance,
                 value -> governor.manualRenderDistance = value,
-                8));
+                8)
+                .withDetail("The fixed render distance applied on world join in MANUAL mode. Ignored in the "
+                        + "other two modes."));
+
+        rows.add(new CategoryHeaderRow(cursor.x(), cursor.nextY(), cursor.width(), "Diagnostics"));
+
+        rows.add(CycleRow.ofBoolean(cursor.x(), cursor.nextY(), cursor.width(),
+                "Tick-time profiler",
+                "Logs tick timing for performance reports.",
+                Applies.LIVE,
+                () -> working.optimus.tickProfiler,
+                value -> working.optimus.tickProfiler = value,
+                false)
+                .withDetail("Logs min/avg/max client tick time every 100 ticks. A diagnostic for reporting "
+                        + "back on slow hardware, not a speed-up - off by default."));
 
         return rows;
     }

@@ -19,6 +19,7 @@
 
 package dev.velofine.utility.profiling;
 
+import dev.velofine.core.status.FrameStats;
 import dev.velofine.core.status.LiveStatus;
 
 import java.util.Arrays;
@@ -57,6 +58,7 @@ public final class FrameTimeProfiler {
         nextIndex = 0;
         lastFrameNanos = 0;
         LiveStatus.setFps("fps: --");
+        LiveStatus.setFpsStats(FrameStats.unknown());
     }
 
     public static void onFrame() {
@@ -69,11 +71,13 @@ public final class FrameTimeProfiler {
         lastFrameNanos = now;
 
         if (sampleCount >= 20) {
-            LiveStatus.setFps(summarize());
+            FrameStats stats = summarize();
+            LiveStatus.setFpsStats(stats);
+            LiveStatus.setFps(format(stats));
         }
     }
 
-    private static String summarize() {
+    private static FrameStats summarize() {
         long[] copy = Arrays.copyOf(samples, sampleCount);
         Arrays.sort(copy);
 
@@ -86,7 +90,16 @@ public final class FrameTimeProfiler {
         double low1Fps = p99Ms > 0 ? 1000.0 / p99Ms : 0;
         double low01Fps = p999Ms > 0 ? 1000.0 / p999Ms : 0;
 
-        return String.format(Locale.ROOT, "fps: avg %.0f  |  1%% low %.0f  |  0.1%% low %.0f  |  frame %.1fms",
-                avgFps, low1Fps, low01Fps, avgMs);
+        return new FrameStats(avgFps, low1Fps, low01Fps, avgMs);
+    }
+
+    /**
+     * v1.5 settings-UI overhaul: reads like a labeled stat block (FPS / 1% LOW / 0.1% LOW / FRAME)
+     * instead of a lowercase log line - {@link FrameStats} is the actual structured data now (this
+     * is just its default text rendering; a real HUD widget could read the record directly instead).
+     */
+    private static String format(FrameStats stats) {
+        return String.format(Locale.ROOT, "FPS %.0f   1%% LOW %.0f   0.1%% LOW %.0f   FRAME %.1fms",
+                stats.avgFps(), stats.low1Fps(), stats.low01Fps(), stats.avgMs());
     }
 }

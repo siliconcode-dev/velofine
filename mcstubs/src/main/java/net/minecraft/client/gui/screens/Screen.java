@@ -35,8 +35,13 @@ import net.minecraft.network.chat.Component;
  * <p>{@code addRenderableWidget}'s type parameter keeps all three real bounds: the <em>first</em>
  * bound determines the erasure, so narrowing it to {@code AbstractWidget} would emit a methodref
  * that does not exist at runtime.
+ *
+ * <p>{@code implements GuiEventListener}: real {@code Screen} does implement it (confirmed via
+ * javap - {@code keyPressed} is redeclared directly on {@code Screen} itself, but {@code
+ * charTyped} is not, meaning {@code Screen} relies on {@code GuiEventListener}'s own default for
+ * that one). Added for the v1.5 search overlay's typed-character capture.
  */
-public abstract class Screen {
+public abstract class Screen implements GuiEventListener {
 
     protected Component title;
     protected Minecraft minecraft;

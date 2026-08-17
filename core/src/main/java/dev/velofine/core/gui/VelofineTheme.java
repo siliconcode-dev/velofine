@@ -40,13 +40,29 @@ public final class VelofineTheme {
     public static final int ACCENT = 0xFFD01B1B;
     public static final int ACCENT_DIM = 0xFF5E0D0D;
 
+    /**
+     * Muted amber - "needs attention/restart," never the red brand accent. Red stays reserved for
+     * selection/override/primary-action (see {@code Applies.RESTART}'s badge in
+     * {@code VelofineConfigScreen.drawInfoBox}, the first call site to actually use this).
+     */
+    public static final int WARNING = 0xFFB8860B;
+    /** Muted green - "recommended for your hardware" / healthy. Not yet consumed (Phase E/F). */
+    public static final int SUCCESS = 0xFF4C8F5B;
+
     public static final int TEXT = 0xFFF2F2F2;
     public static final int TEXT_DIM = 0xFF8A8A8A;
     public static final int TEXT_DISABLED = 0xFF5A5A5A;
 
-    /** Height of a single option/tab row, chosen to match vanilla's 20px button rhythm. */
+    /** Height of a tab-rail entry, chosen to match vanilla's 20px button rhythm. */
     public static final int ROW_HEIGHT = 20;
-    public static final int ROW_SPACING = 2;
+    /**
+     * Height of a settings row. Deliberately decoupled from {@link #ROW_HEIGHT} (v1.5 UI overhaul):
+     * rows now render two lines (name+value, then an inline description/slider line), which needs
+     * more room than a tab-rail entry - growing this no longer forces the tab rail to grow with it.
+     */
+    public static final int CONTENT_ROW_HEIGHT = 34;
+    /** Visible gap between rows - deliberately more than a hairline so a dense page still breathes. */
+    public static final int ROW_SPACING = 6;
     public static final int PADDING = 6;
 
     private VelofineTheme() {

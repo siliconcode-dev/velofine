@@ -21,13 +21,14 @@ package dev.velofine.core.gui;
 
 import dev.velofine.core.config.ConfigManager;
 import dev.velofine.core.config.VelofineConfig;
-import dev.velofine.core.gui.page.GeneralPage;
 import dev.velofine.core.gui.page.LegacySupportPage;
 import dev.velofine.core.gui.page.OptimusPage;
+import dev.velofine.core.gui.page.OverviewPage;
 import dev.velofine.core.gui.page.UpdaterPage;
 import dev.velofine.core.gui.page.UtilityPage;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 
@@ -53,8 +54,20 @@ public final class VelofineConfigScreen extends Screen {
 
     private static final int HEADER_HEIGHT = 22;
     private static final int RAIL_WIDTH = 112;
-    private static final int FOOTNOTE_HEIGHT = 12;
-    private static final int INFO_HEIGHT = 40;
+    /** Reserved space below the row list for the footnote line - includes a real gap above the
+     * text itself, not just the text's own height, so a full-to-the-edge row list never reads as
+     * colliding with it. */
+    private static final int FOOTNOTE_HEIGHT = 20;
+    /**
+     * Floor for the description panel, not its size - {@link #infoHeight} is computed per-{@link
+     * #init()} from whatever vertical space the current page's content doesn't need (v1.5 UI
+     * overhaul: previously a fixed 40px regardless of content, which is why long descriptions
+     * silently truncated with "..." and short pages left the panel starved next to a wall of dead
+     * space above it).
+     */
+    private static final int MIN_INFO_HEIGHT = 46;
+    /** Description panel never eats more than this share of the box, even on a near-empty page. */
+    private static final double MAX_INFO_HEIGHT_RATIO = 0.35;
     private static final int ACTION_HEIGHT = 30;
     /** Gap kept between the panel and the window edge, so it reads as a panel, not a wallpaper. */
     private static final int MARGIN = 32;
@@ -62,12 +75,22 @@ public final class VelofineConfigScreen extends Screen {
     private static final int MIN_WIDTH = 420;
     private static final int MIN_HEIGHT = 260;
     private static final int ESCAPE_KEY = 256;
+    // Raw GLFW key codes - same convention ESCAPE_KEY above already uses (this file has never
+    // pulled in an LWJGL/GLFW dependency just for named constants; legacysupport does that, core
+    // doesn't).
+    private static final int ENTER_KEY = 257;
+    private static final int BACKSPACE_KEY = 259;
+    private static final int DOWN_KEY = 264;
+    private static final int UP_KEY = 265;
+    private static final int F_KEY = 70;
+    private static final int MOD_CONTROL = 0x0002;
 
     private final Screen parent;
     private final List<ConfigPage> pages =
-            List.of(new GeneralPage(), new LegacySupportPage(), new OptimusPage(), new UtilityPage(),
+            List.of(new OverviewPage(), new LegacySupportPage(), new OptimusPage(), new UtilityPage(),
                     new UpdaterPage());
     private final List<OptionRow> rows = new ArrayList<>();
+    private final SearchOverlay search = new SearchOverlay();
 
     private VelofineConfig working = ConfigManager.copyOfLive();
     private String appliedSnapshot = ConfigManager.snapshot(ConfigManager.get());
@@ -82,6 +105,7 @@ public final class VelofineConfigScreen extends Screen {
     private int boxHeight;
     private int listTop;
     private int listBottom;
+    private int infoHeight;
 
     private ActionButton undoButton;
     private ActionButton applyButton;
@@ -104,18 +128,43 @@ public final class VelofineConfigScreen extends Screen {
     protected void init() {
         // Fills the window minus a fixed margin, so it scales with resolution/window resize
         // instead of sitting at a small fixed size on a large screen - MIN_WIDTH/MIN_HEIGHT only
-        // kick in below that (a tiny window), never capping it on a big one.
+        // kick in below that (a tiny window), never capping it on a big one. The box itself stays
+        // window-relative (resizing the whole panel to content would be visually jarring); what's
+        // content-aware is how that fixed box is split between the row list and the description
+        // panel below it - see contentHeight/listBottom/infoHeight below.
         boxWidth = Math.max(MIN_WIDTH, width - MARGIN * 2);
         boxHeight = Math.max(MIN_HEIGHT, height - MARGIN * 2);
         boxLeft = (width - boxWidth) / 2;
         boxTop = (height - boxHeight) / 2;
 
         listTop = boxTop + HEADER_HEIGHT + VelofineTheme.PADDING;
-        listBottom = boxTop + boxHeight - ACTION_HEIGHT - INFO_HEIGHT - FOOTNOTE_HEIGHT;
+
+        int contentHeight = measureContentHeight();
+        int maxListHeight = boxTop + boxHeight - ACTION_HEIGHT - FOOTNOTE_HEIGHT - MIN_INFO_HEIGHT - listTop;
+        int listHeight = Math.min(maxListHeight, Math.max(VelofineTheme.CONTENT_ROW_HEIGHT, contentHeight));
+        listBottom = listTop + listHeight;
+
+        int infoAvailable = boxTop + boxHeight - ACTION_HEIGHT - FOOTNOTE_HEIGHT - listBottom;
+        int infoMax = (int) (boxHeight * MAX_INFO_HEIGHT_RATIO);
+        infoHeight = Math.max(MIN_INFO_HEIGHT, Math.min(infoMax, infoAvailable));
 
         buildTabs();
         buildRows();
         buildActions();
+    }
+
+    /**
+     * Dry-runs the selected page's {@code buildRows} against a throwaway cursor purely to learn how
+     * tall its content is. Safe to discard: {@code buildRows} implementations only construct and
+     * return rows, they don't mutate {@code working} or register anything - the real call in
+     * {@link #buildRows()} (with final coordinates) redoes this properly once the layout above is
+     * settled.
+     */
+    private int measureContentHeight() {
+        int listWidth = boxWidth - RAIL_WIDTH - VelofineTheme.PADDING;
+        ConfigPage.RowCursor probe = new ConfigPage.RowCursor(0, 0, listWidth);
+        pages.get(pageIndex).buildRows(working, probe, this);
+        return probe.usedHeight();
     }
 
     private void buildTabs() {
@@ -204,6 +253,41 @@ public final class VelofineConfigScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (search.isOpen()) {
+            if (event.key() == ESCAPE_KEY) {
+                search.close();
+                return true;
+            }
+            if (event.key() == BACKSPACE_KEY) {
+                search.backspace();
+                return true;
+            }
+            if (event.key() == DOWN_KEY) {
+                search.moveSelection(1);
+                return true;
+            }
+            if (event.key() == UP_KEY) {
+                search.moveSelection(-1);
+                return true;
+            }
+            if (event.key() == ENTER_KEY) {
+                SearchOverlay.Entry chosen = search.selectedEntry();
+                search.close();
+                if (chosen != null) {
+                    selectPage(chosen.pageIndex());
+                }
+                return true;
+            }
+            // Swallow everything else while search is open (e.g. so typing doesn't leak into a
+            // KeybindRow that happened to be mid-capture underneath it).
+            return true;
+        }
+
+        if (event.key() == F_KEY && (event.modifiers() & MOD_CONTROL) != 0) {
+            search.open(buildSearchIndex());
+            return true;
+        }
+
         // Key capture is handled here rather than through widget focus so it works no matter what
         // vanilla's focus traversal is doing at the time.
         KeybindRow listening = listeningRow();
@@ -220,17 +304,47 @@ public final class VelofineConfigScreen extends Screen {
     }
 
     @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (!search.isOpen() && event.codepoint() == '/' && listeningRow() == null) {
+            search.open(buildSearchIndex());
+            return true;
+        }
+        return search.charTyped(event.codepoint());
+    }
+
+    /**
+     * Item 8: dry-runs every page's {@code buildRows} against a throwaway cursor (same safe,
+     * side-effect-free pattern {@link #measureContentHeight()} already relies on) to build a flat,
+     * searchable index - category headers and plain info lines are filtered out since they aren't
+     * real settings.
+     */
+    private List<SearchOverlay.Entry> buildSearchIndex() {
+        List<SearchOverlay.Entry> entries = new ArrayList<>();
+        for (int i = 0; i < pages.size(); i++) {
+            ConfigPage page = pages.get(i);
+            ConfigPage.RowCursor probe = new ConfigPage.RowCursor(0, 0, 200);
+            for (OptionRow row : page.buildRows(working, probe, this)) {
+                if (row instanceof CategoryHeaderRow || row instanceof InfoRow) {
+                    continue;
+                }
+                entries.add(new SearchOverlay.Entry(i, page.title(), row.label(), row.description()));
+            }
+        }
+        return entries;
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (mouseY < listTop || mouseY > listBottom || scrollY == 0.0) {
             return false;
         }
-        scroll -= (int) Math.signum(scrollY) * (VelofineTheme.ROW_HEIGHT + VelofineTheme.ROW_SPACING);
+        scroll -= (int) Math.signum(scrollY) * (VelofineTheme.CONTENT_ROW_HEIGHT + VelofineTheme.ROW_SPACING);
         clampScroll();
         return true;
     }
 
     private void clampScroll() {
-        int contentHeight = rows.size() * (VelofineTheme.ROW_HEIGHT + VelofineTheme.ROW_SPACING);
+        int contentHeight = rows.size() * (VelofineTheme.CONTENT_ROW_HEIGHT + VelofineTheme.ROW_SPACING);
         int visibleHeight = listBottom - listTop;
         scroll = Math.max(0, Math.min(scroll, Math.max(0, contentHeight - visibleHeight)));
     }
@@ -258,6 +372,8 @@ public final class VelofineConfigScreen extends Screen {
 
         drawFootnote(extractor);
         drawInfoBox(extractor, hovered);
+
+        search.render(extractor, font, width, height);
     }
 
     private void drawChrome(GuiGraphicsExtractor extractor) {
@@ -290,18 +406,25 @@ public final class VelofineConfigScreen extends Screen {
         int y = listTop - scroll;
         for (OptionRow row : rows) {
             row.setY(y);
-            // A row scrolled out of the clip region must not be clickable either, so it is parked
-            // off-screen rather than merely left undrawn.
-            boolean visible = y + VelofineTheme.ROW_HEIGHT > listTop && y < listBottom;
+            // Full containment only - a row that would only partially fit at the bottom edge is
+            // skipped entirely rather than clipped mid-row. Scroll always moves in whole
+            // CONTENT_ROW_HEIGHT+ROW_SPACING steps (see mouseScrolled), so at rest every row lands
+            // exactly on a boundary; this just stops a would-be-clipped last row's second line from
+            // reading as if it were colliding with the footnote directly below the list.
+            boolean visible = y >= listTop && y + VelofineTheme.CONTENT_ROW_HEIGHT <= listBottom;
             row.visible = visible;
             row.active = visible;
             if (visible) {
                 row.extractRenderState(extractor, mouseX, mouseY, partialTick);
-                if (row.containsPoint(mouseX, mouseY) && mouseY >= listTop && mouseY < listBottom) {
+                // Category headers and plain info lines have nothing to show in the detail panel -
+                // never eligible to become the "hovered" row.
+                boolean selectable = !(row instanceof CategoryHeaderRow) && !(row instanceof InfoRow);
+                if (selectable && row.containsPoint(mouseX, mouseY)
+                        && mouseY >= listTop && mouseY < listBottom) {
                     hovered = row;
                 }
             }
-            y += VelofineTheme.ROW_HEIGHT + VelofineTheme.ROW_SPACING;
+            y += VelofineTheme.CONTENT_ROW_HEIGHT + VelofineTheme.ROW_SPACING;
         }
         extractor.disableScissor();
         return hovered;
@@ -325,11 +448,11 @@ public final class VelofineConfigScreen extends Screen {
     }
 
     private void drawInfoBox(GuiGraphicsExtractor extractor, OptionRow hovered) {
-        int infoTop = boxTop + boxHeight - ACTION_HEIGHT - INFO_HEIGHT;
+        int infoTop = boxTop + boxHeight - ACTION_HEIGHT - infoHeight;
         int infoLeft = boxLeft + VelofineTheme.PADDING;
         int infoWidth = boxWidth - VelofineTheme.PADDING * 2;
 
-        VelofineTheme.panel(extractor, infoLeft, infoTop, infoWidth, INFO_HEIGHT - 4,
+        VelofineTheme.panel(extractor, infoLeft, infoTop, infoWidth, infoHeight - 4,
                 0xFF0C0C0C, VelofineTheme.BORDER);
 
         if (hovered == null) {
@@ -338,17 +461,25 @@ public final class VelofineConfigScreen extends Screen {
             return;
         }
 
-        VelofineTheme.marker(extractor, infoLeft + 1, infoTop + 1, INFO_HEIGHT - 6);
+        VelofineTheme.marker(extractor, infoLeft + 1, infoTop + 1, infoHeight - 6);
 
         String badge = hovered.applies().badge();
-        extractor.text(font, hovered.label().toUpperCase(Locale.ROOT),
-                infoLeft + VelofineTheme.PADDING + 3, infoTop + 5, VelofineTheme.TEXT);
+        String rowLabel = hovered.label().toUpperCase(Locale.ROOT);
+        extractor.text(font, rowLabel, infoLeft + VelofineTheme.PADDING + 3, infoTop + 7, VelofineTheme.TEXT);
+        if (hovered.isRecommended()) {
+            int afterLabelX = infoLeft + VelofineTheme.PADDING + 3 + font.width(rowLabel) + 6;
+            extractor.text(font, "RECOMMENDED", afterLabelX, infoTop + 7, VelofineTheme.SUCCESS);
+        }
         extractor.text(font, badge, infoLeft + infoWidth - VelofineTheme.PADDING - font.width(badge),
-                infoTop + 5, hovered.applies() == Applies.RESTART ? VelofineTheme.ACCENT : VelofineTheme.TEXT_DIM);
+                infoTop + 7, hovered.applies() == Applies.RESTART ? VelofineTheme.WARNING : VelofineTheme.TEXT_DIM);
 
         int textWidth = infoWidth - VelofineTheme.PADDING * 2 - 3;
-        List<String> lines = TextWrap.wrap(font, hovered.description(), textWidth, 2);
-        int lineY = infoTop + 17;
+        // Grows with infoHeight instead of a hardcoded 2-line cap - a taller panel (more content on
+        // this page, more reclaimed space) can now actually show a long description instead of
+        // silently truncating it with "...".
+        int maxLines = Math.max(2, (infoHeight - 21) / font.lineHeight);
+        List<String> lines = TextWrap.wrap(font, hovered.detail(), textWidth, maxLines);
+        int lineY = infoTop + 21;
         for (String line : lines) {
             extractor.text(font, line, infoLeft + VelofineTheme.PADDING + 3, lineY, VelofineTheme.TEXT_DIM);
             lineY += font.lineHeight;

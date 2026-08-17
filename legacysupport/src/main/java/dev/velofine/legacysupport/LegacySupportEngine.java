@@ -23,6 +23,7 @@ import dev.velofine.core.config.ConfigManager;
 import dev.velofine.core.config.Tri;
 import dev.velofine.core.config.VelofineConfig;
 import dev.velofine.core.crash.CrashRecovery;
+import dev.velofine.core.gpu.CpuInfo;
 import dev.velofine.core.gpu.GpuInfo;
 import dev.velofine.core.hardware.DiskInfo;
 import dev.velofine.core.hardware.Fix;
@@ -33,6 +34,7 @@ import dev.velofine.core.hardware.MemoryInfo;
 import dev.velofine.core.log.VelofineLog;
 import dev.velofine.core.mixin.MixinBridge;
 import dev.velofine.core.shader.ShaderSourceInterceptors;
+import dev.velofine.legacysupport.gl.HardwareConfirmation;
 import dev.velofine.legacysupport.shader.ShaderPatcher;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -69,7 +71,9 @@ public final class LegacySupportEngine {
         hardwareProfile = HardwareProfiles.get();
         activeFixes = resolveFixes(hardwareProfile);
 
-        VelofineLog.info("LegacySupport", "GPU detected: " + describe(hardwareProfile.gpu()));
+        VelofineLog.info("LegacySupport", "CPU detected: " + describe(hardwareProfile.cpu()));
+        VelofineLog.info("LegacySupport", "GPU detected: " + describe(hardwareProfile.gpu())
+                + " [confidence: " + hardwareProfile.gpu().confidence() + "]");
         VelofineLog.info("LegacySupport", "RAM detected: " + describe(hardwareProfile.memory()));
         VelofineLog.info("LegacySupport", "disk type: " + describe(hardwareProfile.disk()));
 
@@ -98,8 +102,22 @@ public final class LegacySupportEngine {
                 // core owns the actual @Redirect on GlDevice.compileShader's ShaderSource.get()
                 // call (see ShaderSourceInterceptors' class javadoc for why this moved out of
                 // legacysupport in Phase 7) - this just registers our patch as one candidate.
+                //
+                // v1.5 Phase 2: gated behind HardwareConfirmation.isConfirmedMatch() first - the
+                // Masterdoc's "post-context glGetString confirmation as the actual gate before any
+                // shader swap is applied" requirement. Safe by construction: compileShader cannot
+                // run without a real GL context already current, so the confirmation check never
+                // needs its own mixin (see GlContextSignature's class javadoc).
                 ShaderSourceInterceptors.register(ShaderSourceInterceptors.PRIORITY_LEGACY_SUPPORT,
-                        (id, type, vanillaSource) -> Optional.of(ShaderPatcher.patch(vanillaSource, String.valueOf(id))));
+                        (id, type, vanillaSource) -> {
+                            if (!HardwareConfirmation.isConfirmedMatch(hardwareProfile)) {
+                                VelofineLog.warn("LegacySupport", "Post-context GL renderer does not confirm the "
+                                        + "pre-context hardware detection (possible hybrid/switchable-graphics "
+                                        + "mismatch); skipping shader patch for " + id);
+                                return Optional.empty();
+                            }
+                            return Optional.of(ShaderPatcher.patch(vanillaSource, String.valueOf(id)));
+                        });
             }
 
             VelofineLog.info("LegacySupport", "active fixes: "
@@ -155,6 +173,10 @@ public final class LegacySupportEngine {
         }
 
         return resolved;
+    }
+
+    private static String describe(CpuInfo info) {
+        return info.name() != null ? info.name() : "<unknown>";
     }
 
     private static String describe(GpuInfo info) {

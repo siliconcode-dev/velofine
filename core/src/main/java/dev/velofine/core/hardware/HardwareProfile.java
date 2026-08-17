@@ -19,16 +19,22 @@
 
 package dev.velofine.core.hardware;
 
+import dev.velofine.core.gpu.CpuInfo;
 import dev.velofine.core.gpu.GpuInfo;
 
 /**
  * A single snapshot of everything LegacySupport's fix-selection logic ({@link FixProfileRules})
- * reads: detected GPU, physical RAM, and whether the game directory's drive is rotational.
+ * reads: detected CPU, GPU, physical RAM, and whether the game directory's drive is rotational.
  * Built once at agent-attach time.
+ *
+ * <p>{@code cpu} was added in v1.5 Phase 2 - {@code GpuInfo.confidence()} needs the CPU model to
+ * distinguish reference machine A (i3-3110M + HD Graphics 4000 + a specific driver) from any other
+ * Ivy Bridge laptop sharing the same GPU and driver version. No existing {@link FixProfileRules}
+ * rule reads it directly (yet) - it flows through {@code GpuDetector} into {@code GpuInfo} instead.
  */
-public record HardwareProfile(GpuInfo gpu, MemoryInfo memory, DiskInfo disk) {
+public record HardwareProfile(CpuInfo cpu, GpuInfo gpu, MemoryInfo memory, DiskInfo disk) {
 
     public static HardwareProfile unknown() {
-        return new HardwareProfile(GpuInfo.unknown(), MemoryInfo.unknown(), DiskInfo.unknown());
+        return new HardwareProfile(CpuInfo.unknown(), GpuInfo.unknown(), MemoryInfo.unknown(), DiskInfo.unknown());
     }
 }

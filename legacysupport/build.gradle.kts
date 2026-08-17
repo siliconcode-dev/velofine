@@ -16,6 +16,9 @@ dependencies {
     // risk a duplicate/conflicting LWJGL (and its native libraries) alongside vanilla's.
     compileOnly("org.lwjgl:lwjgl:3.4.1")
     compileOnly("org.lwjgl:lwjgl-glfw:3.4.1")
+    // v1.5 Phase 2: GlContextSignature calls GL11.glGetString for the post-context confirmation
+    // gate - same compileOnly-from-Minecraft's-classpath reasoning as lwjgl/lwjgl-glfw above.
+    compileOnly("org.lwjgl:lwjgl-opengl:3.4.1")
 
     // Signature-only Minecraft stubs. Phase 5 moved these out of this module's own
     // `src/stubs/java` source set into the shared :mcstubs module - see mcstubs/build.gradle.kts
@@ -31,6 +34,7 @@ dependencies {
     // VerifyMixinsHarness's live JUnit run can resolve it.
     testRuntimeOnly("org.lwjgl:lwjgl:3.4.1")
     testRuntimeOnly("org.lwjgl:lwjgl-glfw:3.4.1")
+    testRuntimeOnly("org.lwjgl:lwjgl-opengl:3.4.1")
 }
 
 // mixins.legacysupport.json declares compatibilityLevel JAVA_16, not the higher JAVA_21 Mixin

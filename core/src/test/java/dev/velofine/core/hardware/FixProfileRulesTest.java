@@ -19,6 +19,8 @@
 
 package dev.velofine.core.hardware;
 
+import dev.velofine.core.gpu.CpuInfo;
+import dev.velofine.core.gpu.GpuConfidence;
 import dev.velofine.core.gpu.GpuInfo;
 import org.junit.jupiter.api.Test;
 
@@ -42,8 +44,8 @@ final class FixProfileRulesTest {
 
     @Test
     void intelGen7GpuActivatesGlCompatibilityAndShaderMixPatch() {
-        HardwareProfile profile = new HardwareProfile(
-                new GpuInfo("Intel(R) HD Graphics 4000", "15.33.53.5161", GpuInfo.FixProfile.INTEL_GEN7),
+        HardwareProfile profile = new HardwareProfile(CpuInfo.unknown(),
+                new GpuInfo("Intel(R) HD Graphics 4000", "15.33.53.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE),
                 MemoryInfo.unknown(), DiskInfo.unknown());
 
         assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE, Fix.SHADER_MIX_PATCH), FixProfileRules.resolve(profile));
@@ -51,8 +53,8 @@ final class FixProfileRulesTest {
 
     @Test
     void genericOldGpuActivatesOnlyGlCompatibility() {
-        HardwareProfile profile = new HardwareProfile(
-                new GpuInfo("Some Ancient Adapter", "1.0.0", GpuInfo.FixProfile.GENERIC_OLD),
+        HardwareProfile profile = new HardwareProfile(CpuInfo.unknown(),
+                new GpuInfo("Some Ancient Adapter", "1.0.0", GpuInfo.FixProfile.GENERIC_OLD, GpuConfidence.NONE),
                 MemoryInfo.unknown(), DiskInfo.unknown());
 
         assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE), FixProfileRules.resolve(profile));
@@ -60,21 +62,21 @@ final class FixProfileRulesTest {
 
     @Test
     void rotationalDiskActivatesIoStallSmoothingOnly() {
-        HardwareProfile profile = new HardwareProfile(GpuInfo.unknown(), MemoryInfo.unknown(), new DiskInfo(true));
+        HardwareProfile profile = new HardwareProfile(CpuInfo.unknown(), GpuInfo.unknown(), MemoryInfo.unknown(), new DiskInfo(true));
 
         assertEquals(Set.of(Fix.IO_STALL_SMOOTHING), FixProfileRules.resolve(profile));
     }
 
     @Test
     void lowMemoryActivatesMemorySavingDefaultsOnly() {
-        HardwareProfile profile = new HardwareProfile(GpuInfo.unknown(), new MemoryInfo(4L * 1024 * 1024 * 1024), DiskInfo.unknown());
+        HardwareProfile profile = new HardwareProfile(CpuInfo.unknown(), GpuInfo.unknown(), new MemoryInfo(4L * 1024 * 1024 * 1024), DiskInfo.unknown());
 
         assertEquals(Set.of(Fix.MEMORY_SAVING_DEFAULTS), FixProfileRules.resolve(profile));
     }
 
     @Test
     void memoryAboveTheCeilingIsNotConsideredLow() {
-        HardwareProfile profile = new HardwareProfile(GpuInfo.unknown(), new MemoryInfo(8L * 1024 * 1024 * 1024), DiskInfo.unknown());
+        HardwareProfile profile = new HardwareProfile(CpuInfo.unknown(), GpuInfo.unknown(), new MemoryInfo(8L * 1024 * 1024 * 1024), DiskInfo.unknown());
 
         assertEquals(Set.of(), FixProfileRules.resolve(profile));
     }
@@ -84,7 +86,8 @@ final class FixProfileRulesTest {
         // The i3-3110M reference laptop: Intel Gen7 + rotational HDD + 4GB RAM - matches three
         // rules at once, exactly the scenario FixProfileRules' class javadoc is written around.
         HardwareProfile profile = new HardwareProfile(
-                new GpuInfo("Intel(R) HD Graphics 4000", "15.33.53.5161", GpuInfo.FixProfile.INTEL_GEN7),
+                new CpuInfo("Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz"),
+                new GpuInfo("Intel(R) HD Graphics 4000", "15.33.53.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.EXACT_VERIFIED),
                 new MemoryInfo(4L * 1024 * 1024 * 1024),
                 new DiskInfo(true));
 

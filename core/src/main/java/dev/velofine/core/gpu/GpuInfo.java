@@ -26,8 +26,13 @@ package dev.velofine.core.gpu;
  *                      or {@code null} if detection failed/found nothing.
  * @param driverVersion raw Windows driver version string (e.g. "15.33.53.5161"), or {@code null}.
  * @param fixProfile    which LegacySupport fix profile applies to this hardware.
+ * @param confidence    v1.5: how confidently this matches one of the two personally-verified
+ *                      reference machines vs. just the broader family - see {@link GpuConfidence}
+ *                      and {@link LegacyGpuRegistry}. Independent of {@code fixProfile}: it
+ *                      refines the same detection with an extra confidence signal rather than
+ *                      replacing it, so v1's {@code fixProfile}-driven fixes are unaffected.
  */
-public record GpuInfo(String adapterName, String driverVersion, FixProfile fixProfile) {
+public record GpuInfo(String adapterName, String driverVersion, FixProfile fixProfile, GpuConfidence confidence) {
 
     /**
      * Ivy Bridge Gen7 Intel iGPUs (HD Graphics 4000/2500) — the confirmed, personally-verified
@@ -41,6 +46,6 @@ public record GpuInfo(String adapterName, String driverVersion, FixProfile fixPr
     }
 
     public static GpuInfo unknown() {
-        return new GpuInfo(null, null, FixProfile.NONE);
+        return new GpuInfo(null, null, FixProfile.NONE, GpuConfidence.NONE);
     }
 }

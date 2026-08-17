@@ -19,6 +19,8 @@
 
 package dev.velofine.core.hardware;
 
+import dev.velofine.core.gpu.CpuDetector;
+import dev.velofine.core.gpu.CpuInfo;
 import dev.velofine.core.gpu.GpuDetector;
 import dev.velofine.core.gpu.GpuInfo;
 
@@ -71,12 +73,16 @@ public final class HardwareProfiles {
     }
 
     private static HardwareProfile detect() {
-        GpuInfo gpu = GpuDetector.detect();
+        // v1.5 Phase 2: CPU is detected alongside GPU/RAM/disk so GpuDetector can compute a
+        // confidence tier (LegacyGpuRegistry needs both CPU and GPU to recognize reference
+        // machine A specifically, not just its GPU family).
+        CpuInfo cpu = CpuDetector.detect();
+        GpuInfo gpu = GpuDetector.detect(cpu);
         MemoryInfo memory = MemoryDetector.detect();
         // The disk check needs to know which drive the game directory lives on, which is only
         // known per-launch (Main publishes it from the real --gameDir arg before self-attaching).
         String gameDir = System.getProperty("velofine.gameDir");
         DiskInfo disk = gameDir != null ? DiskDetector.detect(Path.of(gameDir)) : DiskInfo.unknown();
-        return new HardwareProfile(gpu, memory, disk);
+        return new HardwareProfile(cpu, gpu, memory, disk);
     }
 }

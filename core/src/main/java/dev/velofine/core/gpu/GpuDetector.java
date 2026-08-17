@@ -60,20 +60,30 @@ public final class GpuDetector {
     private GpuDetector() {
     }
 
-    public static GpuInfo detect() {
+    public static GpuInfo detect(CpuInfo cpu) {
         try {
             List<GpuInfo> adapters = queryAdapters();
+            GpuInfo resolved = null;
             for (GpuInfo adapter : adapters) {
                 if (adapter.adapterName() != null && INTEL_GEN7_PATTERN.matcher(adapter.adapterName()).find()) {
-                    return new GpuInfo(adapter.adapterName(), adapter.driverVersion(), GpuInfo.FixProfile.INTEL_GEN7);
+                    resolved = new GpuInfo(adapter.adapterName(), adapter.driverVersion(), GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE);
+                    break;
                 }
             }
-            for (GpuInfo adapter : adapters) {
-                if (adapter.adapterName() != null && INTEL_HD_GRAPHICS_PATTERN.matcher(adapter.adapterName()).find()) {
-                    return new GpuInfo(adapter.adapterName(), adapter.driverVersion(), GpuInfo.FixProfile.GENERIC_OLD);
+            if (resolved == null) {
+                for (GpuInfo adapter : adapters) {
+                    if (adapter.adapterName() != null && INTEL_HD_GRAPHICS_PATTERN.matcher(adapter.adapterName()).find()) {
+                        resolved = new GpuInfo(adapter.adapterName(), adapter.driverVersion(), GpuInfo.FixProfile.GENERIC_OLD, GpuConfidence.NONE);
+                        break;
+                    }
                 }
             }
-            return adapters.isEmpty() ? GpuInfo.unknown() : adapters.get(0);
+            if (resolved == null) {
+                resolved = adapters.isEmpty() ? GpuInfo.unknown() : adapters.get(0);
+            }
+
+            GpuConfidence confidence = LegacyGpuRegistry.classify(resolved, cpu);
+            return new GpuInfo(resolved.adapterName(), resolved.driverVersion(), resolved.fixProfile(), confidence);
         } catch (Exception e) {
             VelofineLog.warn("core", "GPU detection failed, assuming no fix profile: " + e);
             return GpuInfo.unknown();
@@ -119,6 +129,6 @@ public final class GpuDetector {
         String name = obj.has("Name") && !obj.get("Name").isJsonNull() ? obj.get("Name").getAsString() : null;
         String driverVersion =
                 obj.has("DriverVersion") && !obj.get("DriverVersion").isJsonNull() ? obj.get("DriverVersion").getAsString() : null;
-        result.add(new GpuInfo(name, driverVersion, GpuInfo.FixProfile.NONE));
+        result.add(new GpuInfo(name, driverVersion, GpuInfo.FixProfile.NONE, GpuConfidence.NONE));
     }
 }

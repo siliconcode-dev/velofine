@@ -24,6 +24,13 @@ package dev.velofine.diagnostics.model;
  * from a {@code glGetError()} poll (see {@code gl.GlErrorChecker}) - the tool captures both since
  * old Intel drivers may not implement {@code KHR_debug} at all, and error capture must not depend
  * on optional debug-extension support.
+ *
+ * <p>{@code activeShaderContext} is the shader/variant that was active (via
+ * {@code KhrDebugCapture#pushGroup}/{@code popGroup}) when this message fired - {@code null} for
+ * messages from {@code GlErrorChecker}'s polling, which already embeds its own context string
+ * directly in {@code message} (e.g. {@code "after draw terrain [default]"}), and for messages that
+ * fired outside any shader's test window (e.g. during context creation).
  */
-public record DebugMessage(String source, String type, int id, String severity, String message) {
+public record DebugMessage(String source, String type, int id, String severity, String message,
+                            String activeShaderContext) {
 }

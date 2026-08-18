@@ -157,7 +157,8 @@ public final class CompareReportsScreen extends JPanel {
         if (!result.sameMachine()) {
             sb.append("[ WARNING ] ").append(result.machineMismatchNote()).append("\n\n");
         }
-        sb.append("REGRESSED: ").append(result.regressedCount()).append("   FIXED: ").append(result.fixedCount()).append("\n\n");
+        sb.append("REGRESSED: ").append(result.regressedCount()).append("   FIXED: ").append(result.fixedCount())
+                .append("   VISUAL REGRESSIONS: ").append(result.visualRegressionCount()).append("\n\n");
 
         for (Classification c : new Classification[] {
                 Classification.REGRESSED, Classification.FIXED, Classification.ONLY_IN_A, Classification.ONLY_IN_B, Classification.UNCHANGED}) {
@@ -169,6 +170,25 @@ public final class CompareReportsScreen extends JPanel {
             for (ShaderComparisonEntry entry : group) {
                 sb.append(String.format("  %-28s %-9s [%s]  A=%s B=%s%n",
                         entry.shaderName(), entry.stage(), entry.defineVariant(), entry.successInA(), entry.successInB()));
+            }
+            sb.append('\n');
+        }
+
+        for (dev.velofine.diagnostics.model.VisualComparisonEntry.Classification c : new dev.velofine.diagnostics.model.VisualComparisonEntry.Classification[] {
+                dev.velofine.diagnostics.model.VisualComparisonEntry.Classification.VISUAL_REGRESSION,
+                dev.velofine.diagnostics.model.VisualComparisonEntry.Classification.NOTHING_RENDERED_IN_EITHER,
+                dev.velofine.diagnostics.model.VisualComparisonEntry.Classification.ONLY_IN_A,
+                dev.velofine.diagnostics.model.VisualComparisonEntry.Classification.ONLY_IN_B}) {
+            java.util.List<dev.velofine.diagnostics.model.VisualComparisonEntry> group =
+                    result.visualEntries().stream().filter(e -> e.classification() == c).toList();
+            if (group.isEmpty()) {
+                continue;
+            }
+            sb.append("[ DRAW TEST ").append(c).append(" ] (").append(group.size()).append(")\n");
+            for (dev.velofine.diagnostics.model.VisualComparisonEntry entry : group) {
+                sb.append(String.format("  %-28s [%s]  A=%s B=%s%n",
+                        entry.shaderName(), entry.defineVariant(),
+                        java.util.Arrays.toString(entry.rgbaInA()), java.util.Arrays.toString(entry.rgbaInB())));
             }
             sb.append('\n');
         }

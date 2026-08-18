@@ -48,7 +48,7 @@ public final class LegacyGpuRegistry {
             // Requires all three - HD Graphics 4000 alone is common across many Ivy Bridge CPUs,
             // and only this exact CPU+GPU+driver combination has actually been personally verified.
             new Signature((gpu, cpu) -> containsIgnoreCase(gpu.adapterName(), "HD Graphics 4000")
-                    && REFERENCE_A_DRIVER.equals(gpu.driverVersion())
+                    && driverMatches(gpu.driverVersion(), REFERENCE_A_DRIVER)
                     && containsIgnoreCase(cpu.name(), "i3-3110M")),
             // Reference machine B: i5-3470S / HD Graphics 2500, Windows-provided driver. No fixed
             // driver-version string exists to check (Windows Update ships whatever it currently
@@ -81,5 +81,29 @@ public final class LegacyGpuRegistry {
 
     private static boolean containsIgnoreCase(String haystack, String needle) {
         return haystack != null && haystack.toLowerCase().contains(needle.toLowerCase());
+    }
+
+    /**
+     * Intel ships every driver under two version strings for the same physical build - a
+     * "package" version (e.g. {@code 15.33.53.5161}, what {@code Masterdoc_v1.5.md} S3 records)
+     * and the WMI/PnP-reported "driver" version (e.g. {@code 10.18.10.5161}, what
+     * {@code Win32_VideoController.DriverVersion} actually returns and what {@link GpuDetector}
+     * captures) - confirmed against a real tester report from reference machine A itself, and
+     * independently on Intel's own community forum. Only the trailing build segment is shared
+     * between the two schemes, so an exact full-string match against the package-version literal
+     * can never succeed against real WMI data; match on the trailing segment instead, falling back
+     * to full-string equality in case a future caller ever does supply the package-version form
+     * directly.
+     */
+    private static boolean driverMatches(String actual, String expected) {
+        if (actual == null || expected == null) {
+            return false;
+        }
+        return expected.equals(actual) || trailingSegment(actual).equals(trailingSegment(expected));
+    }
+
+    private static String trailingSegment(String driverVersion) {
+        int lastDot = driverVersion.lastIndexOf('.');
+        return lastDot >= 0 ? driverVersion.substring(lastDot + 1) : driverVersion;
     }
 }

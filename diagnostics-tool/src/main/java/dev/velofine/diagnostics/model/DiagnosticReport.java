@@ -64,7 +64,9 @@ public record DiagnosticReport(
         List<String> knownQuirkNotes,
         List<FlakinessFinding> flakinessFindings,
         RunOutcome runOutcome,
-        List<PendingShaderKey> incompleteShaders) {
+        List<PendingShaderKey> incompleteShaders,
+        boolean forceFullSuite,
+        HumanVisualCheck humanVisualCheck) {
 
     public static Builder builder() {
         return new Builder();
@@ -81,7 +83,23 @@ public record DiagnosticReport(
                 gpuAdapters, cpuInfo, osInfo, environmentInfo, boundAdapterIndex, contextCreationAttempts,
                 contextRungLabel, glContext, glCapabilities, shaderInventory, inventoryBaseline, shaders,
                 programLinks, lintFindings, shaderPrecision, debugMessages, toolWarnings, knownQuirkNotes, findings,
-                runOutcome, incompleteShaders);
+                runOutcome, incompleteShaders, forceFullSuite, humanVisualCheck);
+    }
+
+    /**
+     * Returns a copy with {@link #humanVisualCheck} attached - used by
+     * {@code ui.screens.HumanVisualCheckScreen} right before the report is actually written to disk
+     * (see that screen's javadoc for why this happens after the pipeline runs, not during it: the
+     * tester needs to have already looked at the real Velofine build in-game, which this tool cannot
+     * drive itself).
+     */
+    public DiagnosticReport withHumanVisualCheck(HumanVisualCheck check) {
+        return new DiagnosticReport(
+                toolVersion, generatedAtIso, mode, mcVersionId, mcClientJarPath, candidateShaderDir,
+                gpuAdapters, cpuInfo, osInfo, environmentInfo, boundAdapterIndex, contextCreationAttempts,
+                contextRungLabel, glContext, glCapabilities, shaderInventory, inventoryBaseline, shaders,
+                programLinks, lintFindings, shaderPrecision, debugMessages, toolWarnings, knownQuirkNotes,
+                flakinessFindings, runOutcome, incompleteShaders, forceFullSuite, check);
     }
 
     /** Mutable, named-setter construction helper - see the class javadoc for why this exists. */
@@ -112,6 +130,7 @@ public record DiagnosticReport(
         private List<String> knownQuirkNotes = new ArrayList<>();
         private RunOutcome runOutcome = RunOutcome.COMPLETED;
         private List<PendingShaderKey> incompleteShaders = new ArrayList<>();
+        private boolean forceFullSuite = false;
 
         private Builder() {
         }
@@ -246,13 +265,19 @@ public record DiagnosticReport(
             return this;
         }
 
+        /** See {@code pipeline.PipelineRequest}'s javadoc for the "force test all" contract this records. */
+        public Builder forceFullSuite(boolean v) {
+            this.forceFullSuite = v;
+            return this;
+        }
+
         public DiagnosticReport build() {
             return new DiagnosticReport(
                     toolVersion, generatedAtIso, mode, mcVersionId, mcClientJarPath, candidateShaderDir,
                     gpuAdapters, cpuInfo, osInfo, environmentInfo, boundAdapterIndex, contextCreationAttempts,
                     contextRungLabel, glContext, glCapabilities, shaderInventory, inventoryBaseline, shaders,
                     programLinks, lintFindings, shaderPrecision, debugMessages, toolWarnings, knownQuirkNotes,
-                    new ArrayList<>(), runOutcome, incompleteShaders);
+                    new ArrayList<>(), runOutcome, incompleteShaders, forceFullSuite, null);
         }
     }
 }

@@ -57,7 +57,9 @@ public final class ModeSelectionScreen extends JPanel {
     private final JButton pickCandidateButton = VelofineSwingTheme.button("Choose candidate folder", ButtonKind.SECONDARY);
     private final JSpinner repeatCountSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 20, 1));
     private final JCheckBox contextRungSweepCheckbox =
-            new JCheckBox("Test every context rung (Core/Compat/legacy - slower, one report per rung)");
+            new JCheckBox("Test every OpenGL 2.0-4.6 Core/Compat context (slower, one report per rung)");
+    private final JCheckBox forceFullSuiteCheckbox =
+            new JCheckBox("Force full test suite (ignore hardware-match tier, always run everything)");
     private final JButton runButton = VelofineSwingTheme.button("Run diagnostic", ButtonKind.PRIMARY);
 
     public ModeSelectionScreen(DiagnosticApp app) {
@@ -103,6 +105,13 @@ public final class ModeSelectionScreen extends JPanel {
         contextRungSweepCheckbox.setFont(VelofineSwingTheme.BODY);
         contextRungSweepCheckbox.setFocusPainted(false);
         body.add(contextRungSweepCheckbox);
+        body.add(Box.createVerticalStrut(10));
+
+        forceFullSuiteCheckbox.setBackground(VelofineSwingTheme.BLACK);
+        forceFullSuiteCheckbox.setForeground(VelofineSwingTheme.WHITE);
+        forceFullSuiteCheckbox.setFont(VelofineSwingTheme.BODY);
+        forceFullSuiteCheckbox.setFocusPainted(false);
+        body.add(forceFullSuiteCheckbox);
         body.add(Box.createVerticalStrut(14));
 
         pickCandidateButton.addActionListener(e -> chooseCandidateDir());
@@ -129,6 +138,7 @@ public final class ModeSelectionScreen extends JPanel {
             app.setMode(candidateOption.isSelected() ? Mode.CANDIDATE : Mode.BASELINE);
             app.setRepeatCount((Integer) repeatCountSpinner.getValue());
             app.setContextRungSweep(contextRungSweepCheckbox.isSelected());
+            app.setForceFullSuite(forceFullSuiteCheckbox.isSelected());
             app.startRun();
         });
 

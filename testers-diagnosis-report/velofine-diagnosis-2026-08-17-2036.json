@@ -1,0 +1,5788 @@
+{
+  "toolVersion": "0.1.0",
+  "generatedAtIso": "2026-08-17T20:37:02.1459879",
+  "mode": "BASELINE",
+  "mcVersionId": "26.2",
+  "mcClientJarPath": "C:\\Users\\EYANAT\\AppData\\Roaming\\.tlauncher\\legacy\\Minecraft\\game\\versions\\26.2\\26.2.jar",
+  "gpuAdapters": [
+    {
+      "adapterName": "Intel(R) HD Graphics 4000",
+      "driverVersion": "10.18.10.5161",
+      "pnpVendorId": "0x8086",
+      "pnpDeviceId": "0x0166",
+      "adapterRamBytes": 2127439872
+    }
+  ],
+  "cpuInfo": {
+    "name": "Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz",
+    "physicalCores": 2,
+    "logicalProcessors": 4
+  },
+  "osInfo": {
+    "caption": "Microsoft Windows 10 Pro",
+    "version": "10.0.19045",
+    "buildNumber": "19045",
+    "architecture": "64-bit"
+  },
+  "environmentInfo": {
+    "jvmVersion": "25.0.4",
+    "jvmVendor": "Eclipse Adoptium",
+    "lwjglVersion": "3.4.1-snapshot",
+    "osArch": "amd64",
+    "availableProcessors": 4,
+    "maxHeapBytes": 1048576000
+  },
+  "boundAdapterIndex": 0,
+  "contextCreationAttempts": [
+    {
+      "hints": "Driver default (no version hints)",
+      "succeeded": true
+    }
+  ],
+  "contextRungLabel": "Driver default (no version hints)",
+  "glContext": {
+    "vendor": "Intel",
+    "renderer": "Intel(R) HD Graphics 4000",
+    "glVersion": "4.0.0 - Build 10.18.10.5161",
+    "glslVersion": "4.00 - Build 10.18.10.5161",
+    "extensions": [
+      "GL_EXT_blend_minmax",
+      "GL_EXT_blend_subtract",
+      "GL_EXT_blend_color",
+      "GL_EXT_abgr",
+      "GL_EXT_texture3D",
+      "GL_EXT_clip_volume_hint",
+      "GL_EXT_compiled_vertex_array",
+      "GL_SGIS_texture_edge_clamp",
+      "GL_SGIS_generate_mipmap",
+      "GL_EXT_draw_range_elements",
+      "GL_SGIS_texture_lod",
+      "GL_EXT_rescale_normal",
+      "GL_EXT_packed_pixels",
+      "GL_EXT_texture_edge_clamp",
+      "GL_EXT_separate_specular_color",
+      "GL_ARB_multitexture",
+      "GL_ARB_map_buffer_alignment",
+      "GL_ARB_conservative_depth",
+      "GL_EXT_texture_env_combine",
+      "GL_EXT_bgra",
+      "GL_EXT_blend_func_separate",
+      "GL_EXT_secondary_color",
+      "GL_EXT_fog_coord",
+      "GL_EXT_texture_env_add",
+      "GL_ARB_texture_cube_map",
+      "GL_ARB_transpose_matrix",
+      "GL_ARB_internalformat_query",
+      "GL_ARB_internalformat_query2",
+      "GL_ARB_texture_env_add",
+      "GL_IBM_texture_mirrored_repeat",
+      "GL_EXT_multi_draw_arrays",
+      "GL_SUN_multi_draw_arrays",
+      "GL_NV_blend_square",
+      "GL_ARB_texture_compression",
+      "GL_3DFX_texture_compression_FXT1",
+      "GL_EXT_texture_filter_anisotropic",
+      "GL_ARB_texture_border_clamp",
+      "GL_ARB_point_parameters",
+      "GL_ARB_texture_env_combine",
+      "GL_ARB_texture_env_dot3",
+      "GL_ARB_texture_env_crossbar",
+      "GL_EXT_texture_compression_s3tc",
+      "GL_ARB_shadow",
+      "GL_ARB_window_pos",
+      "GL_EXT_shadow_funcs",
+      "GL_EXT_stencil_wrap",
+      "GL_ARB_vertex_program",
+      "GL_EXT_texture_rectangle",
+      "GL_ARB_fragment_program",
+      "GL_EXT_stencil_two_side",
+      "GL_ATI_separate_stencil",
+      "GL_ARB_vertex_buffer_object",
+      "GL_EXT_texture_lod_bias",
+      "GL_ARB_occlusion_query",
+      "GL_ARB_fragment_shader",
+      "GL_ARB_shader_objects",
+      "GL_ARB_shading_language_100",
+      "GL_ARB_texture_non_power_of_two",
+      "GL_ARB_vertex_shader",
+      "GL_NV_texgen_reflection",
+      "GL_ARB_point_sprite",
+      "GL_ARB_fragment_program_shadow",
+      "GL_EXT_blend_equation_separate",
+      "GL_ARB_depth_texture",
+      "GL_ARB_texture_rectangle",
+      "GL_ARB_draw_buffers",
+      "GL_ARB_color_buffer_float",
+      "GL_ARB_half_float_pixel",
+      "GL_ARB_texture_float",
+      "GL_ARB_pixel_buffer_object",
+      "GL_EXT_framebuffer_object",
+      "GL_ARB_draw_instanced",
+      "GL_ARB_half_float_vertex",
+      "GL_ARB_occlusion_query2",
+      "GL_EXT_draw_buffers2",
+      "GL_WIN_swap_hint",
+      "GL_EXT_texture_sRGB",
+      "GL_ARB_multisample",
+      "GL_EXT_packed_float",
+      "GL_EXT_texture_shared_exponent",
+      "GL_ARB_texture_rg",
+      "GL_ARB_texture_compression_rgtc",
+      "GL_NV_conditional_render",
+      "GL_ARB_texture_swizzle",
+      "GL_EXT_texture_swizzle",
+      "GL_ARB_texture_gather",
+      "GL_ARB_sync",
+      "GL_ARB_framebuffer_sRGB",
+      "GL_EXT_packed_depth_stencil",
+      "GL_ARB_depth_buffer_float",
+      "GL_EXT_transform_feedback",
+      "GL_ARB_transform_feedback2",
+      "GL_ARB_draw_indirect",
+      "GL_EXT_framebuffer_blit",
+      "GL_EXT_framebuffer_multisample",
+      "GL_ARB_framebuffer_object",
+      "GL_ARB_framebuffer_no_attachments",
+      "GL_EXT_texture_array",
+      "GL_EXT_texture_integer",
+      "GL_ARB_map_buffer_range",
+      "GL_ARB_texture_buffer_range",
+      "GL_EXT_texture_buffer",
+      "GL_EXT_texture_snorm",
+      "GL_ARB_blend_func_extended",
+      "GL_INTEL_performance_queries",
+      "GL_INTEL_performance_query",
+      "GL_ARB_copy_buffer",
+      "GL_ARB_sampler_objects",
+      "GL_NV_primitive_restart",
+      "GL_ARB_seamless_cube_map",
+      "GL_ARB_uniform_buffer_object",
+      "GL_ARB_depth_clamp",
+      "GL_ARB_vertex_array_bgra",
+      "GL_ARB_shader_bit_encoding",
+      "GL_ARB_draw_buffers_blend",
+      "GL_ARB_geometry_shader4",
+      "GL_EXT_geometry_shader4",
+      "GL_ARB_texture_query_lod",
+      "GL_ARB_explicit_attrib_location",
+      "GL_ARB_draw_elements_base_vertex",
+      "GL_ARB_instanced_arrays",
+      "GL_ARB_base_instance",
+      "GL_ARB_fragment_coord_conventions",
+      "GL_EXT_gpu_program_parameters",
+      "GL_ARB_texture_buffer_object_rgb32",
+      "GL_ARB_compatibility",
+      "GL_ARB_texture_rgb10_a2ui",
+      "GL_ARB_texture_multisample",
+      "GL_ARB_vertex_type_2_10_10_10_rev",
+      "GL_ARB_timer_query",
+      "GL_ARB_tessellation_shader",
+      "GL_ARB_vertex_array_object",
+      "GL_ARB_provoking_vertex",
+      "GL_ARB_sample_shading",
+      "GL_ARB_texture_cube_map_array",
+      "GL_EXT_gpu_shader4",
+      "GL_ARB_gpu_shader5",
+      "GL_ARB_gpu_shader_fp64",
+      "GL_ARB_shader_subroutine",
+      "GL_ARB_transform_feedback3",
+      "GL_ARB_get_program_binary",
+      "GL_ARB_separate_shader_objects",
+      "GL_ARB_shader_precision",
+      "GL_ARB_vertex_attrib_64bit",
+      "GL_ARB_viewport_array",
+      "GL_ARB_transform_feedback_instanced",
+      "GL_ARB_compressed_texture_pixel_storage",
+      "GL_ARB_shader_atomic_counters",
+      "GL_ARB_shading_language_packing",
+      "GL_ARB_shading_language_420pack",
+      "GL_ARB_texture_storage",
+      "GL_EXT_texture_storage",
+      "GL_ARB_vertex_attrib_binding",
+      "GL_ARB_multi_draw_indirect",
+      "GL_ARB_program_interface_query",
+      "GL_ARB_texture_storage_multisample",
+      "GL_ARB_buffer_storage",
+      "GL_ARB_debug_output",
+      "GL_KHR_debug",
+      "GL_ARB_arrays_of_arrays",
+      "GL_INTEL_map_texture",
+      "GL_ARB_texture_compression_bptc",
+      "GL_ARB_ES2_compatibility",
+      "GL_ARB_ES3_compatibility",
+      "GL_ARB_robustness",
+      "GL_EXT_texture_sRGB_decode",
+      "GL_KHR_blend_equation_advanced",
+      "GL_EXT_shader_integer_mix",
+      "GL_ARB_stencil_texturing",
+      "WGL_EXT_depth_float",
+      "WGL_ARB_buffer_region",
+      "WGL_ARB_extensions_string",
+      "WGL_ARB_make_current_read",
+      "WGL_ARB_pixel_format",
+      "WGL_ARB_pbuffer",
+      "WGL_EXT_extensions_string",
+      "WGL_EXT_swap_control",
+      "WGL_EXT_swap_control_tear",
+      "WGL_ARB_multisample",
+      "WGL_ARB_pixel_format_float",
+      "WGL_ARB_framebuffer_sRGB",
+      "WGL_ARB_create_context",
+      "WGL_ARB_create_context_profile",
+      "WGL_EXT_pixel_format_packed_float",
+      "WGL_EXT_create_context_es_profile",
+      "WGL_EXT_create_context_es2_profile",
+      "WGL_NV_DX_interop",
+      "WGL_ARB_create_context_robustness"
+    ],
+    "khrDebugSupported": true
+  },
+  "glCapabilities": {
+    "maxUniformBufferBindings": 70,
+    "maxUniformBlockSize": 65536,
+    "maxVertexAttribs": 16,
+    "maxCombinedTextureImageUnits": 96,
+    "maxArrayTextureLayers": 2048,
+    "maxDrawBuffers": 8,
+    "supportsUniformBufferObject": true,
+    "supportsVertexArrayObject": true,
+    "supportsMultiDrawIndirect": true
+  },
+  "shaderInventory": [
+    {
+      "name": "rendertype_end_portal",
+      "flagged": true,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "terrain",
+      "flagged": true,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "animate_sprite",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": false
+    },
+    {
+      "name": "animate_sprite_blit",
+      "flagged": false,
+      "hasVertex": false,
+      "hasFragment": true
+    },
+    {
+      "name": "animate_sprite_interpolate",
+      "flagged": false,
+      "hasVertex": false,
+      "hasFragment": true
+    },
+    {
+      "name": "blit_screen",
+      "flagged": false,
+      "hasVertex": false,
+      "hasFragment": true
+    },
+    {
+      "name": "block",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "debug_point",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": false
+    },
+    {
+      "name": "entity",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "glint",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "gui",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "item",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "lightmap",
+      "flagged": false,
+      "hasVertex": false,
+      "hasFragment": true
+    },
+    {
+      "name": "panorama",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "particle",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "position",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "position_color",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "position_tex",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "position_tex_color",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_beacon_beam",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_clouds",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_crumbling",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_entity_shadow",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_leash",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_lightning",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_lines",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_outline",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_water_mask",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "rendertype_world_border",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "screenquad",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": false
+    },
+    {
+      "name": "sky",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "stars",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "text",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    },
+    {
+      "name": "text_background",
+      "flagged": false,
+      "hasVertex": true,
+      "hasFragment": true
+    }
+  ],
+  "inventoryBaseline": {
+    "baselineAvailable": true,
+    "unexpectedShaders": [],
+    "missingExpectedShaders": []
+  },
+  "shaders": [
+    {
+      "shaderName": "rendertype_end_portal",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_end_portal.vertex.default.glsl",
+      "sourceSha256": "5d70260044a8659a810c8533a6148c1dbd1af431af4b854cdf4fca2284c25274"
+    },
+    {
+      "shaderName": "rendertype_end_portal",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:matrix.glsl",
+        "minecraft:globals.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_end_portal.fragment.default.glsl",
+      "sourceSha256": "1eaaafb00248c98238b21b659b7002d66c5322952cdce7a4c698e02137d789ec"
+    },
+    {
+      "shaderName": "terrain",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:globals.glsl",
+        "minecraft:chunksection.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:sample_lightmap.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/terrain.vertex.default.glsl",
+      "sourceSha256": "4e9793201e8e9f90c295911376a93bbe98d408076640add0c8e29db6a6ecf427"
+    },
+    {
+      "shaderName": "terrain",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:globals.glsl",
+        "minecraft:chunksection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/terrain.fragment.default.glsl",
+      "sourceSha256": "138d680a2dde83143b66c316448b1c6111997cc31574f6df18a1fc3aa1b87e5e"
+    },
+    {
+      "shaderName": "terrain",
+      "stage": "vertex",
+      "defineVariant": "ALPHA_CUTOUT",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:globals.glsl",
+        "minecraft:chunksection.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:sample_lightmap.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/terrain.vertex.ALPHA_CUTOUT.glsl",
+      "sourceSha256": "a42fe076025d9fcb2963fc187f57a6463457301a20010978ee4ba90be7923921"
+    },
+    {
+      "shaderName": "terrain",
+      "stage": "fragment",
+      "defineVariant": "ALPHA_CUTOUT",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:globals.glsl",
+        "minecraft:chunksection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/terrain.fragment.ALPHA_CUTOUT.glsl",
+      "sourceSha256": "7cf90a8d5d95d4330e877fa277960634ba3630e053b080840153179cae46c2ee"
+    },
+    {
+      "shaderName": "animate_sprite",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:animation_sprite.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/animate_sprite.vertex.default.glsl",
+      "sourceSha256": "f69cd4c3dc079a576b61966363003be4441a323a42da9ee0ee6aed7b3e6b8420"
+    },
+    {
+      "shaderName": "animate_sprite_blit",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:animation_sprite.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/animate_sprite_blit.fragment.default.glsl",
+      "sourceSha256": "900d2d36676590be017d576f00b30d5655c83ee3e10f7f31e0bd6033cb1d7dbf"
+    },
+    {
+      "shaderName": "animate_sprite_interpolate",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:animation_sprite.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/animate_sprite_interpolate.fragment.default.glsl",
+      "sourceSha256": "fb6e8c666223d7ebe73966dc12ba686c8e66b825fa1a0de188f45242a258247d"
+    },
+    {
+      "shaderName": "blit_screen",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/blit_screen.fragment.default.glsl",
+      "sourceSha256": "2f6960646bf25745f9adb61d222973fdb53c7102a1f9cb844775d3d62e467b28"
+    },
+    {
+      "shaderName": "block",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:sample_lightmap.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/block.vertex.default.glsl",
+      "sourceSha256": "02ce37c2388614a81688b0baeea53a242ea4629f9dbd99d0f07707bf844ab23c"
+    },
+    {
+      "shaderName": "block",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/block.fragment.default.glsl",
+      "sourceSha256": "d6a1e6923505e3374cbef80b7e62e6b386dd0dd7c6c39a508e30ce53aa71a9ae"
+    },
+    {
+      "shaderName": "debug_point",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:globals.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/debug_point.vertex.default.glsl",
+      "sourceSha256": "777a0c82300d43896baf4a4382d403dee153abeb84f9d99f57dd66b6d8282c93"
+    },
+    {
+      "shaderName": "entity",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:light.glsl",
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:sample_lightmap.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/entity.vertex.default.glsl",
+      "sourceSha256": "3a54e53e753ec034caefbf1a83d644d0a557242be8fb0b88e79bbefe36591cf2"
+    },
+    {
+      "shaderName": "entity",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/entity.fragment.default.glsl",
+      "sourceSha256": "06f3040d2994d748687b8daaf5915ca2ed3218b52e77b9475be8d89de102d50c"
+    },
+    {
+      "shaderName": "glint",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/glint.vertex.default.glsl",
+      "sourceSha256": "1c1976425721de97df87559d082cc6ed07f6d439b59a714a2269bb26cd1d5102"
+    },
+    {
+      "shaderName": "glint",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:globals.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/glint.fragment.default.glsl",
+      "sourceSha256": "62d0ce685ee6c228f15d77dc78e24078167517f36f85ab65f621ccb5000f20c7"
+    },
+    {
+      "shaderName": "gui",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/gui.vertex.default.glsl",
+      "sourceSha256": "45616593210feb9445b1ff78db0938e73504ca84ab9c3ad27884ff612a105c6d"
+    },
+    {
+      "shaderName": "gui",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/gui.fragment.default.glsl",
+      "sourceSha256": "1980e0acdf1a4e0961603ad68cd51a95c97863ec73b5a000894e7a600baeda74"
+    },
+    {
+      "shaderName": "item",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:light.glsl",
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:sample_lightmap.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/item.vertex.default.glsl",
+      "sourceSha256": "d6d14dff4a9454a3dabafc6933cd96eb77ca0544a634283b092fe9d0d9279e9d"
+    },
+    {
+      "shaderName": "item",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/item.fragment.default.glsl",
+      "sourceSha256": "ff8b460c77dd34c3aa32a8a8a19bb61f213839c0e52695e0e215a6bb8eb5ce9c"
+    },
+    {
+      "shaderName": "lightmap",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/lightmap.fragment.default.glsl",
+      "sourceSha256": "182128e6aa43ec43b11148d3f3fefe18a93955b7524e4e7b9649003ef017a794"
+    },
+    {
+      "shaderName": "panorama",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/panorama.vertex.default.glsl",
+      "sourceSha256": "e910479b3b4b910100c15bf2d1fadac151594e5b7e55cee7c5dc471935034faf"
+    },
+    {
+      "shaderName": "panorama",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/panorama.fragment.default.glsl",
+      "sourceSha256": "3a853fe20bfe46ce741c351ecfc56126fcba16815970b983194ae8e5779e350a"
+    },
+    {
+      "shaderName": "particle",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:sample_lightmap.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/particle.vertex.default.glsl",
+      "sourceSha256": "0d56ee38175cf021f569c7c688538610991bf8c03fc368b40b6677ab98b8c7ba"
+    },
+    {
+      "shaderName": "particle",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/particle.fragment.default.glsl",
+      "sourceSha256": "40fabd1500246abf972921c572d3153d2171ed7b77103203043634e3c91f71c2"
+    },
+    {
+      "shaderName": "position",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position.vertex.default.glsl",
+      "sourceSha256": "6bed45a6f2886770336e70a941852bef874b33b90b22eee2601ffa29f2c5b101"
+    },
+    {
+      "shaderName": "position",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position.fragment.default.glsl",
+      "sourceSha256": "8a6c7e4d68eac91957d40c5f207b4301839e00267e35977a0c6697260aa27124"
+    },
+    {
+      "shaderName": "position_color",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_color.vertex.default.glsl",
+      "sourceSha256": "001cdae96fcbb37ec9668d25bb6678dc7c5385086e67bf7b3fd5078522e03675"
+    },
+    {
+      "shaderName": "position_color",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_color.fragment.default.glsl",
+      "sourceSha256": "81937586ed424ed271ed9f94bf549aaac373680fc4713dd50b082c844facdab2"
+    },
+    {
+      "shaderName": "position_tex",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_tex.vertex.default.glsl",
+      "sourceSha256": "ee72cacb286a6c81ed6342e433f91cb0767be9e0490fec4ed4d2b3efffa5f388"
+    },
+    {
+      "shaderName": "position_tex",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_tex.fragment.default.glsl",
+      "sourceSha256": "b0d90bde519a0ba2841eade32af352e57255a629d338e058cad52f3455561cb2"
+    },
+    {
+      "shaderName": "position_tex_color",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_tex_color.vertex.default.glsl",
+      "sourceSha256": "6c2a346ad6aebfeeadd8a69af14c43b0136100d4d19a0cf0920422b5991967b7"
+    },
+    {
+      "shaderName": "position_tex_color",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_tex_color.fragment.default.glsl",
+      "sourceSha256": "c7cf4d9168dda6c348ffe9d43aac2e31b0f7dacce5e52b17915c8d0475f88948"
+    },
+    {
+      "shaderName": "rendertype_beacon_beam",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_beacon_beam.vertex.default.glsl",
+      "sourceSha256": "f42268f02e6e95737b43a6ed67c5515420fbd25ff81ed132fd77a679bf442850"
+    },
+    {
+      "shaderName": "rendertype_beacon_beam",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_beacon_beam.fragment.default.glsl",
+      "sourceSha256": "96f455a083a7caa05bde0fc5f9a2877fd68198dd7866ae956f06592a13ef62fa"
+    },
+    {
+      "shaderName": "rendertype_clouds",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_clouds.vertex.default.glsl",
+      "sourceSha256": "60e5dbb746e9ca66c87af0323b48f5cb4fc9015be528513a657245511a7eb1bc"
+    },
+    {
+      "shaderName": "rendertype_clouds",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_clouds.fragment.default.glsl",
+      "sourceSha256": "aeb5f8fe91820b0889820929e4019623159a3fe9ed2ea270a0b0e6479da56965"
+    },
+    {
+      "shaderName": "rendertype_crumbling",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_crumbling.vertex.default.glsl",
+      "sourceSha256": "40cf595082177b225c0f2842c3ac84a51f78095ffbd4591b9b1a28ab708afc85"
+    },
+    {
+      "shaderName": "rendertype_crumbling",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_crumbling.fragment.default.glsl",
+      "sourceSha256": "e02499f592bfe0312d4eb261ac2bdb0929f0667cfe5ab7be47479c6daffab858"
+    },
+    {
+      "shaderName": "rendertype_entity_shadow",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_entity_shadow.vertex.default.glsl",
+      "sourceSha256": "5d6eb6a74236696c6b5aa595e0eeac563d8a29d1b0d269f5240474fbee5ee4a2"
+    },
+    {
+      "shaderName": "rendertype_entity_shadow",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_entity_shadow.fragment.default.glsl",
+      "sourceSha256": "cfbbe277cee46a624b86b8bf44c0b8b8e96accc1614f143fd4931fbfcdf8f17d"
+    },
+    {
+      "shaderName": "rendertype_leash",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl",
+        "minecraft:sample_lightmap.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_leash.vertex.default.glsl",
+      "sourceSha256": "977488e878591b5219024d2833fb49b583b666e07083aed66ccd53e369aa2dd4"
+    },
+    {
+      "shaderName": "rendertype_leash",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_leash.fragment.default.glsl",
+      "sourceSha256": "2ed0b7b8c2fe9d2ad761263ff5a15d3f367f7a79318d1219902b2eb923fd737e"
+    },
+    {
+      "shaderName": "rendertype_lightning",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_lightning.vertex.default.glsl",
+      "sourceSha256": "b4f65c08a2e2031594b62896cb8cf6fe27c7d0246a6b98bb17855c25d6f09164"
+    },
+    {
+      "shaderName": "rendertype_lightning",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_lightning.fragment.default.glsl",
+      "sourceSha256": "eff4c912d2c5edd88723dd2b267153a4660e3639871b4cdebb7bcf9d783136ee"
+    },
+    {
+      "shaderName": "rendertype_lines",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:globals.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_lines.vertex.default.glsl",
+      "sourceSha256": "df0ba2bb6775e4700886414b612fb1ad29ad6f3e7ebd308e637ae831d9d54cd2"
+    },
+    {
+      "shaderName": "rendertype_lines",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_lines.fragment.default.glsl",
+      "sourceSha256": "87022113cb7d07dd12ac3b056006b1ddd9f99fc9469418f64b013fa6fcb085e8"
+    },
+    {
+      "shaderName": "rendertype_outline",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_outline.vertex.default.glsl",
+      "sourceSha256": "f42268f02e6e95737b43a6ed67c5515420fbd25ff81ed132fd77a679bf442850"
+    },
+    {
+      "shaderName": "rendertype_outline",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_outline.fragment.default.glsl",
+      "sourceSha256": "962fc088cae7ad36979a7eeaff98a90dfb0d9f88378fc20d24184992fcda274c"
+    },
+    {
+      "shaderName": "rendertype_water_mask",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_water_mask.vertex.default.glsl",
+      "sourceSha256": "37df7c1d7ac0253db315274f1f7fe5e574c4b9d2503b938d09baa13baacb607b"
+    },
+    {
+      "shaderName": "rendertype_water_mask",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_water_mask.fragment.default.glsl",
+      "sourceSha256": "7c728d7a001bede481046886594a39d20cdf0c142dbf7248b872795d706b6b1b"
+    },
+    {
+      "shaderName": "rendertype_world_border",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_world_border.vertex.default.glsl",
+      "sourceSha256": "3f5dc7d61a10edf50ae709f8635af8db676635d3a42aa290ff6162baf7238f72"
+    },
+    {
+      "shaderName": "rendertype_world_border",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_world_border.fragment.default.glsl",
+      "sourceSha256": "b0d90bde519a0ba2841eade32af352e57255a629d338e058cad52f3455561cb2"
+    },
+    {
+      "shaderName": "screenquad",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/screenquad.vertex.default.glsl",
+      "sourceSha256": "c4a7088b7fb8fe75793f9499597426ee32b989c3e972f221fc9e9c8a6cc0a55e"
+    },
+    {
+      "shaderName": "sky",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/sky.vertex.default.glsl",
+      "sourceSha256": "6bed45a6f2886770336e70a941852bef874b33b90b22eee2601ffa29f2c5b101"
+    },
+    {
+      "shaderName": "sky",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/sky.fragment.default.glsl",
+      "sourceSha256": "f12f01b5323317491c4dccc1befce4a1d0831110c1b3bdefb98a7a169d503df2"
+    },
+    {
+      "shaderName": "stars",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/stars.vertex.default.glsl",
+      "sourceSha256": "37df7c1d7ac0253db315274f1f7fe5e574c4b9d2503b938d09baa13baacb607b"
+    },
+    {
+      "shaderName": "stars",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/stars.fragment.default.glsl",
+      "sourceSha256": "7c728d7a001bede481046886594a39d20cdf0c142dbf7248b872795d706b6b1b"
+    },
+    {
+      "shaderName": "text",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:sample_lightmap.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/text.vertex.default.glsl",
+      "sourceSha256": "49a55e1dd6794902ce20ee8a02ad55332c88d2f9da3d515ba4113cb755b3b72a"
+    },
+    {
+      "shaderName": "text",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/text.fragment.default.glsl",
+      "sourceSha256": "7657a1c48035cd86549ba71ddde5edd8a4ad2a0378e2acb7262442b1342c8145"
+    },
+    {
+      "shaderName": "text_background",
+      "stage": "vertex",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:sample_lightmap.glsl",
+        "minecraft:dynamictransforms.glsl",
+        "minecraft:projection.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/text_background.vertex.default.glsl",
+      "sourceSha256": "a93a7b92e90b8f265fcbb4e52bc8fa64e1a0ca95b13bbe17bbd6dc89bbebe71a"
+    },
+    {
+      "shaderName": "text_background",
+      "stage": "fragment",
+      "defineVariant": "default",
+      "sourceOrigin": "baseline-jar",
+      "missingFromJar": false,
+      "importChain": [
+        "minecraft:fog.glsl",
+        "minecraft:dynamictransforms.glsl"
+      ],
+      "importCycleDetected": false,
+      "compile": {
+        "success": true,
+        "infoLog": "",
+        "infoLogLength": 1
+      },
+      "resolvedSourcePath": "velofine-diagnosis-2026-08-17-2036-shaders/text_background.fragment.default.glsl",
+      "sourceSha256": "9a8eb1a6627a19c9d31dcfe8019148462a2bc07f7dcac976b1d289b14419b637"
+    }
+  ],
+  "programLinks": [
+    {
+      "shaderName": "rendertype_end_portal",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "CameraBlockPos",
+            "location": -1,
+            "glType": 35668,
+            "glTypeName": "ivec3"
+          },
+          {
+            "name": "CameraOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "ScreenSize",
+            "location": -1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          },
+          {
+            "name": "GlintAlpha",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "GameTime",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "MenuBlurRadius",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "UseRgss",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "Sampler0",
+            "location": 12,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler1",
+            "location": 13,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Globals",
+            "blockIndex": 2,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 3,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_end_portal.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogColor": 0,
+            "FogEnvironmentalStart": 16,
+            "FogCloudsEnd": 36,
+            "FogSkyEnd": 32,
+            "FogRenderDistanceEnd": 28,
+            "FogRenderDistanceStart": 24,
+            "FogEnvironmentalEnd": 20
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        },
+        {
+          "blockName": "Globals",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "CameraBlockPos": 0,
+            "CameraOffset": 16,
+            "GlintAlpha": 40,
+            "GameTime": 44,
+            "MenuBlurRadius": 48,
+            "ScreenSize": 32,
+            "UseRgss": 52
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "terrain",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 2,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV0",
+            "location": 3,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ChunkVisibility",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "TextureSize",
+            "location": -1,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "ChunkPosition",
+            "location": -1,
+            "glType": 35668,
+            "glTypeName": "ivec3"
+          },
+          {
+            "name": "CameraBlockPos",
+            "location": -1,
+            "glType": 35668,
+            "glTypeName": "ivec3"
+          },
+          {
+            "name": "CameraOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "ScreenSize",
+            "location": -1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          },
+          {
+            "name": "GlintAlpha",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "GameTime",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "MenuBlurRadius",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "UseRgss",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler2",
+            "location": 12,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler0",
+            "location": 13,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "ChunkSection",
+            "blockIndex": 0,
+            "dataSizeBytes": 96
+          },
+          {
+            "name": "Globals",
+            "blockIndex": 1,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "Projection",
+            "blockIndex": 2,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 3,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/terrain.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogColor": 0,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36,
+            "FogRenderDistanceStart": 24,
+            "FogEnvironmentalStart": 16,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceEnd": 28
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        },
+        {
+          "blockName": "Globals",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "MenuBlurRadius": 48,
+            "UseRgss": 52,
+            "GameTime": 44,
+            "ScreenSize": 32,
+            "GlintAlpha": 40,
+            "CameraBlockPos": 0,
+            "CameraOffset": 16
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        },
+        {
+          "blockName": "ChunkSection",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "ModelViewMat": 0,
+            "ChunkVisibility": 64,
+            "ChunkPosition": 80,
+            "TextureSize": 72
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "terrain",
+      "defineVariant": "ALPHA_CUTOUT",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 2,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV0",
+            "location": 3,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ChunkVisibility",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "TextureSize",
+            "location": -1,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "ChunkPosition",
+            "location": -1,
+            "glType": 35668,
+            "glTypeName": "ivec3"
+          },
+          {
+            "name": "CameraBlockPos",
+            "location": -1,
+            "glType": 35668,
+            "glTypeName": "ivec3"
+          },
+          {
+            "name": "CameraOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "ScreenSize",
+            "location": -1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          },
+          {
+            "name": "GlintAlpha",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "GameTime",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "MenuBlurRadius",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "UseRgss",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler2",
+            "location": 12,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler0",
+            "location": 13,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "ChunkSection",
+            "blockIndex": 0,
+            "dataSizeBytes": 96
+          },
+          {
+            "name": "Globals",
+            "blockIndex": 1,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "Projection",
+            "blockIndex": 2,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 3,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/terrain.program.ALPHA_CUTOUT.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalEnd": 20,
+            "FogEnvironmentalStart": 16,
+            "FogRenderDistanceEnd": 28,
+            "FogCloudsEnd": 36,
+            "FogColor": 0,
+            "FogRenderDistanceStart": 24,
+            "FogSkyEnd": 32
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        },
+        {
+          "blockName": "Globals",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "GameTime": 44,
+            "MenuBlurRadius": 48,
+            "UseRgss": 52,
+            "GlintAlpha": 40,
+            "ScreenSize": 32,
+            "CameraOffset": 16,
+            "CameraBlockPos": 0
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        },
+        {
+          "blockName": "ChunkSection",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "ChunkVisibility": 64,
+            "ChunkPosition": 80,
+            "TextureSize": 72,
+            "ModelViewMat": 0
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "block",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 2,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV0",
+            "location": 3,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler2",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler0",
+            "location": 6,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 0,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Projection",
+            "blockIndex": 1,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/block.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalStart": 16,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36,
+            "FogRenderDistanceEnd": 28,
+            "FogColor": 0
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "entity",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Normal",
+            "location": 1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 2,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 3,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV1",
+            "location": 4,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV0",
+            "location": 5,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Light0_Direction",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Light1_Direction",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Sampler2",
+            "location": 7,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler1",
+            "location": 8,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler0",
+            "location": 9,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Lighting",
+            "blockIndex": 2,
+            "dataSizeBytes": 32
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 3,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/entity.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogColor": 0,
+            "FogCloudsEnd": 36,
+            "FogEnvironmentalStart": 16
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "glint",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "UV0",
+            "location": 1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "CameraBlockPos",
+            "location": -1,
+            "glType": 35668,
+            "glTypeName": "ivec3"
+          },
+          {
+            "name": "CameraOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "ScreenSize",
+            "location": -1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          },
+          {
+            "name": "GlintAlpha",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "GameTime",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "MenuBlurRadius",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "UseRgss",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          },
+          {
+            "name": "Globals",
+            "blockIndex": 3,
+            "dataSizeBytes": 64
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/glint.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalStart": 16,
+            "FogRenderDistanceEnd": 28,
+            "FogEnvironmentalEnd": 20,
+            "FogSkyEnd": 32,
+            "FogColor": 0,
+            "FogRenderDistanceStart": 24,
+            "FogCloudsEnd": 36
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        },
+        {
+          "blockName": "Globals",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "CameraBlockPos": 0,
+            "CameraOffset": 16,
+            "ScreenSize": 32,
+            "GlintAlpha": 40,
+            "GameTime": 44,
+            "MenuBlurRadius": 48,
+            "UseRgss": 52
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "gui",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/gui.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "item",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Normal",
+            "location": 1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 2,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 3,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV1",
+            "location": 4,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV0",
+            "location": 5,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Light0_Direction",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Light1_Direction",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Sampler2",
+            "location": 7,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler1",
+            "location": 8,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler0",
+            "location": 9,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Lighting",
+            "blockIndex": 2,
+            "dataSizeBytes": 32
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 3,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/item.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogColor": 0,
+            "FogRenderDistanceEnd": 28,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogSkyEnd": 32,
+            "FogEnvironmentalStart": 16,
+            "FogCloudsEnd": 36
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "panorama",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35680,
+            "glTypeName": "samplerCube"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/panorama.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "particle",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "UV0",
+            "location": 1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          },
+          {
+            "name": "Color",
+            "location": 2,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 3,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler2",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler0",
+            "location": 6,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/particle.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalStart": 16,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogColor": 0,
+            "FogEnvironmentalEnd": 20,
+            "FogCloudsEnd": 36
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "position",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/position.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogColor": 0,
+            "FogEnvironmentalEnd": 20,
+            "FogEnvironmentalStart": 16
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "position_color",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_color.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "position_tex",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "UV0",
+            "location": 1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_tex.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "position_tex_color",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "UV0",
+            "location": 1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          },
+          {
+            "name": "Color",
+            "location": 2,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/position_tex_color.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "rendertype_beacon_beam",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV0",
+            "location": 2,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_beacon_beam.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalStart": 16,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogColor": 0,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "rendertype_clouds",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "gl_VertexID",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "CloudFaces",
+            "location": 0,
+            "glType": 36304,
+            "glTypeName": "0x8dd0"
+          },
+          {
+            "name": "CloudColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "CloudOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "CellSize",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "CloudInfo",
+            "blockIndex": 0,
+            "dataSizeBytes": 48
+          },
+          {
+            "name": "Projection",
+            "blockIndex": 1,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 2,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 3,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_clouds.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogColor": 0,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36,
+            "FogEnvironmentalStart": 16
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "rendertype_crumbling",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV0",
+            "location": 2,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_crumbling.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogColor": 0,
+            "FogEnvironmentalStart": 16,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "rendertype_entity_shadow",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV0",
+            "location": 2,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_entity_shadow.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogRenderDistanceStart": 24,
+            "FogSkyEnd": 32,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceEnd": 28,
+            "FogCloudsEnd": 36,
+            "FogColor": 0,
+            "FogEnvironmentalStart": 16
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "rendertype_leash",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 2,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler2",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_leash.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogEnvironmentalStart": 16,
+            "FogCloudsEnd": 36,
+            "FogColor": 0
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "rendertype_lightning",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_lightning.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogRenderDistanceEnd": 28,
+            "FogCloudsEnd": 36,
+            "FogSkyEnd": 32,
+            "FogRenderDistanceStart": 24,
+            "FogEnvironmentalStart": 16,
+            "FogEnvironmentalEnd": 20,
+            "FogColor": 0
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "rendertype_lines",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Normal",
+            "location": 1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "LineWidth",
+            "location": 2,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "Color",
+            "location": 3,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "gl_VertexID",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "CameraBlockPos",
+            "location": -1,
+            "glType": 35668,
+            "glTypeName": "ivec3"
+          },
+          {
+            "name": "CameraOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "ScreenSize",
+            "location": -1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          },
+          {
+            "name": "GlintAlpha",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "GameTime",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "MenuBlurRadius",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "UseRgss",
+            "location": -1,
+            "glType": 5124,
+            "glTypeName": "int"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Globals",
+            "blockIndex": 2,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 3,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_lines.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogRenderDistanceStart": 24,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36,
+            "FogEnvironmentalEnd": 20,
+            "FogColor": 0,
+            "FogEnvironmentalStart": 16,
+            "FogRenderDistanceEnd": 28
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        },
+        {
+          "blockName": "Globals",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "CameraOffset": 16,
+            "GlintAlpha": 40,
+            "GameTime": 44,
+            "ScreenSize": 32,
+            "CameraBlockPos": 0,
+            "MenuBlurRadius": 48,
+            "UseRgss": 52
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "rendertype_outline",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV0",
+            "location": 2,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_outline.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "rendertype_water_mask",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_water_mask.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "rendertype_world_border",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "UV0",
+            "location": 1,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler0",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 0,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Projection",
+            "blockIndex": 1,
+            "dataSizeBytes": 64
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/rendertype_world_border.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "sky",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/sky.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalStart": 16,
+            "FogColor": 0,
+            "FogSkyEnd": 32,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogCloudsEnd": 36
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "stars",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/stars.program.default.png"
+      },
+      "uboTests": []
+    },
+    {
+      "shaderName": "text",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 2,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          },
+          {
+            "name": "UV0",
+            "location": 3,
+            "glType": 35664,
+            "glTypeName": "vec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler2",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "Sampler0",
+            "location": 6,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/text.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogEnvironmentalStart": 16,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36,
+            "FogColor": 0
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    },
+    {
+      "shaderName": "text_background",
+      "defineVariant": "default",
+      "success": true,
+      "infoLog": "",
+      "introspection": {
+        "attributes": [
+          {
+            "name": "Position",
+            "location": 0,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "Color",
+            "location": 1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "UV2",
+            "location": 2,
+            "glType": 35667,
+            "glTypeName": "ivec2"
+          }
+        ],
+        "uniforms": [
+          {
+            "name": "ProjMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ModelViewMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "ColorModulator",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "ModelOffset",
+            "location": -1,
+            "glType": 35665,
+            "glTypeName": "vec3"
+          },
+          {
+            "name": "TextureMat",
+            "location": -1,
+            "glType": 35676,
+            "glTypeName": "mat4"
+          },
+          {
+            "name": "Sampler2",
+            "location": 5,
+            "glType": 35678,
+            "glTypeName": "sampler2D"
+          },
+          {
+            "name": "FogColor",
+            "location": -1,
+            "glType": 35666,
+            "glTypeName": "vec4"
+          },
+          {
+            "name": "FogEnvironmentalStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogEnvironmentalEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceStart",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogRenderDistanceEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogSkyEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          },
+          {
+            "name": "FogCloudsEnd",
+            "location": -1,
+            "glType": 5126,
+            "glTypeName": "float"
+          }
+        ],
+        "uniformBlocks": [
+          {
+            "name": "Projection",
+            "blockIndex": 0,
+            "dataSizeBytes": 64
+          },
+          {
+            "name": "DynamicTransforms",
+            "blockIndex": 1,
+            "dataSizeBytes": 160
+          },
+          {
+            "name": "Fog",
+            "blockIndex": 2,
+            "dataSizeBytes": 48
+          }
+        ]
+      },
+      "drawTest": {
+        "framebufferCompleteBeforeDraw": true,
+        "drawSucceededNoNewError": true,
+        "pixelSampleSummary": "center pixel rgba(0,0,0,0)",
+        "screenshotRelativePath": "velofine-diagnosis-2026-08-17-2036-shaders/text_background.program.default.png"
+      },
+      "uboTests": [
+        {
+          "blockName": "Fog",
+          "bindingPoint": 0,
+          "memberOffsets": {
+            "FogColor": 0,
+            "FogEnvironmentalStart": 16,
+            "FogEnvironmentalEnd": 20,
+            "FogRenderDistanceStart": 24,
+            "FogRenderDistanceEnd": 28,
+            "FogSkyEnd": 32,
+            "FogCloudsEnd": 36
+          },
+          "populatedWithoutGlError": true,
+          "drawSurvived": true
+        }
+      ]
+    }
+  ],
+  "lintFindings": [
+    {
+      "shaderName": "rendertype_end_portal",
+      "stage": "fragment",
+      "ruleId": "DYNAMIC_ARRAY_INDEX",
+      "severity": "WARNING",
+      "line": 117,
+      "message": "Array indexed by identifier \"i\" rather than a numeric literal - a known weak point for older Intel fragment shader compilers. Heuristic match: may be a false positive if the identifier is itself a compile-time #define constant."
+    },
+    {
+      "shaderName": "terrain",
+      "stage": "fragment",
+      "ruleId": "DYNAMIC_ARRAY_INDEX",
+      "severity": "WARNING",
+      "line": 130,
+      "message": "Array indexed by identifier \"i\" rather than a numeric literal - a known weak point for older Intel fragment shader compilers. Heuristic match: may be a false positive if the identifier is itself a compile-time #define constant."
+    },
+    {
+      "shaderName": "terrain",
+      "stage": "fragment",
+      "ruleId": "DYNAMIC_ARRAY_INDEX",
+      "severity": "WARNING",
+      "line": 131,
+      "message": "Array indexed by identifier \"i\" rather than a numeric literal - a known weak point for older Intel fragment shader compilers. Heuristic match: may be a false positive if the identifier is itself a compile-time #define constant."
+    },
+    {
+      "shaderName": "entity",
+      "stage": "vertex",
+      "ruleId": "CONDITIONAL_MOJ_IMPORT",
+      "severity": "INFO",
+      "line": 4,
+      "message": "#moj_import found inside an active #if/#ifdef block - the resolver splices it unconditionally regardless of the surrounding condition. Confirm the imported content being unconditionally present is harmless for this shader."
+    },
+    {
+      "shaderName": "text",
+      "stage": "vertex",
+      "ruleId": "CONDITIONAL_MOJ_IMPORT",
+      "severity": "INFO",
+      "line": 4,
+      "message": "#moj_import found inside an active #if/#ifdef block - the resolver splices it unconditionally regardless of the surrounding condition. Confirm the imported content being unconditionally present is harmless for this shader."
+    },
+    {
+      "shaderName": "text",
+      "stage": "vertex",
+      "ruleId": "CONDITIONAL_MOJ_IMPORT",
+      "severity": "INFO",
+      "line": 5,
+      "message": "#moj_import found inside an active #if/#ifdef block - the resolver splices it unconditionally regardless of the surrounding condition. Confirm the imported content being unconditionally present is harmless for this shader."
+    },
+    {
+      "shaderName": "text",
+      "stage": "fragment",
+      "ruleId": "CONDITIONAL_MOJ_IMPORT",
+      "severity": "INFO",
+      "line": 4,
+      "message": "#moj_import found inside an active #if/#ifdef block - the resolver splices it unconditionally regardless of the surrounding condition. Confirm the imported content being unconditionally present is harmless for this shader."
+    },
+    {
+      "shaderName": "text_background",
+      "stage": "vertex",
+      "ruleId": "CONDITIONAL_MOJ_IMPORT",
+      "severity": "INFO",
+      "line": 4,
+      "message": "#moj_import found inside an active #if/#ifdef block - the resolver splices it unconditionally regardless of the surrounding condition. Confirm the imported content being unconditionally present is harmless for this shader."
+    },
+    {
+      "shaderName": "text_background",
+      "stage": "vertex",
+      "ruleId": "CONDITIONAL_MOJ_IMPORT",
+      "severity": "INFO",
+      "line": 5,
+      "message": "#moj_import found inside an active #if/#ifdef block - the resolver splices it unconditionally regardless of the surrounding condition. Confirm the imported content being unconditionally present is harmless for this shader."
+    },
+    {
+      "shaderName": "text_background",
+      "stage": "fragment",
+      "ruleId": "CONDITIONAL_MOJ_IMPORT",
+      "severity": "INFO",
+      "line": 4,
+      "message": "#moj_import found inside an active #if/#ifdef block - the resolver splices it unconditionally regardless of the surrounding condition. Confirm the imported content being unconditionally present is harmless for this shader."
+    }
+  ],
+  "shaderPrecision": [
+    {
+      "shaderType": "vertex",
+      "precisionType": "float_low",
+      "unsupported": false,
+      "rangeMin": 127,
+      "rangeMax": 127,
+      "precision": 23
+    },
+    {
+      "shaderType": "vertex",
+      "precisionType": "float_medium",
+      "unsupported": false,
+      "rangeMin": 127,
+      "rangeMax": 127,
+      "precision": 23
+    },
+    {
+      "shaderType": "vertex",
+      "precisionType": "float_high",
+      "unsupported": false,
+      "rangeMin": 127,
+      "rangeMax": 127,
+      "precision": 23
+    },
+    {
+      "shaderType": "fragment",
+      "precisionType": "float_low",
+      "unsupported": false,
+      "rangeMin": 127,
+      "rangeMax": 127,
+      "precision": 23
+    },
+    {
+      "shaderType": "fragment",
+      "precisionType": "float_medium",
+      "unsupported": false,
+      "rangeMin": 127,
+      "rangeMax": 127,
+      "precision": 23
+    },
+    {
+      "shaderType": "fragment",
+      "precisionType": "float_high",
+      "unsupported": false,
+      "rangeMin": 127,
+      "rangeMax": 127,
+      "precision": 23
+    }
+  ],
+  "debugMessages": [
+    {
+      "source": "GL_DEBUG_SOURCE_API",
+      "type": "GL_DEBUG_TYPE_PERFORMANCE",
+      "id": 2,
+      "severity": "MEDIUM",
+      "message": "Fragment shader recompiled due to state change."
+    },
+    {
+      "source": "GL_DEBUG_SOURCE_API",
+      "type": "GL_DEBUG_TYPE_PERFORMANCE",
+      "id": 2,
+      "severity": "MEDIUM",
+      "message": "Fragment shader recompiled due to state change."
+    },
+    {
+      "source": "GL_DEBUG_SOURCE_API",
+      "type": "GL_DEBUG_TYPE_PERFORMANCE",
+      "id": 2,
+      "severity": "MEDIUM",
+      "message": "Fragment shader recompiled due to state change."
+    },
+    {
+      "source": "GL_DEBUG_SOURCE_API",
+      "type": "GL_DEBUG_TYPE_PERFORMANCE",
+      "id": 2,
+      "severity": "MEDIUM",
+      "message": "Fragment shader recompiled due to state change."
+    },
+    {
+      "source": "GL_DEBUG_SOURCE_API",
+      "type": "GL_DEBUG_TYPE_PERFORMANCE",
+      "id": 2,
+      "severity": "MEDIUM",
+      "message": "Fragment shader recompiled due to state change."
+    },
+    {
+      "source": "GL_DEBUG_SOURCE_API",
+      "type": "GL_DEBUG_TYPE_ERROR",
+      "id": 1281,
+      "severity": "HIGH",
+      "message": "GL error GL_INVALID_VALUE"
+    }
+  ],
+  "toolWarnings": [],
+  "knownQuirkNotes": [
+    "GPU (\"Intel(R) HD Graphics 4000\") matches the broader Ivy Bridge Gen7 Intel iGPU family but not an exact-verified reference machine - eligible only for the conservative compatibility-renderer fallback (Phase 3), not the targeted fix."
+  ],
+  "flakinessFindings": [],
+  "runOutcome": "COMPLETED",
+  "incompleteShaders": []
+}

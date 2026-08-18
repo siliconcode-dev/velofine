@@ -49,8 +49,9 @@ public final class DriverQuirkMatcher {
                 continue;
             }
             if (isExactMachineA(cpu, gpu)) {
-                notes.add("Matches reference machine A (i3-3110M / HD Graphics 4000, driver 15.33.53.5161) "
-                        + "exactly - eligible for the full targeted shader-patch fix once available (Phase 4).");
+                notes.add("Matches reference machine A (i3-3110M / HD Graphics 4000, driver 15.33.53.5161 "
+                        + "/ 10.18.10.5161) exactly - eligible for the full targeted shader-patch fix once "
+                        + "available (Phase 4).");
             } else if (isMachineBGpu(gpu)) {
                 notes.add("GPU matches reference machine B (i5-3470S / HD Graphics 2500). CPU model "
                         + (matchesCpu(cpu, "i5-3470S") ? "also matches" : "was not confirmed as i5-3470S")
@@ -68,7 +69,7 @@ public final class DriverQuirkMatcher {
     private static boolean isExactMachineA(CpuInfo cpu, GpuInfo gpu) {
         return matchesCpu(cpu, "i3-3110M")
                 && gpu.adapterName().toLowerCase().contains("hd graphics 4000")
-                && "15.33.53.5161".equals(gpu.driverVersion());
+                && driverMatches(gpu.driverVersion(), "15.33.53.5161");
     }
 
     private static boolean isMachineBGpu(GpuInfo gpu) {
@@ -77,5 +78,25 @@ public final class DriverQuirkMatcher {
 
     private static boolean matchesCpu(CpuInfo cpu, String model) {
         return cpu != null && cpu.name() != null && cpu.name().contains(model);
+    }
+
+    /**
+     * Mirrors {@code core.gpu.LegacyGpuRegistry}'s driver-matching rule exactly (per this class's
+     * own precedent of deliberately mirroring core's criteria): Intel reports the same physical
+     * driver under two version schemes (package version, e.g. {@code 15.33.53.5161}, vs. the
+     * WMI/PnP-reported version, e.g. {@code 10.18.10.5161}) that only share their trailing build
+     * segment - confirmed against a real tester report from reference machine A and independently
+     * on Intel's own community forum. Match on that shared segment rather than full-string equality.
+     */
+    private static boolean driverMatches(String actual, String expected) {
+        if (actual == null || expected == null) {
+            return false;
+        }
+        return expected.equals(actual) || trailingSegment(actual).equals(trailingSegment(expected));
+    }
+
+    private static String trailingSegment(String driverVersion) {
+        int lastDot = driverVersion.lastIndexOf('.');
+        return lastDot >= 0 ? driverVersion.substring(lastDot + 1) : driverVersion;
     }
 }

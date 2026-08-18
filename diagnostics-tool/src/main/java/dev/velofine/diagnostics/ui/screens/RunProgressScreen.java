@@ -51,8 +51,11 @@ import javax.swing.SwingWorker;
  * crash or genuine hang can't be caught from inside the same JVM, so real crash/hang resilience
  * needs process isolation). This screen's job is building {@link PipelineRequest}(s) per
  * {@link DiagnosticApp}'s repeat-count/context-rung-sweep settings, handing each to the
- * supervisor, adapting its log callback onto the Swing log, and writing the resulting report(s) to
- * disk - it has no direct knowledge of {@link DiagnosticPipeline} or GL at all anymore.
+ * supervisor, and adapting its log callback onto the Swing log - it has no direct knowledge of
+ * {@link DiagnosticPipeline} or GL at all anymore. A context-rung sweep's non-final rungs are
+ * written to disk immediately (nothing further to confirm about them); the run/rung actually shown
+ * to the tester is left unsaved and handed to {@link HumanVisualCheckScreen} instead, which performs
+ * the actual write once the tester has answered (or skipped) its prompt.
  *
  * <p>Iterates {@link ShaderExtractor#discoverCoreShaders()}'s <b>full</b> inventory - every real
  * core shader in the client jar, not a hardcoded subset - compiling and linking each one, so a
@@ -112,54 +115,70 @@ public final class RunProgressScreen extends JPanel {
         new PipelineWorker().execute();
     }
 
-    private final class PipelineWorker extends SwingWorker<RunOutcome, String> {
+    private final class PipelineWorker extends SwingWorker<PendingReport, String> {
 
         @Override
-        protected RunOutcome doInBackground() {
+        protected PendingReport doInBackground() {
             McVersionEntry version = app.getSelectedVersion();
             Mode mode = app.getMode();
             Path candidateDir = app.getCandidateShaderDir();
             int repeatCount = app.getRepeatCount();
             boolean rungSweep = app.isContextRungSweep();
+            boolean forceFullSuite = app.isForceFullSuite();
 
             if (!rungSweep) {
                 PipelineRequest request = new PipelineRequest(
-                        version, mode, candidateDir, repeatCount, null, ReportWriter.newTimestamp());
-                return runAndSave(request);
+                        version, mode, candidateDir, repeatCount, null, ReportWriter.newTimestamp(), forceFullSuite);
+                return runWithoutSaving(request);
             }
 
-            // Context-rung sweep: one supervised run (or repeat-set) PER fallback-ladder rung, each
-            // written as its own independent report - only the last rung's outcome is shown in
-            // ResultsScreen, but every rung's saved path is logged so nothing is silently dropped.
+            // Context-rung sweep: one supervised run (or repeat-set) PER fallback-ladder rung. Every
+            // rung except the last is written immediately (its own independent, already-final
+            // report - nothing further to confirm about it); only the LAST rung's report is
+            // deferred to the human visual-check step before saving, matching how only the last
+            // rung's outcome is shown in ResultsScreen too.
             List<String> savedPaths = new ArrayList<>();
-            RunOutcome lastOutcome = null;
             List<String> rungLabels = DiagnosticGlContext.hintLabels();
-            for (int rungIndex = 0; rungIndex < rungLabels.size(); rungIndex++) {
+            for (int rungIndex = 0; rungIndex < rungLabels.size() - 1; rungIndex++) {
                 publish("##### Context rung " + (rungIndex + 1) + "/" + rungLabels.size()
                         + ": " + rungLabels.get(rungIndex) + " #####");
                 PipelineRequest request = new PipelineRequest(
-                        version, mode, candidateDir, repeatCount, rungIndex, ReportWriter.newTimestamp());
-                lastOutcome = runAndSave(request);
-                if (lastOutcome.savedPath() != null) {
-                    savedPaths.add(lastOutcome.savedPath().toString());
+                        version, mode, candidateDir, repeatCount, rungIndex, ReportWriter.newTimestamp(), forceFullSuite);
+                Path saved = runAndSave(request);
+                if (saved != null) {
+                    savedPaths.add(saved.toString());
                 }
             }
-            publish("Context rung sweep complete. Reports saved: " + savedPaths);
-            return lastOutcome;
+
+            int lastRungIndex = rungLabels.size() - 1;
+            publish("##### Context rung " + rungLabels.size() + "/" + rungLabels.size()
+                    + ": " + rungLabels.get(lastRungIndex) + " #####");
+            PipelineRequest lastRequest = new PipelineRequest(
+                    version, mode, candidateDir, repeatCount, lastRungIndex, ReportWriter.newTimestamp(), forceFullSuite);
+            PendingReport pending = runWithoutSaving(lastRequest);
+            publish("Context rung sweep complete. Earlier-rung reports already saved: " + savedPaths);
+            return pending;
         }
 
-        private RunOutcome runAndSave(PipelineRequest request) {
+        /** Used for every sweep rung except the last - no further confirmation needed, write immediately. */
+        private Path runAndSave(PipelineRequest request) {
             DiagnosticReport report = ChildProcessSupervisor.runAndAwait(request, this::publish);
 
             publish("Writing report...");
             try {
                 Path saved = ReportWriter.write(report, ReportPaths.reportsDirectory(), request.runTimestamp());
                 publish("Saved: " + saved);
-                return new RunOutcome(report, saved);
+                return saved;
             } catch (Exception e) {
                 publish("Failed to write report: " + e);
-                return new RunOutcome(report, null);
+                return null;
             }
+        }
+
+        /** Used for the run/rung actually shown to the tester - saving is deferred to {@link HumanVisualCheckScreen}. */
+        private PendingReport runWithoutSaving(PipelineRequest request) {
+            DiagnosticReport report = ChildProcessSupervisor.runAndAwait(request, this::publish);
+            return new PendingReport(report, request.runTimestamp());
         }
 
         private void publish(String line) {
@@ -179,14 +198,14 @@ public final class RunProgressScreen extends JPanel {
         protected void done() {
             runInProgress = false;
             try {
-                RunOutcome outcome = get();
-                app.showResults(outcome.report(), outcome.savedPath(), null);
+                PendingReport pending = get();
+                app.showHumanVisualCheck(pending.report(), pending.runTimestamp());
             } catch (Exception e) {
                 app.showResults(null, null, "Diagnostic run failed: " + e);
             }
         }
     }
 
-    private record RunOutcome(DiagnosticReport report, Path savedPath) {
+    private record PendingReport(DiagnosticReport report, String runTimestamp) {
     }
 }

@@ -7,7 +7,7 @@
 
 import org.gradle.internal.os.OperatingSystem
 
-version = "0.1.0"
+version = "0.2.0"
 
 plugins {
     id("com.gradleup.shadow") version "9.6.1"
@@ -68,7 +68,7 @@ val distZipDir = layout.buildDirectory.dir("dist")
 // Same numeric-only stripping trick as installer/build.gradle.kts's jpackageAppVersion - this
 // module's own version is numeric-only today, but keep the same defensive regex so a future
 // "0.2.0-rc1"-style bump doesn't silently break jpackage's strict --app-version parsing.
-val jpackageAppVersion = Regex("^[0-9]+(\\.[0-9]+)*").find(project.version.toString())?.value ?: "0.1.0"
+val jpackageAppVersion = Regex("^[0-9]+(\\.[0-9]+)*").find(project.version.toString())?.value ?: "0.2.0"
 
 val stageJpackageInput = tasks.register<Sync>("stageJpackageInput") {
     dependsOn(tasks.shadowJar)

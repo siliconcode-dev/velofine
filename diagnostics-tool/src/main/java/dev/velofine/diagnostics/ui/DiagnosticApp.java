@@ -25,6 +25,7 @@ import dev.velofine.diagnostics.model.DiagnosticReport;
 import dev.velofine.diagnostics.model.Mode;
 import dev.velofine.diagnostics.ui.screens.CompareReportsScreen;
 import dev.velofine.diagnostics.ui.screens.DirectoryPickerScreen;
+import dev.velofine.diagnostics.ui.screens.HumanVisualCheckScreen;
 import dev.velofine.diagnostics.ui.screens.ModeSelectionScreen;
 import dev.velofine.diagnostics.ui.screens.ResultsScreen;
 import dev.velofine.diagnostics.ui.screens.RunProgressScreen;
@@ -36,13 +37,15 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 /**
- * Owns the wizard shell (a {@link CardLayout} swapping between five screens in sequence) and the
+ * Owns the wizard shell (a {@link CardLayout} swapping between screens in sequence) and the
  * session's mutable state (Minecraft dir, chosen version, mode, candidate shader dir), passed
  * screen-to-screen via plain getters/setters - a lightweight linear wizard doesn't need a heavier
  * state-management pattern.
  *
  * <p>Flow: directory picker -&gt; version picker -&gt; mode selection -&gt; run (background thread,
- * see {@link RunProgressScreen}) -&gt; results, with "run again" looping back to mode selection.
+ * see {@link RunProgressScreen}) -&gt; human visual-check prompt (see
+ * {@link HumanVisualCheckScreen}, where the report is actually written to disk) -&gt; results, with
+ * "run again" looping back to mode selection.
  */
 public final class DiagnosticApp {
 
@@ -50,6 +53,7 @@ public final class DiagnosticApp {
     private static final String CARD_VERSION = "version";
     private static final String CARD_MODE = "mode";
     private static final String CARD_RUN = "run";
+    private static final String CARD_HUMAN_CHECK = "human_check";
     private static final String CARD_RESULTS = "results";
     private static final String CARD_COMPARE = "compare";
 
@@ -61,6 +65,7 @@ public final class DiagnosticApp {
     private final VersionPickerScreen versionPickerScreen;
     private final ModeSelectionScreen modeSelectionScreen;
     private final RunProgressScreen runProgressScreen;
+    private final HumanVisualCheckScreen humanVisualCheckScreen;
     private final ResultsScreen resultsScreen;
     private final CompareReportsScreen compareReportsScreen;
 
@@ -70,12 +75,14 @@ public final class DiagnosticApp {
     private Path candidateShaderDir;
     private int repeatCount = 1;
     private boolean contextRungSweep = false;
+    private boolean forceFullSuite = false;
 
     public DiagnosticApp() {
         directoryPickerScreen = new DirectoryPickerScreen(this);
         versionPickerScreen = new VersionPickerScreen(this);
         modeSelectionScreen = new ModeSelectionScreen(this);
         runProgressScreen = new RunProgressScreen(this);
+        humanVisualCheckScreen = new HumanVisualCheckScreen(this);
         resultsScreen = new ResultsScreen(this);
         compareReportsScreen = new CompareReportsScreen(this);
 
@@ -83,6 +90,7 @@ public final class DiagnosticApp {
         cards.add(versionPickerScreen, CARD_VERSION);
         cards.add(modeSelectionScreen, CARD_MODE);
         cards.add(runProgressScreen, CARD_RUN);
+        cards.add(humanVisualCheckScreen, CARD_HUMAN_CHECK);
         cards.add(resultsScreen, CARD_RESULTS);
         cards.add(compareReportsScreen, CARD_COMPARE);
 
@@ -118,6 +126,16 @@ public final class DiagnosticApp {
     public void startRun() {
         cardLayout.show(cards, CARD_RUN);
         runProgressScreen.startRun();
+    }
+
+    /**
+     * Routes through {@link HumanVisualCheckScreen} first, not directly to results - the report
+     * isn't written to disk yet at this point (see that screen's javadoc); its Continue/Skip action
+     * writes it and then calls {@link #showResults}.
+     */
+    public void showHumanVisualCheck(DiagnosticReport pendingReport, String runTimestamp) {
+        humanVisualCheckScreen.reset(pendingReport, runTimestamp);
+        cardLayout.show(cards, CARD_HUMAN_CHECK);
     }
 
     public void showResults(DiagnosticReport report, Path savedReportPath, String failureMessage) {
@@ -181,5 +199,13 @@ public final class DiagnosticApp {
 
     public boolean isContextRungSweep() {
         return contextRungSweep;
+    }
+
+    public void setForceFullSuite(boolean forceFullSuite) {
+        this.forceFullSuite = forceFullSuite;
+    }
+
+    public boolean isForceFullSuite() {
+        return forceFullSuite;
     }
 }

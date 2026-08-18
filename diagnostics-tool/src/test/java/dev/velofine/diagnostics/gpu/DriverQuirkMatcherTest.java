@@ -42,6 +42,22 @@ final class DriverQuirkMatcherTest {
     }
 
     @Test
+    void exactMatchOnReferenceMachineAWithRealWmiDriverFormat() {
+        // Real-world regression case: WMI reports this exact physical driver as "10.18.10.5161",
+        // not the "15.33.53.5161" package-version literal - confirmed by a real tester report from
+        // reference machine A itself. Only the trailing build segment (5161) is shared between
+        // Intel's two numbering schemes.
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz", 2, 4);
+        List<GpuInfo> gpus = List.of(new GpuInfo("Intel(R) HD Graphics 4000", "10.18.10.5161", null, null, null));
+
+        List<String> notes = DriverQuirkMatcher.match(cpu, gpus);
+
+        assertEquals(1, notes.size());
+        assertTrue(notes.get(0).contains("reference machine A"));
+        assertTrue(notes.get(0).contains("targeted shader-patch fix"));
+    }
+
+    @Test
     void gpuOnlyMatchOnReferenceMachineBGpuWithoutConfirmedCpu() {
         CpuInfo cpu = new CpuInfo("Some Other CPU", 4, 8);
         List<GpuInfo> gpus = List.of(new GpuInfo("Intel(R) HD Graphics 2500", "unknown", null, null, null));

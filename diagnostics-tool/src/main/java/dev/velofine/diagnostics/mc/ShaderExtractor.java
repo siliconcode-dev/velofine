@@ -46,6 +46,7 @@ import java.util.TreeMap;
 public final class ShaderExtractor implements AutoCloseable, MojImportResolver.ImportSource {
 
     private static final String CORE_DIR = "assets/minecraft/shaders/core/";
+    private static final String BLOCK_TEXTURES_DIR = "assets/minecraft/textures/block/";
 
     private final FileSystem jarFs;
 
@@ -102,6 +103,23 @@ public final class ShaderExtractor implements AutoCloseable, MojImportResolver.I
             return Optional.empty();
         }
         return Optional.of(Files.readString(path, StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Reads a real block texture PNG (e.g. {@code "water_still"}, {@code "lava_still"}) straight
+     * from {@code assets/minecraft/textures/block/} in the client jar - used by {@code gl.TextureBinder}
+     * so the draw test (Fix 3, v1.5 diagnostic-tool rework) samples real texture data instead of an
+     * unbound texture unit. Lives here rather than a separate extractor class: {@code FileSystems
+     * .newFileSystem} throws {@code FileSystemAlreadyExistsException} on a second open of the same
+     * jar URI while this one is still open, so reusing the already-open {@link #jarFs} is the only
+     * way to read both shaders and textures from the same jar within one pipeline run.
+     */
+    public Optional<byte[]> readBlockTexturePng(String name) throws IOException {
+        Path path = jarFs.getPath(BLOCK_TEXTURES_DIR + name + ".png");
+        if (!Files.isRegularFile(path)) {
+            return Optional.empty();
+        }
+        return Optional.of(Files.readAllBytes(path));
     }
 
     @Override

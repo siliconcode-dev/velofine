@@ -22,11 +22,14 @@ package dev.velofine.diagnostics.report;
 import dev.velofine.diagnostics.model.ComparisonResult;
 import dev.velofine.diagnostics.model.CpuInfo;
 import dev.velofine.diagnostics.model.DiagnosticReport;
+import dev.velofine.diagnostics.model.DrawTestResult;
 import dev.velofine.diagnostics.model.GlContextInfo;
 import dev.velofine.diagnostics.model.Mode;
+import dev.velofine.diagnostics.model.ProgramLinkEntry;
 import dev.velofine.diagnostics.model.ShaderCompileEntry;
 import dev.velofine.diagnostics.model.ShaderCompileResult;
 import dev.velofine.diagnostics.model.ShaderComparisonEntry.Classification;
+import dev.velofine.diagnostics.model.VisualComparisonEntry;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -53,6 +56,20 @@ final class ReportComparatorTest {
                 .cpuInfo(cpuInfo)
                 .shaders(shaders)
                 .build();
+    }
+
+    private DiagnosticReport reportWithProgramLinks(List<ProgramLinkEntry> programLinks, GlContextInfo glContext) {
+        return DiagnosticReport.builder()
+                .mode(Mode.BASELINE)
+                .mcVersionId("26.2")
+                .glContext(glContext)
+                .programLinks(programLinks)
+                .build();
+    }
+
+    private ProgramLinkEntry linkWithDrawTest(String name, boolean anyPixelRendered, int[] rgba) {
+        DrawTestResult drawTest = new DrawTestResult(true, true, anyPixelRendered, rgba, "test", null);
+        return new ProgramLinkEntry(name, "default", true, "", null, drawTest, List.of());
     }
 
     @Test
@@ -112,5 +129,50 @@ final class ReportComparatorTest {
         assertEquals(2, result.entries().size());
         assertTrue(result.entries().stream().anyMatch(e -> e.shaderName().equals("removed_shader") && e.classification() == Classification.ONLY_IN_A));
         assertTrue(result.entries().stream().anyMatch(e -> e.shaderName().equals("new_shader") && e.classification() == Classification.ONLY_IN_B));
+    }
+
+    @Test
+    void flagsVisualRegressionWhenSampledPixelDiffersBeyondTolerance() {
+        // Reference (A) rendered a bright, opaque lava-orange pixel; this run (B) rendered fully
+        // transparent black - exactly the invisible-lava failure mode this tool exists to catch,
+        // well beyond ReportComparator's fixed tolerance.
+        DiagnosticReport a = reportWithProgramLinks(
+                List.of(linkWithDrawTest("rendertype_translucent", true, new int[] {255, 140, 0, 255})), sameRenderer());
+        DiagnosticReport b = reportWithProgramLinks(
+                List.of(linkWithDrawTest("rendertype_translucent", true, new int[] {0, 0, 0, 0})), sameRenderer());
+
+        ComparisonResult result = ReportComparator.compare(a, b);
+
+        assertEquals(1, result.visualRegressionCount());
+        assertTrue(result.visualEntries().stream().anyMatch(e ->
+                e.shaderName().equals("rendertype_translucent") && e.classification() == VisualComparisonEntry.Classification.VISUAL_REGRESSION));
+    }
+
+    @Test
+    void unchangedWhenSampledPixelWithinTolerance() {
+        DiagnosticReport a = reportWithProgramLinks(
+                List.of(linkWithDrawTest("terrain", true, new int[] {200, 200, 200, 255})), sameRenderer());
+        DiagnosticReport b = reportWithProgramLinks(
+                List.of(linkWithDrawTest("terrain", true, new int[] {205, 198, 202, 255})), sameRenderer());
+
+        ComparisonResult result = ReportComparator.compare(a, b);
+
+        assertEquals(0, result.visualRegressionCount());
+        assertTrue(result.visualEntries().stream().anyMatch(e ->
+                e.shaderName().equals("terrain") && e.classification() == VisualComparisonEntry.Classification.UNCHANGED));
+    }
+
+    @Test
+    void flagsNothingRenderedInEitherWhenNeitherSideRasterized() {
+        DiagnosticReport a = reportWithProgramLinks(
+                List.of(linkWithDrawTest("gui", false, new int[] {255, 0, 255, 255})), sameRenderer());
+        DiagnosticReport b = reportWithProgramLinks(
+                List.of(linkWithDrawTest("gui", false, new int[] {255, 0, 255, 255})), sameRenderer());
+
+        ComparisonResult result = ReportComparator.compare(a, b);
+
+        assertEquals(0, result.visualRegressionCount());
+        assertTrue(result.visualEntries().stream().anyMatch(e ->
+                e.shaderName().equals("gui") && e.classification() == VisualComparisonEntry.Classification.NOTHING_RENDERED_IN_EITHER));
     }
 }

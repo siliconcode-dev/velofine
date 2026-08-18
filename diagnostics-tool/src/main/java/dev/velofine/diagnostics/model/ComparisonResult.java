@@ -31,7 +31,8 @@ import java.util.List;
 public record ComparisonResult(
         boolean sameMachine,
         String machineMismatchNote,
-        List<ShaderComparisonEntry> entries) {
+        List<ShaderComparisonEntry> entries,
+        List<VisualComparisonEntry> visualEntries) {
 
     public long regressedCount() {
         return entries.stream().filter(e -> e.classification() == ShaderComparisonEntry.Classification.REGRESSED).count();
@@ -39,5 +40,9 @@ public record ComparisonResult(
 
     public long fixedCount() {
         return entries.stream().filter(e -> e.classification() == ShaderComparisonEntry.Classification.FIXED).count();
+    }
+
+    public long visualRegressionCount() {
+        return visualEntries.stream().filter(e -> e.classification() == VisualComparisonEntry.Classification.VISUAL_REGRESSION).count();
     }
 }

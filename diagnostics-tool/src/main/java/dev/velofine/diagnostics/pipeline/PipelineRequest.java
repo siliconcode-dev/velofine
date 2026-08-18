@@ -37,6 +37,15 @@ import java.nio.file.Path;
  * the same value must also name the report JSON file the caller writes afterward, so the two stay
  * consistent. Keeping this a plain input rather than a pipeline-internal {@code now()} call also
  * keeps {@link DiagnosticPipeline#run} free of hidden time-dependent side effects.
+ *
+ * <p>{@code forceFullSuite}, when {@code true}, is the diagnostic-tool-side "force test all" override:
+ * a visible, recorded guarantee (see {@code model.DiagnosticReport#forceFullSuite}) that this run's
+ * full test/compare suite - including the golden-reference visual-regression diff (Fix 3c) - ran
+ * unconditionally, regardless of {@code core.gpu.GpuConfidence}/hardware-match tier. Nothing in the
+ * pipeline today actually narrows test scope by tier, so this flag has no branch to bypass yet - its
+ * job is to be the explicit contract point any future tier-based scoping must check first, so a
+ * tester on ambiguous/unmatched hardware is never silently handed a truncated report. See
+ * {@link DiagnosticPipeline}'s own class javadoc for this contract statement.
  */
 public record PipelineRequest(
         McVersionEntry mcVersion,
@@ -44,9 +53,10 @@ public record PipelineRequest(
         Path candidateShaderDir,
         int repeatCount,
         Integer forcedContextRungIndex,
-        String runTimestamp) {
+        String runTimestamp,
+        boolean forceFullSuite) {
 
     public static PipelineRequest singleRun(McVersionEntry mcVersion, Mode mode, Path candidateShaderDir) {
-        return new PipelineRequest(mcVersion, mode, candidateShaderDir, 1, null, ReportWriter.newTimestamp());
+        return new PipelineRequest(mcVersion, mode, candidateShaderDir, 1, null, ReportWriter.newTimestamp(), false);
     }
 }

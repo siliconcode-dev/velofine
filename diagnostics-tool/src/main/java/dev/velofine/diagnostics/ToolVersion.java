@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * This tool's own independent version (see {@code build.gradle.kts}'s {@code version = "0.1.0"}),
+ * This tool's own independent version (see {@code build.gradle.kts}'s {@code version = "0.2.0"}),
  * separate from Velofine's own release line. Read from a build-time-templated properties file
  * rather than a second hardcoded literal in source - mirrors {@code core.BuildInfo}'s pattern.
  */

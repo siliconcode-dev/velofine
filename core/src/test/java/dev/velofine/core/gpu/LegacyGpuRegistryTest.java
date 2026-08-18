@@ -40,6 +40,19 @@ final class LegacyGpuRegistryTest {
     }
 
     @Test
+    void realWmiFormattedDriverVersionForReferenceMachineAIsExactVerified() {
+        // Real-world regression case: WMI (Win32_VideoController.DriverVersion, what GpuDetector
+        // actually captures) reports this exact physical driver as "10.18.10.5161", not the
+        // "15.33.53.5161" package-version literal Masterdoc_v1.5.md records - confirmed by a real
+        // tester report from this exact reference machine. Only the trailing build segment (5161)
+        // is shared between Intel's two numbering schemes.
+        GpuInfo gpu = new GpuInfo("Intel(R) HD Graphics 4000", "10.18.10.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE);
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz");
+
+        assertEquals(GpuConfidence.EXACT_VERIFIED, LegacyGpuRegistry.classify(gpu, cpu));
+    }
+
+    @Test
     void sameGpuAndDriverButDifferentCpuIsOnlyFamilyMatch() {
         // A different Ivy Bridge laptop with the identical GPU+driver but not the exact reference
         // CPU - Build_plan Phase 2's confidence tiering exists precisely for this case.

@@ -39,6 +39,16 @@ public final class OffscreenFramebuffer implements AutoCloseable {
 
     public static final int SIZE = 64;
 
+    /**
+     * Magenta - deliberately a color no real shader under test is expected to legitimately output,
+     * so "nothing was drawn here" (still this color after the draw) is distinguishable from "the
+     * shader legitimately rendered black/transparent" (a different color after the draw). Fixes a
+     * real ambiguity a live tester report hit: every shader's draw test reported an identical
+     * result because the framebuffer's uninitialized/previous content was being read back, not
+     * confirmed shader output.
+     */
+    public static final int[] SENTINEL_RGBA = {255, 0, 255, 255};
+
     private final int framebuffer;
     private final int colorRenderbuffer;
 
@@ -66,6 +76,12 @@ public final class OffscreenFramebuffer implements AutoCloseable {
 
     public boolean checkStatus() {
         return GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) == GL30.GL_FRAMEBUFFER_COMPLETE;
+    }
+
+    /** Clears the color buffer to {@link #SENTINEL_RGBA} - call after {@link #bind()}, before drawing. */
+    public void clearToSentinel() {
+        GL11.glClearColor(SENTINEL_RGBA[0] / 255f, SENTINEL_RGBA[1] / 255f, SENTINEL_RGBA[2] / 255f, SENTINEL_RGBA[3] / 255f);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
     }
 
     /** Reads the full RGBA8 pixel data back to a heap array ({@code SIZE*SIZE*4} bytes). */

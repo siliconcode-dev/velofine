@@ -19,9 +19,14 @@
 
 package dev.velofine.diagnostics.ui.screens;
 
+import dev.velofine.diagnostics.model.ComparisonResult;
+import dev.velofine.diagnostics.model.DebugMessage;
 import dev.velofine.diagnostics.model.DiagnosticReport;
 import dev.velofine.diagnostics.model.ProgramLinkEntry;
 import dev.velofine.diagnostics.model.ShaderCompileEntry;
+import dev.velofine.diagnostics.model.VisualComparisonEntry;
+import dev.velofine.diagnostics.report.ReferenceBaseline;
+import dev.velofine.diagnostics.report.ReportComparator;
 import dev.velofine.diagnostics.ui.DiagnosticApp;
 import dev.velofine.diagnostics.ui.VelofineSwingTheme;
 import dev.velofine.diagnostics.ui.VelofineSwingTheme.ButtonKind;
@@ -30,6 +35,8 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.GridLayout;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -40,7 +47,7 @@ import javax.swing.JTextArea;
 public final class ResultsScreen extends JPanel {
 
     private final DiagnosticApp app;
-    private final JPanel statsRow = new JPanel(new GridLayout(1, 4, 1, 0));
+    private final JPanel statsRow = new JPanel(new GridLayout(1, 6, 1, 0));
     private final JTextArea details = new JTextArea();
     private Path reportsDir;
 
@@ -104,24 +111,68 @@ public final class ResultsScreen extends JPanel {
         long missing = report.shaders().stream().filter(ShaderCompileEntry::missingFromJar).count();
         long linkedOk = report.programLinks().stream().filter(ProgramLinkEntry::success).count();
         long linkedFail = report.programLinks().stream().filter(l -> !l.success()).count();
+        long highSeverityErrors = report.debugMessages().stream().filter(ResultsScreen::isHighSeverity).count();
+
+        Optional<DiagnosticReport> reference = ReferenceBaseline.load();
+        ComparisonResult referenceDiff = reference.map(ref -> ReportComparator.compare(ref, report)).orElse(null);
+        long visualRegressions = referenceDiff != null ? referenceDiff.visualRegressionCount() : 0;
 
         statsRow.removeAll();
         statsRow.add(stat("COMPILE OK", String.valueOf(compiledOk), VelofineSwingTheme.TERMINAL_GREEN));
         statsRow.add(stat("COMPILE FAIL", String.valueOf(compiledFail), compiledFail > 0 ? VelofineSwingTheme.RED : VelofineSwingTheme.DIM_WHITE));
         statsRow.add(stat("LINK FAIL", String.valueOf(linkedFail), linkedFail > 0 ? VelofineSwingTheme.RED : VelofineSwingTheme.DIM_WHITE));
         statsRow.add(stat("MISSING", String.valueOf(missing), missing > 0 ? VelofineSwingTheme.RED : VelofineSwingTheme.DIM_WHITE));
+        // A shader can compile, link, and draw without a new GL error and still be a real problem -
+        // this tile is what used to be silently buried inside a raw "DEBUG MESSAGES: N" count with
+        // no severity distinction from benign performance notices sitting right next to it.
+        statsRow.add(stat("GL ERRORS", String.valueOf(highSeverityErrors), highSeverityErrors > 0 ? VelofineSwingTheme.RED : VelofineSwingTheme.DIM_WHITE));
+        // The tile that actually answers "does this look like the invisible-lava/black-block bug" -
+        // "N/A" (not zero) when no bundled reference exists yet, so an empty reference directory
+        // doesn't silently read as "confirmed fine."
+        statsRow.add(stat("VS. REFERENCE", referenceDiff != null ? String.valueOf(visualRegressions) : "N/A",
+                visualRegressions > 0 ? VelofineSwingTheme.RED : VelofineSwingTheme.DIM_WHITE));
         statsRow.revalidate();
         statsRow.repaint();
-        // linkedOk isn't surfaced as its own tile (compile/link-fail/missing are the tiles that
-        // matter for spotting a problem at a glance) but stays folded into the detail text below.
+        // linkedOk isn't surfaced as its own tile (compile/link-fail/missing/GL-errors/vs-reference
+        // are the tiles that matter for spotting a problem at a glance) but stays folded into the
+        // detail text below.
 
         StringBuilder sb = new StringBuilder();
         sb.append("REPORT SAVED: ").append(savedReportPath != null ? savedReportPath : "(not saved - see warnings)").append('\n');
         sb.append("RUN OUTCOME: ").append(report.runOutcome())
                 .append("   DEBUG MESSAGES: ").append(report.debugMessages().size())
+                .append(" (").append(highSeverityErrors).append(" GL error(s))")
                 .append("   LINK OK: ").append(linkedOk).append('\n');
         if (report.contextRungLabel() != null) {
             sb.append("CONTEXT RUNG (forced): ").append(report.contextRungLabel()).append('\n');
+        }
+
+        List<DebugMessage> highSeverity = report.debugMessages().stream()
+                .filter(ResultsScreen::isHighSeverity).toList();
+        if (!highSeverity.isEmpty()) {
+            sb.append("\n[ GL ERRORS (").append(highSeverity.size()).append(") ]\n");
+            highSeverity.forEach(m -> sb.append(String.format("  [%s] %-24s %s%s%n",
+                    m.severity(), m.type(),
+                    m.activeShaderContext() != null ? "(" + m.activeShaderContext() + ") " : "",
+                    m.message())));
+        }
+
+        if (referenceDiff == null) {
+            sb.append("\n[ VS. REFERENCE: no bundled known-good reference report found - see "
+                    + "diagnostics-tool/src/main/resources/reference/README.md ]\n");
+        } else if (!referenceDiff.sameMachine()) {
+            sb.append("\n[ VS. REFERENCE: comparison skipped - ").append(referenceDiff.machineMismatchNote()).append(" ]\n");
+        } else {
+            List<VisualComparisonEntry> regressions = referenceDiff.visualEntries().stream()
+                    .filter(e -> e.classification() == VisualComparisonEntry.Classification.VISUAL_REGRESSION)
+                    .toList();
+            if (!regressions.isEmpty()) {
+                sb.append("\n[ VISUAL REGRESSIONS vs. known-good reference (").append(regressions.size()).append(") ]\n");
+                regressions.forEach(e -> sb.append(String.format("  %-28s [%s]  reference=rgba%s  this run=rgba%s%n",
+                        e.shaderName(), e.defineVariant(), toRgbaString(e.rgbaInA()), toRgbaString(e.rgbaInB()))));
+            } else {
+                sb.append("\n[ VS. REFERENCE: no visual regressions detected against the known-good baseline ]\n");
+            }
         }
 
         if (!report.incompleteShaders().isEmpty()) {
@@ -138,6 +189,12 @@ public final class ResultsScreen extends JPanel {
         if (!report.knownQuirkNotes().isEmpty()) {
             sb.append("\n[ KNOWN HARDWARE NOTES - informational only, not pass/fail signal ]\n");
             report.knownQuirkNotes().forEach(n -> sb.append("  - ").append(n).append('\n'));
+        } else if (report.forceFullSuite()) {
+            // This hardware didn't match any known signature at all, yet the full suite still ran
+            // in full because the tester explicitly forced it - flagged so this doesn't read as
+            // "this looks like verified/matched hardware" when it's actually unmatched-but-forced.
+            sb.append("\n[ FORCE FULL SUITE: this hardware matched no known signature - every test "
+                    + "still ran in full because \"Force full test suite\" was checked ]\n");
         }
 
         if (!report.lintFindings().isEmpty()) {
@@ -192,6 +249,17 @@ public final class ResultsScreen extends JPanel {
 
         details.setText(sb.toString());
         details.setCaretPosition(0);
+    }
+
+    private static boolean isHighSeverity(DebugMessage message) {
+        return "HIGH".equals(message.severity());
+    }
+
+    private static String toRgbaString(int[] rgba) {
+        if (rgba == null || rgba.length != 4) {
+            return "(none)";
+        }
+        return "(" + rgba[0] + "," + rgba[1] + "," + rgba[2] + "," + rgba[3] + ")";
     }
 
     private JPanel stat(String label, String value, Color valueColor) {

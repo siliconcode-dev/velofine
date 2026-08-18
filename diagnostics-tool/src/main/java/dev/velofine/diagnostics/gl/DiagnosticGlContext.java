@@ -50,17 +50,49 @@ public final class DiagnosticGlContext implements AutoCloseable {
     private record HintSet(String label, int major, int minor, int profile, boolean forwardCompat) {
     }
 
-    private static final List<HintSet> FALLBACK_LADDER = List.of(
-            new HintSet("OpenGL 3.3 Core, Forward-Compatible (vanilla's exact request)",
-                    3, 3, GLFW.GLFW_OPENGL_CORE_PROFILE, true),
-            new HintSet("OpenGL 3.3 Core, no forward-compat",
-                    3, 3, GLFW.GLFW_OPENGL_CORE_PROFILE, false),
-            new HintSet("OpenGL 3.3 Compatibility Profile",
-                    3, 3, GLFW.GLFW_OPENGL_COMPAT_PROFILE, false),
-            new HintSet("OpenGL 2.1, any profile",
-                    2, 1, GLFW.GLFW_OPENGL_ANY_PROFILE, false),
-            new HintSet("Driver default (no version hints)",
-                    0, 0, GLFW.GLFW_OPENGL_ANY_PROFILE, false));
+    private static final List<HintSet> FALLBACK_LADDER = buildLadder();
+
+    /**
+     * Rung 0 is always vanilla's own exact real request, so normal (non-swept) single-run behavior
+     * - which just takes the first rung that succeeds - is unchanged from before this method
+     * existed. The rest of the ladder is a real, exhaustive OpenGL 2.0-through-4.6 (the latest
+     * OpenGL version) sweep, Core <b>and</b> Compatibility profile at every version 3.2+ (profiles
+     * don't exist before 3.2 - GLFW requires {@code GLFW_OPENGL_ANY_PROFILE} below that) - not just
+     * the handful of rungs vanilla itself happens to need. Only consumed exhaustively when the
+     * opt-in "context rung sweep" is used ({@code ModeSelectionScreen}); a normal single run still
+     * only ever attempts however many rungs it takes to find one that succeeds.
+     */
+    private static List<HintSet> buildLadder() {
+        List<HintSet> ladder = new ArrayList<>();
+
+        ladder.add(new HintSet("OpenGL 3.3 Core, Forward-Compatible (vanilla's exact request)",
+                3, 3, GLFW.GLFW_OPENGL_CORE_PROFILE, true));
+        ladder.add(new HintSet("OpenGL 3.3 Core, no forward-compat",
+                3, 3, GLFW.GLFW_OPENGL_CORE_PROFILE, false));
+        ladder.add(new HintSet("OpenGL 3.3 Compatibility Profile",
+                3, 3, GLFW.GLFW_OPENGL_COMPAT_PROFILE, false));
+
+        int[][] legacyVersions = {{2, 0}, {2, 1}, {3, 0}, {3, 1}};
+        for (int[] v : legacyVersions) {
+            ladder.add(new HintSet("OpenGL " + v[0] + "." + v[1] + ", any profile",
+                    v[0], v[1], GLFW.GLFW_OPENGL_ANY_PROFILE, false));
+        }
+
+        int[][] profiledVersions = {{3, 2}, {3, 3}, {4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}, {4, 5}, {4, 6}};
+        for (int[] v : profiledVersions) {
+            if (v[0] == 3 && v[1] == 3) {
+                continue; // already covered above (with/without forward-compat)
+            }
+            String label = "OpenGL " + v[0] + "." + v[1];
+            ladder.add(new HintSet(label + " Core Profile", v[0], v[1], GLFW.GLFW_OPENGL_CORE_PROFILE, false));
+            ladder.add(new HintSet(label + " Compatibility Profile", v[0], v[1], GLFW.GLFW_OPENGL_COMPAT_PROFILE, false));
+        }
+
+        ladder.add(new HintSet("Driver default (no version hints)",
+                0, 0, GLFW.GLFW_OPENGL_ANY_PROFILE, false));
+
+        return List.copyOf(ladder);
+    }
 
     private final long window;
 

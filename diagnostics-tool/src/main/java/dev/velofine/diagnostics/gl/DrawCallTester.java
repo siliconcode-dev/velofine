@@ -21,6 +21,7 @@ package dev.velofine.diagnostics.gl;
 
 import dev.velofine.diagnostics.model.DebugMessage;
 import dev.velofine.diagnostics.model.DrawTestResult;
+import dev.velofine.diagnostics.model.UniformInfo;
 import dev.velofine.diagnostics.report.FramebufferPngWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -38,12 +39,17 @@ import org.lwjgl.opengl.GL30;
  * {@code GL_INVALID_OPERATION: There is no VAO bound} - fixed by making VAO binding an explicit,
  * shared precondition both testers rely on instead of each silently assuming their own).
  *
- * <p><b>Success criterion is deliberately narrow: "the draw call completed without a new GL error
- * and the framebuffer stayed complete" - NOT "renders correctly in-game."</b> The synthesized
- * geometry is a single zero-filled point with no real game data or textures bound; this is a
- * robustness/crash test at the draw-call level, not a visual-correctness test. See
- * {@link DrawTestResult}'s own javadoc for the same caveat, and {@code ResultsScreen} for where
- * this gets surfaced to a human. Not unit tested: requires a real GL context.
+ * <p><b>{@code drawSucceededNoNewError} means the draw call completed without a new GL error and the
+ * framebuffer stayed complete</b> - a crash/error/hang check, not by itself proof of visual
+ * correctness (the synthesized geometry is still a single point, not real game geometry). As of
+ * Fix 3 (v1.5 diagnostic-tool rework) this is no longer structurally blind to visual output, though:
+ * the framebuffer is cleared to {@link OffscreenFramebuffer#SENTINEL_RGBA} before the draw, real
+ * per-shader uniform defaults are set ({@link UniformDefaults}), real texture data is bound
+ * ({@link TextureBinder}), and {@link #readAnyRenderedPixel} scans the whole buffer for the first
+ * pixel that differs from the sentinel rather than assuming the untested center pixel is where the
+ * single synthesized point happened to land. See {@link DrawTestResult}'s javadoc for how this
+ * feeds {@code report.ReportComparator}'s golden-reference visual-regression diff. Not unit tested:
+ * requires a real GL context.
  */
 public final class DrawCallTester {
 
@@ -51,15 +57,28 @@ public final class DrawCallTester {
     }
 
     public static DrawTestResult run(
-            int program, int vao, Path shaderDir, String shaderName, String stage, String variant,
+            int program, int vao, List<UniformInfo> uniforms, TextureBinder textures,
+            Path shaderDir, String shaderName, String stage, String variant,
             List<DebugMessage> debugMessages) {
 
         try (OffscreenFramebuffer fbo = OffscreenFramebuffer.create()) {
             fbo.bind();
             boolean complete = fbo.checkStatus();
+            fbo.clearToSentinel();
             GlErrorChecker.checkAndRecord("FBO setup for " + shaderName + " [" + variant + "]", debugMessages);
 
             GL20.glUseProgram(program);
+            UniformDefaults.apply(program, uniforms);
+            textures.bindSamplers(uniforms);
+            GlErrorChecker.checkAndRecord("uniform/texture defaults for " + shaderName + " [" + variant + "]", debugMessages);
+
+            // Best-effort: core-profile drivers generally clamp glPointSize to their aliased-point
+            // range (often just 1px) unless the vertex shader itself writes gl_PointSize with
+            // GL_PROGRAM_POINT_SIZE enabled, which real unmodified vanilla shaders don't do - this
+            // can't be relied on alone, which is why the readback below scans the whole buffer
+            // rather than assuming a large, guaranteed-covered point.
+            GL11.glPointSize(OffscreenFramebuffer.SIZE);
+
             GL30.glBindVertexArray(vao);
             GL11.glDrawArrays(GL11.GL_POINTS, 0, 1);
             GlErrorChecker.checkAndRecord("draw " + shaderName + " [" + variant + "]", debugMessages);
@@ -72,23 +91,46 @@ public final class DrawCallTester {
             try {
                 pngPath = FramebufferPngWriter.write(shaderDir, shaderName, stage, variant, pixels, OffscreenFramebuffer.SIZE);
             } catch (IOException e) {
+                String context = shaderName + "." + stage + " [" + variant + "]";
                 debugMessages.add(new DebugMessage("draw-call-tester", "PNG_WRITE_FAILED", -1, "N/A",
-                        shaderName + "." + stage + " [" + variant + "]: " + e));
+                        context + ": " + e, context));
             }
 
             GL30.glBindVertexArray(0);
             GL20.glUseProgram(0);
-            return new DrawTestResult(complete, drawOk, summarize(pixels), pngPath);
+
+            int[] rendered = readAnyRenderedPixel(pixels);
+            boolean anyPixelRendered = rendered != null;
+            int[] sampledRgba = anyPixelRendered ? rendered : OffscreenFramebuffer.SENTINEL_RGBA;
+            String summary = anyPixelRendered
+                    ? "rendered pixel rgba(" + sampledRgba[0] + "," + sampledRgba[1] + "," + sampledRgba[2] + "," + sampledRgba[3] + ")"
+                    : "nothing rasterized (framebuffer stayed at sentinel color)";
+
+            return new DrawTestResult(complete, drawOk, anyPixelRendered, sampledRgba, summary, pngPath);
         }
     }
 
-    private static String summarize(byte[] rgba) {
+    /**
+     * Scans the full buffer for the first pixel that differs from {@link OffscreenFramebuffer#SENTINEL_RGBA}
+     * beyond a small tolerance (driver dithering/rounding, not a real color difference), returning
+     * {@code null} if every pixel is still the sentinel - i.e. the single synthesized point never
+     * actually rasterized into the buffer at all, a real and distinguishable finding in its own
+     * right rather than being silently reported as if it were shader output.
+     */
+    private static int[] readAnyRenderedPixel(byte[] rgba) {
         int size = OffscreenFramebuffer.SIZE;
-        int centerIndex = ((size / 2) * size + (size / 2)) * 4;
-        int r = rgba[centerIndex] & 0xFF;
-        int g = rgba[centerIndex + 1] & 0xFF;
-        int b = rgba[centerIndex + 2] & 0xFF;
-        int a = rgba[centerIndex + 3] & 0xFF;
-        return "center pixel rgba(" + r + "," + g + "," + b + "," + a + ")";
+        int[] sentinel = OffscreenFramebuffer.SENTINEL_RGBA;
+        for (int i = 0; i < size * size; i++) {
+            int offset = i * 4;
+            int r = rgba[offset] & 0xFF;
+            int g = rgba[offset + 1] & 0xFF;
+            int b = rgba[offset + 2] & 0xFF;
+            int a = rgba[offset + 3] & 0xFF;
+            if (Math.abs(r - sentinel[0]) > 2 || Math.abs(g - sentinel[1]) > 2
+                    || Math.abs(b - sentinel[2]) > 2 || Math.abs(a - sentinel[3]) > 2) {
+                return new int[] {r, g, b, a};
+            }
+        }
+        return null;
     }
 }

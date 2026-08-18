@@ -30,6 +30,7 @@ import dev.velofine.diagnostics.gl.ProgramIntrospector;
 import dev.velofine.diagnostics.gl.ProgramLinker;
 import dev.velofine.diagnostics.gl.ShaderCompiler;
 import dev.velofine.diagnostics.gl.ShaderPrecisionProbe;
+import dev.velofine.diagnostics.gl.TextureBinder;
 import dev.velofine.diagnostics.gl.UboRoundTripTester;
 import dev.velofine.diagnostics.gl.VertexFormatSynthesizer;
 import dev.velofine.diagnostics.gpu.AdapterMatcher;
@@ -80,6 +81,15 @@ import org.lwjgl.opengl.GL20;
  * same code, rather than each reimplementing it. GUI-independent: reports progress via
  * {@link ProgressSink} instead of a Swing-specific callback, so it has zero dependency on
  * {@code javax.swing}.
+ *
+ * <p><b>"Force full test suite" contract</b> ({@code request.forceFullSuite()} - see
+ * {@code PipelineRequest}'s javadoc): every test in the matrix above already runs unconditionally
+ * regardless of detected hardware or {@code core.gpu.GpuConfidence} tier - nothing here currently
+ * narrows scope by tier. If a future change ever adds real tier-based scoping (e.g. skipping the
+ * expensive golden-reference visual-regression diff on unmatched hardware), it <b>must</b> check
+ * {@code request.forceFullSuite()} first and skip nothing when it's {@code true}. The flag is
+ * recorded on the built {@link DiagnosticReport} regardless, so a saved report always shows whether
+ * full coverage was explicitly requested.
  */
 public final class DiagnosticPipeline {
 
@@ -180,8 +190,12 @@ public final class DiagnosticPipeline {
                         shaderPrecisionEntries = ShaderPrecisionProbe.probe();
                         GlErrorChecker.checkAndRecord("shader precision probe", debugMessages);
 
-                        runShaderMatrix(extractor, inventory, mode, candidateDir, shaderArchiveDir,
-                                compileEntries, linkEntries, debugMessages, lintFindings, sink);
+                        sink.onStep("Uploading real texture data for the draw test...");
+                        try (TextureBinder textures = TextureBinder.create(extractor)) {
+                            GlErrorChecker.checkAndRecord("texture upload", debugMessages);
+                            runShaderMatrix(extractor, inventory, mode, candidateDir, shaderArchiveDir,
+                                    compileEntries, linkEntries, debugMessages, lintFindings, sink, khrDebug, textures);
+                        }
                     }
                 }
             } else {
@@ -221,6 +235,7 @@ public final class DiagnosticPipeline {
                 .debugMessages(debugMessages)
                 .toolWarnings(toolWarnings)
                 .knownQuirkNotes(knownQuirkNotes)
+                .forceFullSuite(request.forceFullSuite())
                 .build();
     }
 
@@ -239,7 +254,9 @@ public final class DiagnosticPipeline {
             List<ProgramLinkEntry> linkEntries,
             List<DebugMessage> debugMessages,
             List<LintFinding> lintFindings,
-            ProgressSink sink) {
+            ProgressSink sink,
+            KhrDebugCapture khrDebug,
+            TextureBinder textures) {
 
         for (ShaderInventoryEntry entry : inventory) {
             for (String variant : DefineVariants.variantsFor(entry.name())) {
@@ -250,47 +267,55 @@ public final class DiagnosticPipeline {
 
                 if (entry.hasVertex()) {
                     vertexHandle = compileStage(extractor, entry.name(), "vsh", "vertex", variant, mode,
-                            candidateDir, shaderArchiveDir, compileEntries, debugMessages, lintFindings, sink);
+                            candidateDir, shaderArchiveDir, compileEntries, debugMessages, lintFindings, sink, khrDebug);
                 }
                 if (entry.hasFragment()) {
                     fragmentHandle = compileStage(extractor, entry.name(), "fsh", "fragment", variant, mode,
-                            candidateDir, shaderArchiveDir, compileEntries, debugMessages, lintFindings, sink);
+                            candidateDir, shaderArchiveDir, compileEntries, debugMessages, lintFindings, sink, khrDebug);
                 }
 
                 if (vertexHandle != null && fragmentHandle != null) {
-                    ProgramLinker.LinkResult link = ProgramLinker.link(vertexHandle, fragmentHandle);
-                    GlErrorChecker.checkAndRecord("link " + entry.name() + " [" + variant + "]", debugMessages);
+                    // One debug group covers link+introspect+draw+UBO for this program - a driver
+                    // error anywhere in this window now carries this shader/variant's name instead
+                    // of being a flat, contextless DebugMessage (see KhrDebugCapture's javadoc).
+                    khrDebug.pushGroup(entry.name() + " link+draw [" + variant + "]");
+                    try {
+                        ProgramLinker.LinkResult link = ProgramLinker.link(vertexHandle, fragmentHandle);
+                        GlErrorChecker.checkAndRecord("link " + entry.name() + " [" + variant + "]", debugMessages);
 
-                    ProgramIntrospection introspection = null;
-                    DrawTestResult drawTest = null;
-                    List<UboRoundTripResult> uboTests = List.of();
+                        ProgramIntrospection introspection = null;
+                        DrawTestResult drawTest = null;
+                        List<UboRoundTripResult> uboTests = List.of();
 
-                    if (link.success()) {
-                        introspection = ProgramIntrospector.introspect(link.program());
-                        GlErrorChecker.checkAndRecord("introspect " + entry.name() + " [" + variant + "]", debugMessages);
+                        if (link.success()) {
+                            introspection = ProgramIntrospector.introspect(link.program());
+                            GlErrorChecker.checkAndRecord("introspect " + entry.name() + " [" + variant + "]", debugMessages);
 
-                        // Built once and shared between DrawCallTester and UboRoundTripTester - a
-                        // real, confirmed bug caught via a live run against this machine's actual GPU
-                        // was each independently building its own VAO but never binding it before
-                        // drawing (GL_INVALID_OPERATION: no VAO bound). See both classes' javadoc.
-                        try (VertexFormatSynthesizer synthesized = VertexFormatSynthesizer.build(introspection.attributes())) {
-                            drawTest = DrawCallTester.run(link.program(), synthesized.vao(), shaderArchiveDir,
-                                    entry.name(), "program", variant, debugMessages);
-                            GlErrorChecker.checkGraphicsResetStatus("draw " + entry.name() + " [" + variant + "]", debugMessages);
+                            // Built once and shared between DrawCallTester and UboRoundTripTester - a
+                            // real, confirmed bug caught via a live run against this machine's actual GPU
+                            // was each independently building its own VAO but never binding it before
+                            // drawing (GL_INVALID_OPERATION: no VAO bound). See both classes' javadoc.
+                            try (VertexFormatSynthesizer synthesized = VertexFormatSynthesizer.build(introspection.attributes())) {
+                                drawTest = DrawCallTester.run(link.program(), synthesized.vao(), introspection.uniforms(), textures,
+                                        shaderArchiveDir, entry.name(), "program", variant, debugMessages);
+                                GlErrorChecker.checkGraphicsResetStatus("draw " + entry.name() + " [" + variant + "]", debugMessages);
 
-                            uboTests = UboRoundTripTester.runAllKnownBlocks(
-                                    link.program(), synthesized.vao(), introspection.uniformBlocks(), debugMessages);
+                                uboTests = UboRoundTripTester.runAllKnownBlocks(link.program(), synthesized.vao(),
+                                        introspection.uniformBlocks(), introspection.uniforms(), textures, debugMessages);
+                            }
+
+                            sink.onStep("  " + entry.name() + " [" + variant + "] draw test: "
+                                    + (drawTest.drawSucceededNoNewError() ? "OK" : "FAILED"));
                         }
 
-                        sink.onStep("  " + entry.name() + " [" + variant + "] draw test: "
-                                + (drawTest.drawSucceededNoNewError() ? "OK" : "FAILED"));
+                        ProgramLinkEntry linkEntry = new ProgramLinkEntry(
+                                entry.name(), variant, link.success(), link.infoLog(), introspection, drawTest, uboTests);
+                        linkEntries.add(linkEntry);
+                        sink.onProgramLinked(linkEntry);
+                        ProgramLinker.delete(link.program());
+                    } finally {
+                        khrDebug.popGroup();
                     }
-
-                    ProgramLinkEntry linkEntry = new ProgramLinkEntry(
-                            entry.name(), variant, link.success(), link.infoLog(), introspection, drawTest, uboTests);
-                    linkEntries.add(linkEntry);
-                    sink.onProgramLinked(linkEntry);
-                    ProgramLinker.delete(link.program());
                 }
 
                 if (vertexHandle != null) {
@@ -316,53 +341,60 @@ public final class DiagnosticPipeline {
             List<ShaderCompileEntry> compileEntries,
             List<DebugMessage> debugMessages,
             List<LintFinding> lintFindings,
-            ProgressSink sink) {
+            ProgressSink sink,
+            KhrDebugCapture khrDebug) {
 
-        RootSource root = resolveRootSource(extractor, name, extension, mode, candidateDir, sink);
-        if (root == null) {
-            ShaderCompileEntry entry = new ShaderCompileEntry(name, stage, variant, "none", true, List.of(), false, null, null, null);
+        String context = name + "." + stage + " [" + variant + "]";
+        khrDebug.pushGroup(context);
+        try {
+            RootSource root = resolveRootSource(extractor, name, extension, mode, candidateDir, sink);
+            if (root == null) {
+                ShaderCompileEntry entry = new ShaderCompileEntry(name, stage, variant, "none", true, List.of(), false, null, null, null);
+                compileEntries.add(entry);
+                sink.onShaderCompiled(entry);
+                return null;
+            }
+
+            lintFindings.addAll(GlslLinter.lintRaw(root.source(), name, stage));
+
+            MojImportResolver.ResolvedShader resolved = MojImportResolver.resolve(root.source(), extractor);
+            String defined = DefineVariants.applyDefine(resolved.source(), name, variant);
+
+            lintFindings.addAll(GlslLinter.lintResolved(defined, name, stage));
+
+            String resolvedSourcePath = null;
+            String sourceSha256 = ShaderSourceArchiver.sha256Hex(defined);
+            try {
+                ShaderSourceArchiver.ArchivedSource archived = ShaderSourceArchiver.persist(shaderArchiveDir, name, stage, variant, defined);
+                resolvedSourcePath = archived.relativePath();
+            } catch (Exception e) {
+                sink.onStep("  Failed to archive resolved source for " + name + "." + extension + ": " + e);
+            }
+
+            int glType = "vertex".equals(stage) ? GL20.GL_VERTEX_SHADER : GL20.GL_FRAGMENT_SHADER;
+            ShaderCompiler.CompiledShader compiled = ShaderCompiler.compile(glType, defined);
+            GlErrorChecker.checkAndRecord("compile " + name + "." + extension + " [" + variant + "]", debugMessages);
+
+            if (!resolved.missingImports().isEmpty()) {
+                for (String missing : resolved.missingImports()) {
+                    debugMessages.add(new DebugMessage("moj_import-resolver", "MISSING_IMPORT", -1, "N/A",
+                            name + "." + extension + ": " + missing, context));
+                }
+            }
+
+            ShaderCompileEntry entry = new ShaderCompileEntry(
+                    name, stage, variant, root.origin(), false,
+                    resolved.importChain(), resolved.importCycleDetected(), compiled.result(),
+                    resolvedSourcePath, sourceSha256);
             compileEntries.add(entry);
             sink.onShaderCompiled(entry);
-            return null;
+
+            sink.onStep("  " + name + "." + extension + " [" + variant + "]: " + (compiled.result().success() ? "OK" : "FAILED"));
+
+            return compiled.handle();
+        } finally {
+            khrDebug.popGroup();
         }
-
-        lintFindings.addAll(GlslLinter.lintRaw(root.source(), name, stage));
-
-        MojImportResolver.ResolvedShader resolved = MojImportResolver.resolve(root.source(), extractor);
-        String defined = DefineVariants.applyDefine(resolved.source(), name, variant);
-
-        lintFindings.addAll(GlslLinter.lintResolved(defined, name, stage));
-
-        String resolvedSourcePath = null;
-        String sourceSha256 = ShaderSourceArchiver.sha256Hex(defined);
-        try {
-            ShaderSourceArchiver.ArchivedSource archived = ShaderSourceArchiver.persist(shaderArchiveDir, name, stage, variant, defined);
-            resolvedSourcePath = archived.relativePath();
-        } catch (Exception e) {
-            sink.onStep("  Failed to archive resolved source for " + name + "." + extension + ": " + e);
-        }
-
-        int glType = "vertex".equals(stage) ? GL20.GL_VERTEX_SHADER : GL20.GL_FRAGMENT_SHADER;
-        ShaderCompiler.CompiledShader compiled = ShaderCompiler.compile(glType, defined);
-        GlErrorChecker.checkAndRecord("compile " + name + "." + extension + " [" + variant + "]", debugMessages);
-
-        if (!resolved.missingImports().isEmpty()) {
-            for (String missing : resolved.missingImports()) {
-                debugMessages.add(new DebugMessage("moj_import-resolver", "MISSING_IMPORT", -1, "N/A",
-                        name + "." + extension + ": " + missing));
-            }
-        }
-
-        ShaderCompileEntry entry = new ShaderCompileEntry(
-                name, stage, variant, root.origin(), false,
-                resolved.importChain(), resolved.importCycleDetected(), compiled.result(),
-                resolvedSourcePath, sourceSha256);
-        compileEntries.add(entry);
-        sink.onShaderCompiled(entry);
-
-        sink.onStep("  " + name + "." + extension + " [" + variant + "]: " + (compiled.result().success() ? "OK" : "FAILED"));
-
-        return compiled.handle();
     }
 
     private record RootSource(String source, String origin) {

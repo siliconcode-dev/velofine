@@ -54,7 +54,8 @@ public final class RepeatRunner {
             // by the caller) is passed through unchanged on the first iteration.
             PipelineRequest request = run == 0 ? baseRequest : new PipelineRequest(
                     baseRequest.mcVersion(), baseRequest.mode(), baseRequest.candidateShaderDir(),
-                    baseRequest.repeatCount(), baseRequest.forcedContextRungIndex(), ReportWriter.newTimestamp());
+                    baseRequest.repeatCount(), baseRequest.forcedContextRungIndex(), ReportWriter.newTimestamp(),
+                    baseRequest.forceFullSuite());
 
             lastReport = DiagnosticPipeline.run(request, sink);
             for (ShaderCompileEntry entry : lastReport.shaders()) {

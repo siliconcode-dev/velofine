@@ -45,7 +45,7 @@ public final class GlErrorChecker {
     public static void checkAndRecord(String context, List<DebugMessage> sink) {
         int error;
         while ((error = GL11.glGetError()) != GL11.GL_NO_ERROR) {
-            sink.add(new DebugMessage("glGetError-poll", errorName(error), error, "N/A", "after " + context));
+            sink.add(new DebugMessage("glGetError-poll", errorName(error), error, "N/A", "after " + context, null));
         }
     }
 
@@ -69,7 +69,7 @@ public final class GlErrorChecker {
             return;
         }
         if (status != GL11.GL_NO_ERROR) {
-            sink.add(new DebugMessage("glGetGraphicsResetStatus", resetStatusName(status), status, "HIGH", "after " + context));
+            sink.add(new DebugMessage("glGetGraphicsResetStatus", resetStatusName(status), status, "HIGH", "after " + context, null));
         }
     }
 

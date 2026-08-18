@@ -20,6 +20,8 @@
 package dev.velofine.diagnostics.gl;
 
 import dev.velofine.diagnostics.model.DebugMessage;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
@@ -37,10 +39,19 @@ import org.lwjgl.opengl.KHRDebug;
  * it - old Intel drivers may simply not implement this extension, in which case
  * {@link #isSupported()} is {@code false} and the caller must rely on polling alone. Not unit
  * tested: requires a real GPU/driver context.
+ *
+ * <p>{@link #pushGroup(String)}/{@link #popGroup()} wrap the real {@code glPushDebugGroup}/
+ * {@code glPopDebugGroup} KHR_debug entry points (the standard mechanism for attributing an async
+ * debug message to "what was active when it fired," per {@code GL_DEBUG_OUTPUT_SYNCHRONOUS} being
+ * enabled above) - the pipeline pushes one group per shader/variant under test so a driver-reported
+ * error is no longer a flat, contextless list entry. The push/pop bookkeeping is tracked in a plain
+ * Java stack regardless of {@link #isSupported()} so callers don't need to branch on support just to
+ * know the current context; only the real GL calls are skipped when unsupported.
  */
 public final class KhrDebugCapture implements AutoCloseable {
 
     private final boolean supported;
+    private final Deque<String> groupStack = new ArrayDeque<>();
     private GLDebugMessageCallback callback;
 
     private KhrDebugCapture(boolean supported) {
@@ -56,10 +67,16 @@ public final class KhrDebugCapture implements AutoCloseable {
             GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
             // Held as a field (not a throwaway lambda) and freed in close() - a documented LWJGL
             // callback-lifetime footgun: native code can call back into a GC'd callback otherwise.
-            capture.callback = GLDebugMessageCallback.create((source, type, id, severity, length, message, userParam) ->
-                    sink.add(new DebugMessage(
-                            sourceName(source), typeName(type), id, severityName(severity),
-                            GLDebugMessageCallback.getMessage(length, message))));
+            capture.callback = GLDebugMessageCallback.create((source, type, id, severity, length, message, userParam) -> {
+                // Push/pop groups generate their own structural notification messages - bookkeeping
+                // noise, not diagnostic signal, so they're dropped rather than added to the sink.
+                if (type == KHRDebug.GL_DEBUG_TYPE_PUSH_GROUP || type == KHRDebug.GL_DEBUG_TYPE_POP_GROUP) {
+                    return;
+                }
+                sink.add(new DebugMessage(
+                        sourceName(source), typeName(type), id, severityName(severity),
+                        GLDebugMessageCallback.getMessage(length, message), capture.groupStack.peek()));
+            });
             KHRDebug.glDebugMessageCallback(capture.callback, 0L);
         }
 
@@ -68,6 +85,25 @@ public final class KhrDebugCapture implements AutoCloseable {
 
     public boolean isSupported() {
         return supported;
+    }
+
+    /** Marks {@code label} (typically {@code "<shaderName>.<stage> [<variant>]"}) as the active
+     * context for any debug message that fires until the matching {@link #popGroup()}. */
+    public void pushGroup(String label) {
+        groupStack.push(label);
+        if (supported) {
+            KHRDebug.glPushDebugGroup(KHRDebug.GL_DEBUG_SOURCE_APPLICATION, 0, label);
+        }
+    }
+
+    public void popGroup() {
+        if (groupStack.isEmpty()) {
+            return;
+        }
+        groupStack.pop();
+        if (supported) {
+            KHRDebug.glPopDebugGroup();
+        }
     }
 
     @Override

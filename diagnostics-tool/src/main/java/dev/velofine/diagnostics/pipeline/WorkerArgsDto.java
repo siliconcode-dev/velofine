@@ -37,7 +37,8 @@ public record WorkerArgsDto(
         String candidateShaderDirPath,
         int repeatCount,
         Integer forcedContextRungIndex,
-        String runTimestamp) {
+        String runTimestamp,
+        boolean forceFullSuite) {
 
     public static WorkerArgsDto from(PipelineRequest request) {
         return new WorkerArgsDto(
@@ -47,12 +48,13 @@ public record WorkerArgsDto(
                 request.candidateShaderDir() != null ? request.candidateShaderDir().toString() : null,
                 request.repeatCount(),
                 request.forcedContextRungIndex(),
-                request.runTimestamp());
+                request.runTimestamp(),
+                request.forceFullSuite());
     }
 
     public PipelineRequest toRequest() {
         McVersionEntry version = new McVersionEntry(mcVersionId, Path.of(mcJarPath));
         Path candidateDir = candidateShaderDirPath != null ? Path.of(candidateShaderDirPath) : null;
-        return new PipelineRequest(version, Mode.valueOf(mode), candidateDir, repeatCount, forcedContextRungIndex, runTimestamp);
+        return new PipelineRequest(version, Mode.valueOf(mode), candidateDir, repeatCount, forcedContextRungIndex, runTimestamp, forceFullSuite);
     }
 }

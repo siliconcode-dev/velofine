@@ -17,22 +17,18 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package com.mojang.blaze3d.buffers;
 
-public class Identifier {
+/**
+ * Confirmed real via javap against the real 26.2 jar - the real type is a record with
+ * {@code buffer()}/{@code offset()}/{@code length()} accessors and a {@code map(...)} method too;
+ * only {@code slice(long, long)} (the one LegacySupport's animated-texture-upload fix calls, to
+ * carve one mip level's UBO region out of the shared slice vanilla passes into
+ * {@code createAnimationState}) is stubbed.
+ */
+public final class GpuBufferSlice {
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getPath() {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getNamespace() {
+    public GpuBufferSlice slice(long offset, long length) {
         throw new UnsupportedOperationException("stub");
     }
 }

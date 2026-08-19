@@ -30,4 +30,11 @@ dependencies {
     // GlBackendMixin (which now compiles against this module) uses org.lwjgl.glfw.GLFW directly.
     compileOnly("org.lwjgl:lwjgl:3.4.1")
     compileOnly("org.lwjgl:lwjgl-glfw:3.4.1")
+
+    // SpriteContents$AnimationState's real constructor takes a real fastutil Int2ObjectMap (confirmed
+    // via javap against the real 26.2 client jar) - genuine OSS Minecraft already bundles at runtime
+    // (see libraries/it/unimi/dsi/fastutil in a real game directory, version confirmed against
+    // 26.2.json's own library manifest), not a fictitious stub type, so it's a real compileOnly
+    // dependency here too rather than hand-stubbed.
+    compileOnly("it.unimi.dsi:fastutil:8.5.18")
 }

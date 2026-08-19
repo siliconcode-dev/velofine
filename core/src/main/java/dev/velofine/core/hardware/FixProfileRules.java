@@ -19,6 +19,7 @@
 
 package dev.velofine.core.hardware;
 
+import dev.velofine.core.gpu.GpuConfidence;
 import dev.velofine.core.gpu.GpuInfo;
 
 import java.util.EnumSet;
@@ -46,7 +47,20 @@ public final class FixProfileRules {
             new Rule(p -> p.disk().rotational(),
                     EnumSet.of(Fix.IO_STALL_SMOOTHING)),
             new Rule(p -> p.memory().isLowMemory(),
-                    EnumSet.of(Fix.MEMORY_SAVING_DEFAULTS))
+                    EnumSet.of(Fix.MEMORY_SAVING_DEFAULTS)),
+            // v1.6-Beta: gated at EXACT_VERIFIED, not the broader INTEL_GEN7/GENERIC_OLD family
+            // match - this fix is categorically more invasive than any prior LegacySupport mixin
+            // (replaces a core render-pipeline method's return value, allocates real GPU resources),
+            // and GpuConfidence's own Phase 2 javadoc already anticipated exactly this: EXACT_VERIFIED
+            // hardware is eligible for "the full targeted shader-patch fix", FAMILY_MATCH only for
+            // the conservative fallback. An EXACT_VERIFIED machine is always also INTEL_GEN7 per
+            // LegacyGpuRegistry's own classification, so this is additive, not a narrowing of the
+            // existing rules above.
+            // v1.7-Beta: END_PORTAL_ARRAY_INDEX_PATCH joins the same rule - both fixes change real
+            // shader/rendering output and stay gated to personally-verified hardware only, per
+            // CLAUDE.md's confidence-tiered policy.
+            new Rule(p -> p.gpu().confidence() == GpuConfidence.EXACT_VERIFIED,
+                    EnumSet.of(Fix.ANIMATED_TEXTURE_UPLOAD_FIX, Fix.END_PORTAL_ARRAY_INDEX_PATCH))
     );
 
     private FixProfileRules() {

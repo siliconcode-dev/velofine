@@ -6,6 +6,8 @@
   "mixins": [
     "GlBackendMixin",
     "ChunkMapMixin",
-    "OptionsMixin"
+    "OptionsMixin",
+    "SpriteContentsAccessor",
+    "SpriteContentsAnimatedTextureMixin"
   ]
 }

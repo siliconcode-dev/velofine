@@ -17,22 +17,13 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package com.mojang.blaze3d.textures;
 
-public class Identifier {
-
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getPath() {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getNamespace() {
-        throw new UnsupportedOperationException("stub");
-    }
+/**
+ * Confirmed real via javap against the real 26.2 jar - an empty marker is enough here, since
+ * Velofine's own code only ever passes {@code GpuTextureView} instances through (received from
+ * {@code GpuDevice.createTextureView}, stored in the frame-texture map handed to
+ * {@code SpriteContents.AnimationState}'s constructor), never calls methods on one directly.
+ */
+public abstract class GpuTextureView implements AutoCloseable {
 }

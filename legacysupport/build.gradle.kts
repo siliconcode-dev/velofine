@@ -20,6 +20,14 @@ dependencies {
     // gate - same compileOnly-from-Minecraft's-classpath reasoning as lwjgl/lwjgl-glfw above.
     compileOnly("org.lwjgl:lwjgl-opengl:3.4.1")
 
+    // v1.6-Beta: SpriteContentsAnimatedTextureMixin's animated-texture-upload fix shadows real
+    // fastutil-typed fields/constructs a real fastutil-typed map (confirmed via javap - Minecraft's
+    // own SpriteContents$AnimatedTexture/AnimationState use it directly) - real OSS Minecraft
+    // already bundles at runtime, same compileOnly-from-Minecraft's-classpath reasoning as lwjgl
+    // above, not a fictitious mcstubs type. Version pinned to the exact one 26.2.json's own library
+    // manifest lists.
+    compileOnly("it.unimi.dsi:fastutil:8.5.18")
+
     // Signature-only Minecraft stubs. Phase 5 moved these out of this module's own
     // `src/stubs/java` source set into the shared :mcstubs module - see mcstubs/build.gradle.kts
     // for why that per-engine decision from Phase 4 was reversed. compileOnly, so shadowJar can
@@ -35,6 +43,9 @@ dependencies {
     testRuntimeOnly("org.lwjgl:lwjgl:3.4.1")
     testRuntimeOnly("org.lwjgl:lwjgl-glfw:3.4.1")
     testRuntimeOnly("org.lwjgl:lwjgl-opengl:3.4.1")
+    // SpriteContentsAnimatedTextureMixin's method body references real fastutil types - same
+    // testRuntimeOnly-for-VerifyMixinsHarness reasoning as the lwjgl entries above.
+    testRuntimeOnly("it.unimi.dsi:fastutil:8.5.18")
 }
 
 // mixins.legacysupport.json declares compatibilityLevel JAVA_16, not the higher JAVA_21 Mixin
@@ -55,7 +66,8 @@ tasks.test {
         dependsOn(":launcher:shadowJar")
         jvmArgs("-javaagent:${project(":launcher").tasks.named("shadowJar").get().outputs.files.singleFile}")
         systemProperty("velofine.legacysupport.forceFixes",
-            "GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS")
+            "GL_COMPATIBILITY_PROFILE,SHADER_MIX_PATCH,IO_STALL_SMOOTHING,MEMORY_SAVING_DEFAULTS,ANIMATED_TEXTURE_UPLOAD_FIX,"
+                + "END_PORTAL_ARRAY_INDEX_PATCH")
         systemProperty("velofine.test.mcJarPath", mcJarPath)
         classpath += files(mcJarPath)
     }

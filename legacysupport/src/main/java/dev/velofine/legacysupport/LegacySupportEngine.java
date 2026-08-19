@@ -19,6 +19,7 @@
 
 package dev.velofine.legacysupport;
 
+import com.mojang.blaze3d.shaders.ShaderType;
 import dev.velofine.core.config.ConfigManager;
 import dev.velofine.core.config.Tri;
 import dev.velofine.core.config.VelofineConfig;
@@ -35,6 +36,7 @@ import dev.velofine.core.log.VelofineLog;
 import dev.velofine.core.mixin.MixinBridge;
 import dev.velofine.core.shader.ShaderSourceInterceptors;
 import dev.velofine.legacysupport.gl.HardwareConfirmation;
+import dev.velofine.legacysupport.shader.EndPortalArrayIndexPatch;
 import dev.velofine.legacysupport.shader.ShaderPatcher;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -98,7 +100,7 @@ public final class LegacySupportEngine {
             Mixins.addConfiguration("mixins.legacysupport.json", (IMixinConfigSource) null);
             MixinBridge.install(instrumentation);
 
-            if (activeFixes.contains(Fix.SHADER_MIX_PATCH)) {
+            if (activeFixes.contains(Fix.SHADER_MIX_PATCH) || activeFixes.contains(Fix.END_PORTAL_ARRAY_INDEX_PATCH)) {
                 // core owns the actual @Redirect on GlDevice.compileShader's ShaderSource.get()
                 // call (see ShaderSourceInterceptors' class javadoc for why this moved out of
                 // legacysupport in Phase 7) - this just registers our patch as one candidate.
@@ -108,6 +110,12 @@ public final class LegacySupportEngine {
                 // shader swap is applied" requirement. Safe by construction: compileShader cannot
                 // run without a real GL context already current, so the confirmation check never
                 // needs its own mixin (see GlContextSignature's class javadoc).
+                //
+                // v1.7-Beta: END_PORTAL_ARRAY_INDEX_PATCH shares this one registration/confirmation
+                // gate with SHADER_MIX_PATCH rather than registering separately - it's checked first
+                // since it fully replaces rendertype_end_portal's fragment source when active, making
+                // ShaderPatcher's own mix()-literal regex moot for that one shader (it wouldn't match
+                // there anyway - apply_fog's mix() call uses a computed blend factor, not a literal).
                 ShaderSourceInterceptors.register(ShaderSourceInterceptors.PRIORITY_LEGACY_SUPPORT,
                         (id, type, vanillaSource) -> {
                             if (!HardwareConfirmation.isConfirmedMatch(hardwareProfile)) {
@@ -116,7 +124,16 @@ public final class LegacySupportEngine {
                                         + "mismatch); skipping shader patch for " + id);
                                 return Optional.empty();
                             }
-                            return Optional.of(ShaderPatcher.patch(vanillaSource, String.valueOf(id)));
+                            if (activeFixes.contains(Fix.END_PORTAL_ARRAY_INDEX_PATCH)
+                                    && type == ShaderType.FRAGMENT
+                                    && "minecraft".equals(id.getNamespace())
+                                    && "core/rendertype_end_portal".equals(id.getPath())) {
+                                return Optional.of(EndPortalArrayIndexPatch.patch(vanillaSource));
+                            }
+                            if (activeFixes.contains(Fix.SHADER_MIX_PATCH)) {
+                                return Optional.of(ShaderPatcher.patch(vanillaSource, String.valueOf(id)));
+                            }
+                            return Optional.empty();
                         });
             }
 

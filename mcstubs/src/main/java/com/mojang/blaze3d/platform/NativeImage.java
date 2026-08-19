@@ -17,22 +17,24 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package com.mojang.blaze3d.platform;
 
-public class Identifier {
+/**
+ * Confirmed real via javap against the real 26.2 jar - only the {@code (int, int, boolean)}
+ * constructor and the 9-arg {@code copyRect} overload LegacySupport's animated-texture-upload fix
+ * actually uses are stubbed; the real class has several other constructors/read/write methods.
+ */
+public final class NativeImage implements AutoCloseable {
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
+    public NativeImage(int width, int height, boolean useStbFree) {
+    }
+
+    public void copyRect(NativeImage dest, int srcX, int srcY, int destX, int destY, int width, int height,
+            boolean mirrorX, boolean mirrorY) {
         throw new UnsupportedOperationException("stub");
     }
 
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getPath() {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getNamespace() {
-        throw new UnsupportedOperationException("stub");
+    @Override
+    public void close() {
     }
 }

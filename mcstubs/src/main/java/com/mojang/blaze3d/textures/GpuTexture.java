@@ -17,22 +17,16 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package com.mojang.blaze3d.textures;
 
-public class Identifier {
+/**
+ * Confirmed real via javap against the real 26.2 jar - the real class has several more instance
+ * methods (getWidth/getHeight/getFormat/...) Velofine's own code never calls; only the two real
+ * {@code USAGE_*} bit-flag constants LegacySupport's animated-texture-upload fix passes to
+ * {@code GpuDevice.createTexture} are stubbed alongside the bare type itself.
+ */
+public abstract class GpuTexture implements AutoCloseable {
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getPath() {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getNamespace() {
-        throw new UnsupportedOperationException("stub");
-    }
+    public static final int USAGE_COPY_DST = 0;
+    public static final int USAGE_TEXTURE_BINDING = 0;
 }

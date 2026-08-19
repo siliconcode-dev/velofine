@@ -91,6 +91,25 @@ public final class LegacySupportPage extends ConfigPage {
                         + "constant-folding bug cannot produce a wrong result. AUTO is recommended for "
                         + "most systems - it only engages on hardware known to need it."));
 
+        rows.add(fixRow(working, cursor, Fix.ANIMATED_TEXTURE_UPLOAD_FIX,
+                "Animated texture upload fix",
+                "Fixes invisible water and black lava/fire on old Intel graphics.",
+                Applies.RESTART)
+                .withDetail("Re-implements animated-texture frame uploads (water, lava, fire, lanterns) the "
+                        + "old synchronous way instead of Mojang's newer GPU staging-buffer path, which some "
+                        + "Intel Gen7 drivers upload from the wrong offset (MC-308593). AUTO only engages on "
+                        + "hardware personally verified to hit this bug - broader family matches don't get "
+                        + "this one yet."));
+
+        rows.add(fixRow(working, cursor, Fix.END_PORTAL_ARRAY_INDEX_PATCH,
+                "End portal array-index patch",
+                "Fixes the invisible end portal on old Intel graphics.",
+                Applies.RESTART)
+                .withDetail("Unrolls a loop in the end portal's fragment shader that indexes a color array "
+                        + "with a runtime loop variable - a known weak point for older Intel shader compilers, "
+                        + "and the one real hardware-specific finding in that shader's source. AUTO only "
+                        + "engages on hardware personally verified to hit this bug."));
+
         rows.add(new CategoryHeaderRow(cursor.x(), cursor.nextY(), cursor.width(), "IO & Memory"));
 
         rows.add(fixRow(working, cursor, Fix.IO_STALL_SMOOTHING,

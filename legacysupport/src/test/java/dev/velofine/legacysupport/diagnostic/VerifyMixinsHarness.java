@@ -97,6 +97,18 @@ final class VerifyMixinsHarness {
     }
 
     @Test
+    void spriteContentsAccessorExposesByMipLevel() throws IOException {
+        assertMixinApplied("net.minecraft.client.renderer.texture.SpriteContents", "SpriteContentsAccessor",
+                "velofine$getByMipLevel");
+    }
+
+    @Test
+    void spriteContentsAnimatedTextureMixinFixesMc308593() throws IOException {
+        assertMixinApplied("net.minecraft.client.renderer.texture.SpriteContents$AnimatedTexture",
+                "SpriteContentsAnimatedTextureMixin", "velofine$fixAnimationUpload");
+    }
+
+    @Test
     void mobMixinThrottlesGoalSelectorUpdates() throws IOException {
         assertMixinApplied("net.minecraft.world.entity.Mob", "MobMixin",
                 "velofine$goalSelectorUpdateInterval");

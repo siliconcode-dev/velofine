@@ -17,22 +17,16 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package com.mojang.blaze3d.systems;
 
-public class Identifier {
+/**
+ * Confirmed real via javap against the real 26.2 jar - the real class has dozens of other static
+ * members (render-thread assertions, projection matrix state, shared index buffers, ...); only the
+ * static {@code getDevice()} accessor LegacySupport's animated-texture-upload fix calls is stubbed.
+ */
+public class RenderSystem {
 
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getPath() {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getNamespace() {
+    public static GpuDevice getDevice() {
         throw new UnsupportedOperationException("stub");
     }
 }

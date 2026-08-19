@@ -17,22 +17,13 @@
  * Copyright (C) 2026 siliconcode-dev
  */
 
-package net.minecraft.resources;
+package com.mojang.blaze3d;
 
-public class Identifier {
-
-    /** Confirmed real static factory via javap against the real 26.2 jar. */
-    public static Identifier fromNamespaceAndPath(String namespace, String path) {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getPath() {
-        throw new UnsupportedOperationException("stub");
-    }
-
-    /** Confirmed real via javap against the real 26.2 jar. */
-    public String getNamespace() {
-        throw new UnsupportedOperationException("stub");
-    }
+/**
+ * Confirmed real via javap against the real 26.2 jar - the real enum has 38+ format constants;
+ * only {@code RGBA8_UNORM} (the format LegacySupport's animated-texture-upload fix creates its
+ * replacement frame textures with, matching the sprite atlas's own real pixel format) is stubbed.
+ */
+public enum GpuFormat {
+    RGBA8_UNORM
 }

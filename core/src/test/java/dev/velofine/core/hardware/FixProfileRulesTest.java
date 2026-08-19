@@ -83,8 +83,10 @@ final class FixProfileRulesTest {
 
     @Test
     void rulesAreAdditiveAcrossIndependentHardwareCharacteristics() {
-        // The i3-3110M reference laptop: Intel Gen7 + rotational HDD + 4GB RAM - matches three
-        // rules at once, exactly the scenario FixProfileRules' class javadoc is written around.
+        // The i3-3110M reference laptop: Intel Gen7 + rotational HDD + 4GB RAM - matches four
+        // rules at once (three hardware-characteristic rules plus the EXACT_VERIFIED-gated one,
+        // since this profile is the real reference machine), exactly the scenario
+        // FixProfileRules' class javadoc is written around.
         HardwareProfile profile = new HardwareProfile(
                 new CpuInfo("Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz"),
                 new GpuInfo("Intel(R) HD Graphics 4000", "15.33.53.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.EXACT_VERIFIED),
@@ -94,7 +96,30 @@ final class FixProfileRulesTest {
         Set<Fix> resolved = FixProfileRules.resolve(profile);
 
         assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE, Fix.SHADER_MIX_PATCH,
-                Fix.IO_STALL_SMOOTHING, Fix.MEMORY_SAVING_DEFAULTS), resolved);
-        assertTrue(resolved.size() == 4);
+                Fix.IO_STALL_SMOOTHING, Fix.MEMORY_SAVING_DEFAULTS, Fix.ANIMATED_TEXTURE_UPLOAD_FIX,
+                Fix.END_PORTAL_ARRAY_INDEX_PATCH), resolved);
+        assertTrue(resolved.size() == 6);
+    }
+
+    @Test
+    void exactVerifiedConfidenceAlsoActivatesAnimatedTextureUploadFix() {
+        HardwareProfile profile = new HardwareProfile(CpuInfo.unknown(),
+                new GpuInfo("Intel(R) HD Graphics 2500", null, GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.EXACT_VERIFIED),
+                MemoryInfo.unknown(), DiskInfo.unknown());
+
+        assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE, Fix.SHADER_MIX_PATCH, Fix.ANIMATED_TEXTURE_UPLOAD_FIX,
+                Fix.END_PORTAL_ARRAY_INDEX_PATCH),
+                FixProfileRules.resolve(profile));
+    }
+
+    @Test
+    void familyMatchConfidenceDoesNotActivateAnimatedTextureUploadFix() {
+        // A broader, unverified Intel Gen7-family match should stay on the conservative fixes only -
+        // v1.6-Beta's fix is categorically more invasive and is deliberately not extended to this tier.
+        HardwareProfile profile = new HardwareProfile(CpuInfo.unknown(),
+                new GpuInfo("Intel(R) HD Graphics", null, GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.FAMILY_MATCH),
+                MemoryInfo.unknown(), DiskInfo.unknown());
+
+        assertEquals(Set.of(Fix.GL_COMPATIBILITY_PROFILE, Fix.SHADER_MIX_PATCH), FixProfileRules.resolve(profile));
     }
 }

@@ -9,17 +9,32 @@
 // entry-point mixins), `optimus` (the governor) and `utility` all need the same ones - duplicating
 // that three ways is clearly worse than one shared module.
 //
-// CRITICAL: this module must NEVER appear on a runtime configuration. Every consumer declares it
-// `compileOnly`, and `launcher` (the only module that is shaded into a shipped jar) does not depend
-// on it at all - so shadowJar can never bundle a fake `net.minecraft.*` class over the real one.
+// CRITICAL: this module must NEVER appear on a *production* runtime configuration. Every consumer
+// declares it `compileOnly`, and `launcher` (the only module that is shaded into a shipped jar) does
+// not depend on it at all - so shadowJar can never bundle a fake `net.minecraft.*` class over the
+// real one. The one sanctioned exception is `testImplementation` (core, v1.8-Beta), where a unit test
+// needs a stub type to exist at test runtime: a test classpath is never shaded and never reaches a
+// user, so the invariant above still holds. Do not extend this to `implementation`/`runtimeOnly`.
 //
-// Because these stubs are compiled against but never loaded, only their *erased signatures* matter,
-// and they must match the real classes exactly - a mismatched erasure produces a methodref that
-// resolves fine at compile time and throws NoSuchMethodError at runtime. Every signature here was
-// taken from `javap` output against the real 26.2 client jar. Where a real method is generic, the
-// stub keeps the same type-variable bounds, because the *first* bound determines the erasure
+// Because these stubs are compiled against but never loaded, their *erased signatures* must match
+// the real classes exactly - a mismatched erasure produces a methodref that resolves fine at compile
+// time and throws NoSuchMethodError at runtime. Every signature here was taken from `javap` output
+// against the real 26.2 client jar. Where a real method is generic, the stub keeps the same
+// type-variable bounds, because the *first* bound determines the erasure
 // (e.g. Screen.addRenderableWidget's `<T extends GuiEventListener & Renderable & NarratableEntry>`
 // erases to GuiEventListener, not to AbstractWidget).
+//
+// CRITICAL EXCEPTION - signatures are NOT the only thing that matters. A `static final` primitive or
+// String *with an initializer* is a JLS 4.12.4 constant variable, and javac INLINES its value
+// directly into consumer bytecode; the real class is never consulted at runtime. v1.7-Beta shipped a
+// GpuTexture stub declaring `USAGE_COPY_DST = 0`/`USAGE_TEXTURE_BINDING = 0` as placeholders, which
+// silently compiled `USAGE_TEXTURE_BINDING | USAGE_COPY_DST` down to a literal 0 and broke the
+// animated-texture fix on real hardware (the real values are 4 and 1). So: any such constant must be
+// declared NON-final and UNINITIALIZED (`public static int FOO;`), forcing a `getstatic` that
+// resolves against the real class - and failing loudly with NoSuchFieldError if the field is ever
+// renamed, instead of silently computing a wrong value. Object-typed `static final` fields (e.g.
+// RenderPipelines' constants) are not constant variables and are already safe. `StubConstantInliningTest`
+// enforces this mechanically.
 //
 // The supertype hierarchy is deliberately NOT mirrored: interfaces like GuiEventListener are
 // declared as empty markers rather than reproducing their ~18 default methods, since nothing we

@@ -45,16 +45,28 @@ public final class LegacyGpuRegistry {
 
     private static final List<Signature> EXACT_SIGNATURES = List.of(
             // Reference machine A: i3-3110M / HD Graphics 4000 / Intel driver 15.33.53.5161.
-            // Requires all three - HD Graphics 4000 alone is common across many Ivy Bridge CPUs,
-            // and only this exact CPU+GPU+driver combination has actually been personally verified.
-            new Signature((gpu, cpu) -> containsIgnoreCase(gpu.adapterName(), "HD Graphics 4000")
+            // Driver + CPU are jointly decisive on their own, so the GPU clause accepts either the
+            // full model name or the generic "Intel ... HD Graphics" form WMI sometimes reports
+            // instead (see machine B's note below for the confirmed case of that happening).
+            new Signature((gpu, cpu) -> isIntelHdGraphics(gpu.adapterName())
                     && driverMatches(gpu.driverVersion(), REFERENCE_A_DRIVER)
                     && containsIgnoreCase(cpu.name(), "i3-3110M")),
             // Reference machine B: i5-3470S / HD Graphics 2500, Windows-provided driver. No fixed
             // driver-version string exists to check (Windows Update ships whatever it currently
-            // ships) - the GPU model itself is specific enough, matching
-            // DriverQuirkMatcher.isMachineBGpu's already-established logic.
-            new Signature((gpu, cpu) -> containsIgnoreCase(gpu.adapterName(), "HD Graphics 2500"))
+            // ships).
+            //
+            // v1.8-Beta: the original rule matched on the GPU model name alone, on the reasoning that
+            // "the GPU model itself is specific enough". That turned out to be wrong on the actual
+            // reference machine - a real v1.7-Beta tester log shows WMI reporting the bare string
+            // "Intel(R) HD Graphics" with no model number, so this signature never matched, the
+            // machine classified as FAMILY_MATCH, and both EXACT_VERIFIED-gated fixes silently stayed
+            // off. (Same class of discovery as the driverMatches javadoc below: WMI reports something
+            // different from what the hardware documentation says.) The CPU model is the decisive
+            // signal - "i5-3470S" identifies this machine uniquely - so it is now accepted as an
+            // alternative to the model name. The Intel-adapter conjunct is required so that a discrete
+            // card added to an i5-3470S desktop can never be classified as the reference iGPU.
+            new Signature((gpu, cpu) -> containsIgnoreCase(gpu.adapterName(), "HD Graphics 2500")
+                    || (containsIgnoreCase(cpu.name(), "i5-3470S") && isIntelHdGraphics(gpu.adapterName())))
     );
 
     private LegacyGpuRegistry() {
@@ -81,6 +93,15 @@ public final class LegacyGpuRegistry {
 
     private static boolean containsIgnoreCase(String haystack, String needle) {
         return haystack != null && haystack.toLowerCase().contains(needle.toLowerCase());
+    }
+
+    /**
+     * True for any Intel HD Graphics-branded adapter, model number present or not. Guards the
+     * CPU-driven clauses above so a discrete GPU in a reference-CPU machine is never mistaken for
+     * the reference iGPU.
+     */
+    private static boolean isIntelHdGraphics(String adapterName) {
+        return containsIgnoreCase(adapterName, "Intel") && containsIgnoreCase(adapterName, "HD Graphics");
     }
 
     /**

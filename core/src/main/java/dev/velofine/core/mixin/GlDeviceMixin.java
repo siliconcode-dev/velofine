@@ -19,9 +19,11 @@
 
 package dev.velofine.core.mixin;
 
+import com.mojang.blaze3d.preprocessor.GlslPreprocessor;
 import com.mojang.blaze3d.shaders.ShaderSource;
 import com.mojang.blaze3d.shaders.ShaderType;
 import dev.velofine.core.shader.ShaderSourceInterceptors;
+import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -54,5 +56,33 @@ public abstract class GlDeviceMixin {
     private String velofine$resolveShaderSource(ShaderSource source, Identifier id, ShaderType type) {
         String vanilla = source.get(id, type);
         return ShaderSourceInterceptors.resolve(id, type, vanilla);
+    }
+
+    /**
+     * Stage 2 (v1.8-Beta): the same method's later call to
+     * {@code GlslPreprocessor.injectDefines(source, defines)} - confirmed via javap as a single call
+     * site at bytecode offset 47, downstream of the {@code ShaderSource.get} redirect above at
+     * offset 9. This is where a shader's {@code #define}s first exist in the source text, so it is
+     * the only correct place for any transform that needs to read one. See
+     * {@link ShaderSourceInterceptors}'s class javadoc for the v1.7-Beta bug that made this
+     * necessary.
+     *
+     * <p>Anchored on the named {@code INVOKE} descriptor rather than {@code @ModifyVariable}'s local
+     * ordinal deliberately: {@code compileShader} holds several {@code String} locals, and an
+     * ordinal would silently bind to the wrong one if Mojang reorders them, whereas a wrong
+     * descriptor fails loudly at apply time ({@code mixins.core-shader.json} is
+     * {@code "required": true}). Same reasoning CLAUDE.md records for {@code OptionsMixin}'s slices.
+     *
+     * <p>The redirected call is {@code static}, so the handler takes only its two arguments and no
+     * receiver; the handler itself is a non-static instance method because the enclosing target
+     * {@code compileShader} is non-static.
+     */
+    @Redirect(method = "compileShader",
+            at = @At(value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/preprocessor/GlslPreprocessor;injectDefines("
+                            + "Ljava/lang/String;Lnet/minecraft/client/renderer/ShaderDefines;)Ljava/lang/String;"))
+    private String velofine$resolvePostDefineShaderSource(String source, ShaderDefines defines) {
+        String injected = GlslPreprocessor.injectDefines(source, defines);
+        return ShaderSourceInterceptors.resolvePostDefines(injected);
     }
 }

@@ -40,11 +40,20 @@ import java.util.regex.Pattern;
  * <p>Dynamic (non-compile-time-constant) array indexing in a fragment shader is a well-documented
  * cross-vendor GPU-driver-compiler weak point - the same category CLAUDE.md's v1.5 addendum already
  * named as a planned "general shader-robustness improvement" ("avoiding dynamic (non-constant) array
- * indexing in fragment shaders") but never implemented. {@code PORTAL_LAYERS} is a compile-time-known
- * constant ({@code #define PORTAL_LAYERS 16}, confirmed present in the real raw asset file, not
- * injected later by Mojang's own preprocessor), so a full loop unroll is mechanically safe and
- * eliminates the dynamic index entirely while preserving identical math for hardware that never had
- * the bug.
+ * indexing in fragment shaders") but never implemented. {@code PORTAL_LAYERS} resolves to a
+ * compile-time constant 16, so a full loop unroll is mechanically safe and eliminates the dynamic
+ * index entirely while preserving identical math for hardware that never had the bug.
+ *
+ * <p><b>This runs at {@code ShaderSourceInterceptors}' stage 2 (post-{@code #define}), and must.</b>
+ * v1.7-Beta shipped it at stage 1 on the belief - stated in this javadoc at the time, and wrong -
+ * that {@code #define PORTAL_LAYERS 16} was present in the raw {@code .fsh} asset. It is not: it is a
+ * {@code ShaderDefines} value carried by {@code RenderPipelines.END_PORTAL} and spliced in by
+ * {@code GlslPreprocessor.injectDefines}, which {@code GlDevice.compileShader} calls only *after*
+ * {@code ShaderSource.get} returns. So at stage 1 the bound is an unresolvable identifier, {@link
+ * #resolveBound} returns null, and the patch bails out - which is exactly what every launch did on
+ * the tester's real hardware ("could not resolve loop bound \"PORTAL_LAYERS\"" in the v1.7-Beta log).
+ * The diagnostic tool's extracted {@code .glsl} files <em>do</em> show the {@code #define} at line 2
+ * because that tool performs its own define injection, which is why the discrepancy went unnoticed.
  *
  * <p>Deliberately narrow, matching {@link ShaderPatcher}'s own risk posture: this only recognizes
  * one specific shape - a simple, non-nested-brace {@code for (int VAR = 0; VAR < BOUND; VAR++) { ... }}

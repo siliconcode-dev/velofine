@@ -57,4 +57,11 @@ dependencies {
     // entry-point mixins. compileOnly on purpose: these fake net.minecraft.* classes must never
     // reach a runtime classpath, where they would shadow the real ones.
     compileOnly(project(":mcstubs"))
+
+    // v1.8-Beta: ShaderSourceInterceptorsTest needs ShaderType/Identifier to exist at *test* runtime.
+    // The load-bearing invariant is unchanged - `launcher`, the only module shaded into a shipped
+    // jar, still has no dependency on :mcstubs at all, and a test runtime classpath is never shaded -
+    // but note this is a deliberate, narrow relaxation of mcstubs' "never on a runtime configuration"
+    // wording, not an oversight. See mcstubs/build.gradle.kts's header.
+    testImplementation(project(":mcstubs"))
 }

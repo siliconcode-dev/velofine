@@ -57,6 +57,21 @@ final class TestHttpServer implements AutoCloseable {
         });
     }
 
+    /**
+     * Responds with a 302 + {@code Location} header, mirroring what GitHub's real release-asset URLs
+     * do (every {@code github.com/.../releases/download/...} request redirects to
+     * {@code objects.githubusercontent.com}). {@code location} is a path on this same stub, resolved
+     * through {@link #urlFor}. Same-origin http-&gt;http, which {@code HttpClient.Redirect.NORMAL}
+     * follows - see {@code GitHubReleaseClient}'s builder for why NORMAL and not ALWAYS.
+     */
+    void respondRedirect(String path, String location) {
+        server.createContext(path, exchange -> {
+            exchange.getResponseHeaders().add("Location", urlFor(location));
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
+        });
+    }
+
     String urlFor(String path) {
         return "http://localhost:" + server.getAddress().getPort() + path;
     }

@@ -79,8 +79,15 @@ final class VerifyMixinsHarness {
     void coreGlDeviceMixinRedirectsShaderSource() throws IOException {
         // Phase 7 moved this mixin from legacysupport to core (see ShaderSourceInterceptors' class
         // javadoc) - it now installs unconditionally via CoreEngine, no forceFixes needed.
+        //
+        // v1.8-Beta adds the second, post-#define redirect on GlslPreprocessor.injectDefines. This
+        // assertion is the release gate for it: mixins.core-shader.json is "required": true, so a
+        // wrong INVOKE descriptor throws InvalidInjectionException here rather than silently doing
+        // nothing in a tester's log - which is exactly how v1.7-Beta's end-portal fix shipped broken.
+        // Note the limit of this check: it proves the redirect *applies*, not that the source it
+        // receives actually contains the defines. EndPortalArrayIndexPatchTest covers that half.
         assertMixinApplied("com.mojang.blaze3d.opengl.GlDevice", "core.mixin.GlDeviceMixin",
-                "velofine$resolveShaderSource");
+                "velofine$resolveShaderSource", "velofine$resolvePostDefineShaderSource");
     }
 
     @Test

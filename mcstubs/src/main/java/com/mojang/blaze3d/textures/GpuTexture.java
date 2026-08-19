@@ -24,9 +24,25 @@ package com.mojang.blaze3d.textures;
  * methods (getWidth/getHeight/getFormat/...) Velofine's own code never calls; only the two real
  * {@code USAGE_*} bit-flag constants LegacySupport's animated-texture-upload fix passes to
  * {@code GpuDevice.createTexture} are stubbed alongside the bare type itself.
+ *
+ * <p><b>These fields are deliberately non-{@code final} and deliberately uninitialized</b>, and that
+ * is load-bearing - do not "tidy" them into constants. The real values (confirmed via
+ * {@code javap -constants}) are {@code USAGE_COPY_DST=1, USAGE_COPY_SRC=2, USAGE_TEXTURE_BINDING=4,
+ * USAGE_RENDER_ATTACHMENT=8, USAGE_CUBEMAP_COMPATIBLE=16}, but this stub intentionally does not
+ * assert them. A {@code static final} primitive <i>with an initializer</i> is a JLS 4.12.4 constant
+ * variable, which javac <b>inlines into consumer bytecode</b> - so the real class is never consulted
+ * at runtime. v1.7-Beta shipped with both declared {@code = 0}, which compiled
+ * {@code USAGE_TEXTURE_BINDING | USAGE_COPY_DST} down to a literal {@code 0} and made every
+ * animated-texture upload fail on real hardware with {@code IllegalStateException: Color texture must
+ * have USAGE_COPY_DST to be a destination for a write} (63 failures per launch in the tester log).
+ *
+ * <p>Declared this way, javac must emit a {@code getstatic} that resolves against the real class at
+ * runtime - and it fails loudly with {@code NoSuchFieldError} if Mojang ever renames a flag, rather
+ * than silently computing a wrong mask. See {@code mcstubs/build.gradle.kts}'s header for the general
+ * rule and {@code StubConstantInliningTest} for the guard that enforces it.
  */
 public abstract class GpuTexture implements AutoCloseable {
 
-    public static final int USAGE_COPY_DST = 0;
-    public static final int USAGE_TEXTURE_BINDING = 0;
+    public static int USAGE_COPY_DST;
+    public static int USAGE_TEXTURE_BINDING;
 }

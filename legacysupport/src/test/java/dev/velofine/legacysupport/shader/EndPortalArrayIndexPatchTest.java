@@ -38,12 +38,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 final class EndPortalArrayIndexPatchTest {
 
-    // The real, byte-identical fragment source every tester report captured - trimmed to the parts
-    // relevant to the loop (the fog/COLORS/matrix helper functions above main() are irrelevant to the
-    // patch and omitted here; the patch only ever touches the for-loop itself).
-    private static final String REAL_END_PORTAL_FRAGMENT = """
+    /**
+     * The <b>raw asset</b> as it really ships in the jar - note there is no {@code #define
+     * PORTAL_LAYERS}, because that value is a {@code ShaderDefines} entry on
+     * {@code RenderPipelines.END_PORTAL} and is spliced in later by
+     * {@code GlslPreprocessor.injectDefines}. v1.7-Beta's fixture silently included the {@code
+     * #define}, so its unroll test passed while the shipped code could never work - see
+     * {@link #rawAssetSourceWithoutInjectedDefinesBailsOutSafely()}.
+     */
+    private static final String RAW_END_PORTAL_FRAGMENT = """
             #version 330
-            #define PORTAL_LAYERS 16
 
             uniform sampler2D Sampler0;
             uniform sampler2D Sampler1;
@@ -70,9 +74,17 @@ final class EndPortalArrayIndexPatchTest {
             }
             """;
 
+    /**
+     * What the patch actually receives at stage 2: the raw asset after
+     * {@code GlslPreprocessor.injectDefines} has spliced the pipeline's defines in after the
+     * {@code #version} line.
+     */
+    private static final String POST_DEFINES_END_PORTAL_FRAGMENT =
+            RAW_END_PORTAL_FRAGMENT.replace("#version 330\n", "#version 330\n#define PORTAL_LAYERS 16\n");
+
     @Test
     void unrollsTheRealEndPortalLoop() {
-        String patched = EndPortalArrayIndexPatch.patch(REAL_END_PORTAL_FRAGMENT);
+        String patched = EndPortalArrayIndexPatch.patch(POST_DEFINES_END_PORTAL_FRAGMENT);
 
         assertFalse(patched.contains("COLORS[i]"), "dynamic index should be gone");
         assertFalse(patched.contains("for (int i"), "the for-loop construct should be gone");
@@ -81,6 +93,22 @@ final class EndPortalArrayIndexPatchTest {
         assertEquals(16, countOccurrences(patched, "textureProj(Sampler1,"),
                 "one textureProj(Sampler1, ...) call per unrolled iteration");
         assertEquals(countChar(patched, '{'), countChar(patched, '}'), "braces must stay balanced");
+    }
+
+    /**
+     * Reproduces the exact v1.7-Beta field failure. Registered at the pre-{@code #define} stage, the
+     * patch was handed this raw text on every launch, could not resolve {@code PORTAL_LAYERS}, and
+     * bailed out - so the shipped "fix" never once modified a shader on the tester's hardware
+     * ("could not resolve loop bound \"PORTAL_LAYERS\"" in the real log). Bailing out is the correct
+     * behavior for this input; the actual fix was moving the registration to stage 2, which is what
+     * {@link #unrollsTheRealEndPortalLoop()} now covers. Keep both: together they pin down that the
+     * patch is correct <em>and</em> that it is being fed the right text.
+     */
+    @Test
+    void rawAssetSourceWithoutInjectedDefinesBailsOutSafely() {
+        assertSame(RAW_END_PORTAL_FRAGMENT, EndPortalArrayIndexPatch.patch(RAW_END_PORTAL_FRAGMENT),
+                "raw asset text has no #define PORTAL_LAYERS - the bound is unresolvable and the patch "
+                        + "must leave the source alone rather than guess");
     }
 
     @Test

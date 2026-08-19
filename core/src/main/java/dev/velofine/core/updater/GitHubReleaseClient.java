@@ -49,8 +49,17 @@ final class GitHubReleaseClient {
 
     private static final Gson GSON = new Gson();
 
+    // followRedirects is load-bearing, not boilerplate: HttpClient defaults to Redirect.NEVER, and
+    // every GitHub release-asset URL (github.com/.../releases/download/...) 302s to
+    // objects.githubusercontent.com. Since download()/downloadToFile() both reject anything != 200,
+    // the in-app updater could never fetch a manifest or installer on ANY shipped release - confirmed
+    // by a real v1.7-Beta tester log ("Update check failed: ... manifest.json: HTTP 302").
+    // NORMAL rather than ALWAYS: it follows HTTPS->HTTPS but refuses an HTTPS->HTTP downgrade, which
+    // is exactly the right posture for a project that ships unsigned binaries and leans on the
+    // SHA-256 + Ed25519 chain instead.
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
+            .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
 
     private final String releasesUrl;

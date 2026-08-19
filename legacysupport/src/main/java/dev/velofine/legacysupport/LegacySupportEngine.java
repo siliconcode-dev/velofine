@@ -38,6 +38,7 @@ import dev.velofine.core.shader.ShaderSourceInterceptors;
 import dev.velofine.legacysupport.gl.HardwareConfirmation;
 import dev.velofine.legacysupport.shader.EndPortalArrayIndexPatch;
 import dev.velofine.legacysupport.shader.ShaderPatcher;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigSource;
@@ -46,6 +47,7 @@ import java.lang.instrument.Instrumentation;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +67,7 @@ public final class LegacySupportEngine {
 
     private static volatile HardwareProfile hardwareProfile = HardwareProfile.unknown();
     private static volatile Set<Fix> activeFixes = EnumSet.noneOf(Fix.class);
+    private static final AtomicBoolean hardwareMismatchWarned = new AtomicBoolean();
 
     private LegacySupportEngine() {
     }
@@ -100,40 +103,45 @@ public final class LegacySupportEngine {
             Mixins.addConfiguration("mixins.legacysupport.json", (IMixinConfigSource) null);
             MixinBridge.install(instrumentation);
 
-            if (activeFixes.contains(Fix.SHADER_MIX_PATCH) || activeFixes.contains(Fix.END_PORTAL_ARRAY_INDEX_PATCH)) {
-                // core owns the actual @Redirect on GlDevice.compileShader's ShaderSource.get()
-                // call (see ShaderSourceInterceptors' class javadoc for why this moved out of
-                // legacysupport in Phase 7) - this just registers our patch as one candidate.
-                //
-                // v1.5 Phase 2: gated behind HardwareConfirmation.isConfirmedMatch() first - the
-                // Masterdoc's "post-context glGetString confirmation as the actual gate before any
-                // shader swap is applied" requirement. Safe by construction: compileShader cannot
-                // run without a real GL context already current, so the confirmation check never
-                // needs its own mixin (see GlContextSignature's class javadoc).
-                //
-                // v1.7-Beta: END_PORTAL_ARRAY_INDEX_PATCH shares this one registration/confirmation
-                // gate with SHADER_MIX_PATCH rather than registering separately - it's checked first
-                // since it fully replaces rendertype_end_portal's fragment source when active, making
-                // ShaderPatcher's own mix()-literal regex moot for that one shader (it wouldn't match
-                // there anyway - apply_fog's mix() call uses a computed blend factor, not a literal).
+            // core owns the actual @Redirect on GlDevice.compileShader's ShaderSource.get() call and
+            // on its later GlslPreprocessor.injectDefines() call (see ShaderSourceInterceptors' class
+            // javadoc for why these moved out of legacysupport in Phase 7, and for the two-stage
+            // split added in v1.8-Beta) - we just register our patches as candidates.
+            //
+            // v1.5 Phase 2: gated behind HardwareConfirmation.isConfirmedMatch() first - the
+            // Masterdoc's "post-context glGetString confirmation as the actual gate before any
+            // shader swap is applied" requirement. Safe by construction: compileShader cannot run
+            // without a real GL context already current, so the confirmation check never needs its
+            // own mixin (see GlContextSignature's class javadoc).
+            if (activeFixes.contains(Fix.SHADER_MIX_PATCH)) {
+                // Stage 1 (raw asset text). The end-portal shader is skipped here because stage 2
+                // owns it; ShaderPatcher's mix()-literal regex wouldn't match it anyway (apply_fog's
+                // mix() call uses a computed blend factor, not a literal).
                 ShaderSourceInterceptors.register(ShaderSourceInterceptors.PRIORITY_LEGACY_SUPPORT,
                         (id, type, vanillaSource) -> {
-                            if (!HardwareConfirmation.isConfirmedMatch(hardwareProfile)) {
-                                VelofineLog.warn("LegacySupport", "Post-context GL renderer does not confirm the "
-                                        + "pre-context hardware detection (possible hybrid/switchable-graphics "
-                                        + "mismatch); skipping shader patch for " + id);
+                            if (!confirmedForShaderPatch()) {
                                 return Optional.empty();
                             }
-                            if (activeFixes.contains(Fix.END_PORTAL_ARRAY_INDEX_PATCH)
-                                    && type == ShaderType.FRAGMENT
-                                    && "minecraft".equals(id.getNamespace())
-                                    && "core/rendertype_end_portal".equals(id.getPath())) {
-                                return Optional.of(EndPortalArrayIndexPatch.patch(vanillaSource));
+                            if (isEndPortalFragment(id, type)) {
+                                return Optional.empty();
                             }
-                            if (activeFixes.contains(Fix.SHADER_MIX_PATCH)) {
-                                return Optional.of(ShaderPatcher.patch(vanillaSource, String.valueOf(id)));
+                            return Optional.of(ShaderPatcher.patch(vanillaSource, String.valueOf(id)));
+                        });
+            }
+
+            if (activeFixes.contains(Fix.END_PORTAL_ARRAY_INDEX_PATCH)) {
+                // Stage 2 (post-#define text). v1.7-Beta registered this at stage 1 and it therefore
+                // never fired: its loop bound PORTAL_LAYERS is a ShaderDefines value on
+                // RenderPipelines.END_PORTAL, injected by GlslPreprocessor.injectDefines *after*
+                // ShaderSource.get returns, so at stage 1 the identifier simply isn't in the text and
+                // the patch bailed out on every launch ("could not resolve loop bound" in the real
+                // tester log).
+                ShaderSourceInterceptors.registerPostDefines(ShaderSourceInterceptors.PRIORITY_LEGACY_SUPPORT,
+                        (id, type, injectedSource) -> {
+                            if (!confirmedForShaderPatch() || !isEndPortalFragment(id, type)) {
+                                return Optional.empty();
                             }
-                            return Optional.empty();
+                            return Optional.of(EndPortalArrayIndexPatch.patch(injectedSource));
                         });
             }
 
@@ -151,6 +159,32 @@ public final class LegacySupportEngine {
 
     public static boolean isFixActive(Fix fix) {
         return activeFixes.contains(fix);
+    }
+
+    /** The real {@code minecraft:core/rendertype_end_portal} fragment shader - confirmed via javap. */
+    private static boolean isEndPortalFragment(Identifier id, ShaderType type) {
+        return type == ShaderType.FRAGMENT
+                && id != null
+                && "minecraft".equals(id.getNamespace())
+                && "core/rendertype_end_portal".equals(id.getPath());
+    }
+
+    /**
+     * Shared by both interceptor stages, which are registered independently of each other. Cheap to
+     * repeat ({@code GlContextSignature} caches after the first {@code glGetString}), but the warning
+     * is one-shot: a hybrid/switchable-graphics mismatch is a property of the machine, not of each
+     * shader, so logging it per shader per stage would be pure noise.
+     */
+    private static boolean confirmedForShaderPatch() {
+        if (HardwareConfirmation.isConfirmedMatch(hardwareProfile)) {
+            return true;
+        }
+        if (hardwareMismatchWarned.compareAndSet(false, true)) {
+            VelofineLog.warn("LegacySupport", "Post-context GL renderer does not confirm the pre-context "
+                    + "hardware detection (possible hybrid/switchable-graphics mismatch); skipping all "
+                    + "LegacySupport shader patches this launch.");
+        }
+        return false;
     }
 
     /**

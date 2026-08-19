@@ -69,6 +69,34 @@ final class DriverQuirkMatcherTest {
         assertTrue(notes.get(0).contains("was not confirmed"));
     }
 
+    /**
+     * v1.8-Beta, mirroring {@code core.gpu.LegacyGpuRegistryTest}: WMI reports reference machine B's
+     * adapter as a bare "Intel(R) HD Graphics" with no model number (confirmed in a real tester log),
+     * so the CPU model has to carry the identification. Kept in lockstep with core deliberately - the
+     * point of this class is that a tester reading "matches reference machine B" in a report sees the
+     * same verdict the live agent reached.
+     */
+    @Test
+    void genericAdapterNameWithReferenceCpuStillMatchesMachineB() {
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i5-3470S CPU @ 2.90GHz", 4, 4);
+        List<GpuInfo> gpus = List.of(new GpuInfo("Intel(R) HD Graphics", "10.18.10.5161", null, null, null));
+
+        List<String> notes = DriverQuirkMatcher.match(cpu, gpus);
+
+        assertEquals(1, notes.size());
+        assertTrue(notes.get(0).contains("reference machine B"));
+        assertTrue(notes.get(0).contains("Identified by CPU model"));
+    }
+
+    /** The Intel-adapter conjunct: a discrete card in a reference-CPU desktop must not match. */
+    @Test
+    void referenceCpuWithDiscreteGpuDoesNotMatchMachineB() {
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i5-3470S CPU @ 2.90GHz", 4, 4);
+        List<GpuInfo> gpus = List.of(new GpuInfo("NVIDIA GeForce GTX 1050 Ti", "31.0.15.3699", null, null, null));
+
+        assertTrue(DriverQuirkMatcher.match(cpu, gpus).isEmpty());
+    }
+
     @Test
     void broaderFamilyMatchWhenDriverVersionDiffersFromExactReference() {
         CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz", 2, 4);

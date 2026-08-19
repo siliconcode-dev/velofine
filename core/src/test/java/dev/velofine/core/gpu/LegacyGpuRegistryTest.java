@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validates {@link LegacyGpuRegistry#classify} against the literal reference-machine values from
- * {@code Masterdoc_v1.5.md} S3, since no real tester-submitted diagnostic report has landed in
- * {@code testers-diagnosis-report/} yet to validate against directly (see this phase's plan notes
- * in {@code Claude_v1.5.md}).
+ * {@code Masterdoc_v1.5.md} S3, plus - since v1.8-Beta - the values a real tester machine actually
+ * reports, which turned out not to match the documentation (see
+ * {@link #genericWmiAdapterNameOnReferenceMachineBIsStillExactVerified()}).
  */
 final class LegacyGpuRegistryTest {
 
@@ -47,6 +47,50 @@ final class LegacyGpuRegistryTest {
         // tester report from this exact reference machine. Only the trailing build segment (5161)
         // is shared between Intel's two numbering schemes.
         GpuInfo gpu = new GpuInfo("Intel(R) HD Graphics 4000", "10.18.10.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE);
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz");
+
+        assertEquals(GpuConfidence.EXACT_VERIFIED, LegacyGpuRegistry.classify(gpu, cpu));
+    }
+
+    /**
+     * The v1.8-Beta regression case, taken verbatim from a real v1.7-Beta tester log: WMI reports
+     * reference machine B's adapter as the bare {@code "Intel(R) HD Graphics"} with no model number,
+     * so the old model-name-only signature never matched and the machine classified as
+     * {@code FAMILY_MATCH} - leaving both EXACT_VERIFIED-gated fixes silently switched off on the one
+     * machine they were written for. The CPU string is the decisive signal.
+     */
+    @Test
+    void genericWmiAdapterNameOnReferenceMachineBIsStillExactVerified() {
+        GpuInfo gpu = new GpuInfo("Intel(R) HD Graphics", "10.18.10.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE);
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i5-3470S CPU @ 2.90GHz");
+
+        assertEquals(GpuConfidence.EXACT_VERIFIED, LegacyGpuRegistry.classify(gpu, cpu));
+    }
+
+    @Test
+    void genericAdapterNameWithNonReferenceCpuIsOnlyFamilyMatch() {
+        GpuInfo gpu = new GpuInfo("Intel(R) HD Graphics", "10.18.10.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE);
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i5-3570 CPU @ 3.40GHz");
+
+        assertEquals(GpuConfidence.FAMILY_MATCH, LegacyGpuRegistry.classify(gpu, cpu));
+    }
+
+    /**
+     * Guards the Intel-adapter conjunct on the CPU-driven clause: an i5-3470S desktop with a discrete
+     * card added must never have that card treated as the reference iGPU.
+     */
+    @Test
+    void referenceCpuWithADiscreteGpuIsNotExactVerified() {
+        GpuInfo gpu = new GpuInfo("NVIDIA GeForce GTX 1050 Ti", "31.0.15.3699", GpuInfo.FixProfile.NONE, GpuConfidence.NONE);
+        CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i5-3470S CPU @ 2.90GHz");
+
+        assertEquals(GpuConfidence.NONE, LegacyGpuRegistry.classify(gpu, cpu));
+    }
+
+    /** Mirror of the machine-B case: machine A's driver + CPU stay decisive without the model name. */
+    @Test
+    void genericWmiAdapterNameOnReferenceMachineAIsStillExactVerified() {
+        GpuInfo gpu = new GpuInfo("Intel(R) HD Graphics", "10.18.10.5161", GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE);
         CpuInfo cpu = new CpuInfo("Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz");
 
         assertEquals(GpuConfidence.EXACT_VERIFIED, LegacyGpuRegistry.classify(gpu, cpu));

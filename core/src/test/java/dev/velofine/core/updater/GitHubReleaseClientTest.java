@@ -114,4 +114,41 @@ final class GitHubReleaseClientTest {
             assertEquals(100, lastPercent.get(), "progress should reach 100% once the full body is written");
         }
     }
+
+    /**
+     * Regression test for the v1.7-Beta field failure: a real tester log showed
+     * {@code Update check failed: java.io.IOException: Download failed for
+     * https://github.com/.../releases/download/v1.7-Beta/manifest.json: HTTP 302}. Java's
+     * {@code HttpClient} defaults to {@code Redirect.NEVER}, and every GitHub release-asset URL
+     * 302s to {@code objects.githubusercontent.com} - so the in-app updater had never successfully
+     * downloaded anything on any shipped release. Fails on pre-fix code with that exact message.
+     */
+    @Test
+    void downloadFollowsA302ToTheRealAssetHost() throws Exception {
+        try (TestHttpServer server = new TestHttpServer()) {
+            server.respondRedirect("/releases/download/manifest.json", "/objects/manifest.json");
+            server.respond("/objects/manifest.json", 200, "{\"velofineVersion\":\"1.8-Beta\"}", "application/json");
+            GitHubReleaseClient client = new GitHubReleaseClient(server.urlFor("/releases"));
+
+            byte[] bytes = client.download(server.urlFor("/releases/download/manifest.json"));
+
+            assertArrayEquals("{\"velofineVersion\":\"1.8-Beta\"}".getBytes(StandardCharsets.UTF_8), bytes);
+        }
+    }
+
+    /** Same redirect path for the streaming download - the installer .exe is the one users feel. */
+    @Test
+    void downloadToFileFollowsA302(@TempDir Path tempDir) throws Exception {
+        try (TestHttpServer server = new TestHttpServer()) {
+            String payload = "installer-bytes";
+            server.respondRedirect("/releases/download/Velofine-Setup.exe", "/objects/Velofine-Setup.exe");
+            server.respond("/objects/Velofine-Setup.exe", 200, payload, "application/octet-stream");
+            GitHubReleaseClient client = new GitHubReleaseClient(server.urlFor("/releases"));
+
+            Path dest = tempDir.resolve("Velofine-Setup.exe");
+            client.downloadToFile(server.urlFor("/releases/download/Velofine-Setup.exe"), dest, percent -> { });
+
+            assertEquals(payload, Files.readString(dest, StandardCharsets.UTF_8));
+        }
+    }
 }

@@ -42,3 +42,70 @@ The two verified reference machines (i3-3110M/HD 4000, i5-3470S/HD 2500) render 
 - **The actual gate**: `legacysupport.gl.HardwareConfirmation.isConfirmedMatch(HardwareProfile)` correlates the captured `GL_RENDERER` against the WMI-detected adapter name via `core.gpu.AdapterMatcher` (ported from `diagnostics-tool`'s normalize-and-compare algorithm — strips `(R)`/`(TM)`/`(C)` trademark markers as whole tokens before comparing, small intentional duplication rather than a cross-module dependency, same precedent `GpuProbe` already sets). `LegacySupportEngine`'s `Fix.SHADER_MIX_PATCH` interceptor registration now checks this before calling `ShaderPatcher.patch(...)`; on a mismatch (e.g. a hybrid/switchable-graphics laptop where WMI and the bound GL context disagree) it logs a warning and returns `Optional.empty()`, falling through to vanilla shader source exactly like the existing "no fix active" path. `Fix.GL_COMPATIBILITY_PROFILE` (the window-hint fix, `GlBackendMixin`) is untouched — it necessarily runs before any GL context exists, so there's nothing to confirm it against, and Masterdoc_v1.5.md S4 only asks for the gate on shader swaps specifically.
 - **Confidence is exposed, not yet consumed by a differentiated fix.** Phase 3 (compatibility-renderer fallback) and Phase 4 (targeted shader fix) don't exist yet, so nothing branches on `EXACT_VERIFIED` vs. `FAMILY_MATCH` today beyond logging — this phase's job was making the signal correct and available, not building its downstream consumers.
 - **Known gap, not yet resolved**: no tester has actually dropped a `velofine-diagnosis-*.json` into `testers-diagnosis-report/` yet, so the exact-match classification is validated only against the literal reference-machine values from Masterdoc_v1.5.md S3 (`core.gpu.LegacyGpuRegistryTest`), not a real tester report. Revisit once one arrives.
+
+## v1.8-Beta: the four bugs that made v1.6/v1.7 no-ops in the field
+
+**Both v1.6-Beta's and v1.7-Beta's targeted fixes were confirmed non-functional on real hardware.** A
+tester ran v1.7-Beta on reference machine B (i5-3470S / HD Graphics 2500 / driver 10.18.10.5161) and
+reported "same as vanilla, nothing changed" — the logs (`testers-diagnosis-report/latest.log (1).txt`,
+`launcher.log.txt`) confirm neither fix ever altered a single shader or texture. Four independent root
+causes, all confirmed against the real logs plus javap against the real 26.2 jar:
+
+- **mcstubs compile-time constants are inlined, and that silently broke the animated-texture fix.**
+  `AnimatedTextureUploadFix` passed `GpuTexture.USAGE_TEXTURE_BINDING | USAGE_COPY_DST`, but the stub
+  declared both `= 0` as placeholders. A `static final` primitive *with an initializer* is a JLS 4.12.4
+  constant variable, so **javac inlines it into consumer bytecode** — the compiled call literally passed
+  `0`, and every upload threw `IllegalStateException: Color texture must have USAGE_COPY_DST to be a
+  destination for a write` (63 failures per launch). Real values are `COPY_DST=1, COPY_SRC=2,
+  TEXTURE_BINDING=4, RENDER_ATTACHMENT=8, CUBEMAP_COMPATIBLE=16`. Fixed by declaring such stub fields
+  **non-final and uninitialized**, forcing a `getstatic` that resolves against the real class at runtime
+  and fails loudly (`NoSuchFieldError`) on drift rather than silently computing a wrong value.
+  `mcstubs/build.gradle.kts`'s header previously claimed "only their erased signatures matter" — wrong,
+  and the direct cause; corrected, and `StubConstantInliningTest` now enforces it mechanically.
+- **Shader interception happened one stage too early.** `GlDevice.compileShader` calls
+  `ShaderSource.get(...)` at bytecode offset 9 and `GlslPreprocessor.injectDefines(source, defines)` at
+  offset 47. `PORTAL_LAYERS` is a `ShaderDefines` value on `RenderPipelines.END_PORTAL` — **not** in the
+  raw `.fsh` — so at stage 1 the end-portal patch could not resolve its loop bound and bailed out on
+  every launch. `ShaderSourceInterceptors` now has a second, post-`injectDefines` stage
+  (`registerPostDefines`/`resolvePostDefines`), driven by a second `@Redirect` in `core.mixin.GlDeviceMixin`;
+  shader identity crosses the two stages via a `ThreadLocal` recorded by stage 1 (sound because the two
+  calls are straight-line within one `compileShader` invocation, and stage 1's redirect is installed
+  unconditionally by `CoreEngine`). `EndPortalArrayIndexPatch` itself needed no code change — only its
+  javadoc, which had asserted the `#define` was present in the raw asset. The diagnostic tool's extracted
+  `.glsl` files *do* show it, because that tool performs its own define injection — which is exactly why
+  the discrepancy went unnoticed, and why `EndPortalArrayIndexPatchTest` now tests raw and post-define
+  fixtures separately.
+- **Detection could never reach `EXACT_VERIFIED` on the actual reference machine.** WMI reports its
+  adapter as the bare `"Intel(R) HD Graphics"` with no model number, which defeated *two* layers:
+  `GpuDetector.INTEL_GEN7_PATTERN` (`Intel.*HD Graphics (2500|4000)`) fell through to `GENERIC_OLD`, and
+  `LegacyGpuRegistry`'s machine-B signature (name contains "HD Graphics 2500") never matched → only
+  `FAMILY_MATCH`. So on a clean config both fixes stayed off entirely; the tester only ever ran them by
+  manually forcing the toggles ON. Both layers now accept the CPU model as the decisive signal
+  (`i5-3470S`/`i3-3110M` uniquely identify the reference machines; Ivy Bridge only ever shipped HD 2500
+  and HD 4000), always conjoined with an Intel-adapter check so a discrete card in a reference-CPU
+  machine can't be misclassified. `diagnostics-tool`'s `DriverQuirkMatcher` had the identical blind spot
+  and was updated in lockstep, per the mirroring commitment in `LegacyGpuRegistry`'s javadoc.
+  The confidence tier itself was **not** broadened — still `EXACT_VERIFIED`-only, deliberately, since
+  broadening the gate in the same release as fixing the bugs would make the next tester report
+  un-attributable.
+- **The auto-updater had never worked on any release.** `GitHubReleaseClient`'s `HttpClient` never set
+  `followRedirects`, and Java defaults to `Redirect.NEVER`; GitHub release-asset URLs always 302 to
+  `objects.githubusercontent.com`, and both download methods reject anything `!= 200`. Fixed with
+  `Redirect.NORMAL` (not `ALWAYS` — it refuses HTTPS→HTTP downgrades). Regression tests reproduce the
+  tester's exact `HTTP 302` message. Every existing user must update manually once.
+
+**Also added**: an opt-in `-Dvelofine.shader.dumpPatched=<dir>` export (`core.shader.ShaderSourceDump`)
+writing the exact final GLSL handed to the driver, so a tester can compile-check it with
+`diagnostic.exe`'s CANDIDATE mode before trusting the live path — closing the Masterdoc Phase 4 loop
+without vendoring Mojang shader source into the repo.
+
+**Investigated and dismissed this session**: the 97 `GL_INVALID_VALUE` messages in the tester log all
+fire immediately after `Stopping!`, i.e. during shutdown/teardown, not during gameplay — so they are not
+evidence of systemic Blaze3D breakage while rendering. A broad "make modern Blaze3D run natively on
+ancient hardware" compatibility layer was explicitly deferred on that basis, pending one clean report
+proving the narrow fixes work.
+
+**Still unconfirmed, and this is the whole point of v1.8**: neither targeted fix has *ever* been observed
+working on real hardware. `VerifyMixinsHarness` proves the bytecode transforms apply (18/18 against the
+real jar); the unit tests prove the transforms are correct in isolation. Whether they actually fix
+invisible water / black lava / the invisible end portal remains the outstanding acceptance test.

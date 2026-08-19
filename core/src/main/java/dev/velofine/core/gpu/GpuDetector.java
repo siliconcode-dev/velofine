@@ -54,6 +54,20 @@ public final class GpuDetector {
     private static final Pattern INTEL_HD_GRAPHICS_PATTERN =
             Pattern.compile("Intel.*HD Graphics", Pattern.CASE_INSENSITIVE);
 
+    // v1.8-Beta: WMI does not always report the GPU model number. On the real i5-3470S/HD Graphics
+    // 2500 reference machine, Win32_VideoController.Name comes back as the bare string
+    // "Intel(R) HD Graphics" - no "2500" - so INTEL_GEN7_PATTERN above misses and the machine fell
+    // through to GENERIC_OLD, which grants only GL_COMPATIBILITY_PROFILE. (Confirmed in a real
+    // v1.7-Beta tester log; the post-context GL_RENDERER string on the same machine *does* say
+    // "Intel(R) HD Graphics 2500", so the model number exists, just not at pre-context WMI time.)
+    //
+    // The CPU resolves the ambiguity rigorously rather than by guessing: Ivy Bridge (3rd-gen Core,
+    // model numbers 3xxx) only ever shipped two iGPUs - HD 2500 and HD 4000 - and both are already
+    // INTEL_GEN7. So a generic "Intel ... HD Graphics" adapter on an Ivy Bridge CPU is necessarily
+    // one of the two.
+    private static final Pattern IVY_BRIDGE_CPU_PATTERN =
+            Pattern.compile("Core.*i[357]-3\\d{3}", Pattern.CASE_INSENSITIVE);
+
     private static final String POWERSHELL_COMMAND =
             "Get-CimInstance Win32_VideoController | Select-Object Name,DriverVersion | ConvertTo-Json -Compress";
 
@@ -65,14 +79,14 @@ public final class GpuDetector {
             List<GpuInfo> adapters = queryAdapters();
             GpuInfo resolved = null;
             for (GpuInfo adapter : adapters) {
-                if (adapter.adapterName() != null && INTEL_GEN7_PATTERN.matcher(adapter.adapterName()).find()) {
+                if (classifyFixProfile(adapter.adapterName(), cpu) == GpuInfo.FixProfile.INTEL_GEN7) {
                     resolved = new GpuInfo(adapter.adapterName(), adapter.driverVersion(), GpuInfo.FixProfile.INTEL_GEN7, GpuConfidence.NONE);
                     break;
                 }
             }
             if (resolved == null) {
                 for (GpuInfo adapter : adapters) {
-                    if (adapter.adapterName() != null && INTEL_HD_GRAPHICS_PATTERN.matcher(adapter.adapterName()).find()) {
+                    if (classifyFixProfile(adapter.adapterName(), cpu) == GpuInfo.FixProfile.GENERIC_OLD) {
                         resolved = new GpuInfo(adapter.adapterName(), adapter.driverVersion(), GpuInfo.FixProfile.GENERIC_OLD, GpuConfidence.NONE);
                         break;
                     }
@@ -88,6 +102,31 @@ public final class GpuDetector {
             VelofineLog.warn("core", "GPU detection failed, assuming no fix profile: " + e);
             return GpuInfo.unknown();
         }
+    }
+
+    /**
+     * Pure classification of one adapter name (plus the CPU, which disambiguates generic Intel
+     * adapter names - see {@link #IVY_BRIDGE_CPU_PATTERN}). Extracted from {@link #detect(CpuInfo)}
+     * in v1.8-Beta so this is unit-testable at all: {@code detect} shells out to PowerShell, so the
+     * classification logic could never be exercised without real WMI before.
+     */
+    static GpuInfo.FixProfile classifyFixProfile(String adapterName, CpuInfo cpu) {
+        if (adapterName == null) {
+            return GpuInfo.FixProfile.NONE;
+        }
+        if (INTEL_GEN7_PATTERN.matcher(adapterName).find()) {
+            return GpuInfo.FixProfile.INTEL_GEN7;
+        }
+        if (INTEL_HD_GRAPHICS_PATTERN.matcher(adapterName).find()) {
+            // Generic "Intel ... HD Graphics" with no model number: an Ivy Bridge CPU pins it to
+            // HD 2500 or HD 4000, the only iGPUs that generation ever shipped.
+            String cpuName = cpu != null ? cpu.name() : null;
+            if (cpuName != null && IVY_BRIDGE_CPU_PATTERN.matcher(cpuName).find()) {
+                return GpuInfo.FixProfile.INTEL_GEN7;
+            }
+            return GpuInfo.FixProfile.GENERIC_OLD;
+        }
+        return GpuInfo.FixProfile.NONE;
     }
 
     private static List<GpuInfo> queryAdapters() throws IOException, InterruptedException {
